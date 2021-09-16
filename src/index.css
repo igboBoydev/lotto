@@ -1,0 +1,31 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@media(min-width: 965px) {
+    .register_section{
+        box-sizing: border-box;
+        width: inherit;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        margin: 2rem 10rem 5rem 10rem;
+        padding: 1rem;
+        border-radius: .25rem;
+    }
+
+    .register_section:hover{
+        box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
