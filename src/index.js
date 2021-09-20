@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
-import { AppProvider } from './context/context';
+import { AppProvider } from './store/context';
 
 // css
 import './index.css'
