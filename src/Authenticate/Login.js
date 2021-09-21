@@ -1,27 +1,74 @@
 import React, { useState } from 'react';
-import { Form, Button, Link, Row, Container, Col } from 'react-bootstrap';
+import { Form, Button, Row, Container, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { useGlobalContext } from '../store/context';
 
-const Login = () => {
-      let { loggingIn } = useGlobalContext();
-    const [userLogin, setUserLogin] = useState({ mobile: '', password: '' });
-    const [showLogin, setShowLogin] = useState(false)
+const initialState = {
+    mobile: '',
+    password: '',
+}
 
-    const handleLogin = (e) => {
+const Login = () => {
+    const { isLoggedIn, giveAccess } = useGlobalContext();
+    const [showValidate, setShowValidate] = useState(false)
+    const [users, setUsers] = useState(initialState)
+    const [value, setValue] = useState([])
+
+    const handleChange = (e) => {
+        e.preventDefault();
+        e.stopPropagation()
         const name = e.target.name;
         const value = e.target.value;
-        setUserLogin({ ...userLogin, [name]: value })
+        setUsers({ ...users, [name]: value })
     }
-   
-    const handleSubmit = (e) => {
-        e.preventDefault()
-            const grantAccess = { id: new Date().getTime().toString(), ...userLogin }
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        setShowValidate(true)
+
         console.log('hello world')
-            loggingIn(grantAccess)
-        setUserLogin('')
-    }
 
 
+        var myHeaders = new Headers();
+        myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+        myHeaders.append("timestamps", "1614848109");
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "mobile": `${users.mobile}`,
+            "password": `${users.password}`
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch("http://localhost:5016/api/v1/login", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                setValue(result)
+                console.log(result)
+                setShowValidate(true)
+                giveAccess(true)
+            },
+                (error) => {
+                    console.log(error)
+                }
+            );
+  
+        
+        users.mobile = ''
+        users.password = ''
+    };
 
   return (
         <section className='register_section d-flex justify-content-center'>
@@ -30,12 +77,12 @@ const Login = () => {
                 <Col className='mt-5' md={{ span: 12, offset: 1 }}>
 
       <Form onSubmit={handleSubmit}>
-          <Form.Label htmlFor="inputPassword5">Email</Form.Label>
+          <Form.Label htmlFor="inputPassword5">Mobile</Form.Label>
           <Form.Control
-            type="email"
-                name='email'
+            type="text"
+                name='mobile'
                 className='input_width'
-            onChange={handleLogin}
+            onChange={handleChange}
             id="inputPassword5"
             aria-describedby="passwordHelpBlock"
                           />
@@ -44,14 +91,14 @@ const Login = () => {
             type="Password"
                 name='password'
                 className='input_width'
-            onChange={handleLogin}
+            onChange={handleChange}
             id="inputPassword5"
             aria-describedby="passwordHelpBlock"
               />
           <Form.Text id="passwordHelpBlock" muted>
             Please Kindly Ensure your Login Details are correct.
         </Form.Text>
-        <Button className='my-4 ' type='submit' variant="outline-success">Submit</Button>
+        <Button variant='success'  className='mb-3' type="submit">Submit</Button>
       </Form>
                        
                 </Col>

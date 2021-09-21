@@ -1,58 +1,87 @@
-import React, { useState } from 'react';
-import { useGlobalContext } from '../store/context';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-
+const initialState = {
+    email: '',
+    password: '',
+    mobile: ''
+}
 const Register = () => {
-    const [validated, setValidated] = useState(false);
-    const { addUser } = useGlobalContext();
-    const [user, setUser] = useState({ email: '', password: '', mobile: '' })
     const [showValidate, setShowValidate] = useState(false)
+    const [users, setUsers] = useState(initialState)
+    const [value, setValue] = useState([])
 
     const handleRegisterChange = (e) => {
         e.preventDefault();
         e.stopPropagation()
         const name = e.target.name;
         const value = e.target.value;
-        setUser({ ...user, [name]: value })
+        setUsers({ ...users, [name]: value })
     }
+
     const handleSubmit = (event) => {
         event.preventDefault()
-        event.stopPropagation()
-      const form = event.currentTarget;
-      if (form.checkValidity() === false) {
-         event.preventDefault();
-        event.stopPropagation();
-      }
-        setValidated(true);
-               
-        if (user.email && user.password && user.mobile) {
-            const newUser = { id: new Date().getTime().toString(), ...user }
-            if (newUser) {
-              addUser(newUser)   
-            }   
-        } else {
-            return;
-        }
 
-        user.email = ''
-        user.password = ''
-        user.mobile = ''
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
         setShowValidate(true)
-    
+
+        var myHeaders = new Headers();
+     myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+     myHeaders.append("Content-Type", "application/json");
+
+
+        var raw = JSON.stringify({
+            "email": `${users.email}`,
+            "password": `${users.password}`,
+            "mobile": `${users.mobile}`
+        });
+
+
+    var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
     };
-    
+
+
+        fetch("http://localhost:5016/api/v1/register", requestOptions)
+            .then(response => response.text())
+            .then(result => { 
+                setValue(result)
+                console.log(result)
+                setShowValidate(true)
+            },
+                (error) => {
+                    console.log(error)
+                }
+        )
+        
+        users.email = ''
+        users.mobile = ''
+        users.password = ''
+    };
+
+    // let obj = Object.keys(value).length
 
     return (
         <section className='register_section d-flex justify-content-center'>
             <Container fluid='md'>
+
             <Row>
                     <Col className='mt-5' md={{ span: 12, offset: 1 }}>
-                          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                        {showValidate ? <span>Registered Successfully</span> : <span>Enter Details</span>
+                        }
+                          <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group as={Col} md="8" controlId="validationCustom01">
                             <Form.Label>Email</Form.Label>
                             <Form.Control
-                                required
+                                    required
+                                    value={users.email}
                                 type="email"
                                 name="email"
                                 onChange={handleRegisterChange}
@@ -65,7 +94,8 @@ const Register = () => {
                             <Form.Label>Mobile</Form.Label>
                             <Form.Control
                                 required
-                                type="text"
+                                    type="text"
+                                    value={users.mobile}
                                 name="mobile"
                                 onChange={handleRegisterChange}
                                 placeholder="090xxxxxxxxxxx"
@@ -78,7 +108,8 @@ const Register = () => {
                             <Form.Control
                                 type="password"
                                 placeholder="xxxxxxxxxxxxxxxx"
-                                name="password"
+                                    name="password"
+                                    value={users.password}
                                 onChange={handleRegisterChange}
                                 aria-describedby="inputGroupPrepend"
                                 required
@@ -114,6 +145,16 @@ const Register = () => {
 
 
 export default Register
+
+
+
+
+
+
+
+
+
+
 
 
 

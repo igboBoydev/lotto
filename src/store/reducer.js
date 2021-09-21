@@ -1,10 +1,11 @@
+import { faArrowAltCircleUp } from "@fortawesome/free-regular-svg-icons";
+
 const reducer = (state, action) => {
     switch (action.type) {
         case 'ADD_USER':
-            const newUsers = { ...state.newUsers, user: action.payload }
             return {
                 ...state,
-                newUsers: newUsers,
+                newAlert: action.payload,
                 isSubmitted: true,
             }
         case "REGISTER_ALERT":
@@ -18,6 +19,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 value: action.payload
+            }
+        case "GIVE_LOGIN_ACCESS":
+            return {
+                ...state,
+                isLoggedIn: action.payload
             }
         case 'DISPLAY_GAMES':
             return { ...state, game: action.payload, loadimg: true };

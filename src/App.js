@@ -4,13 +4,13 @@ import Home from './components/Home'
 import Navigation from './components/Navbar'
 import Footer from './components/Footer'
 import Register from './Authenticate/Register';
-import { Validate } from './Authenticate/Validate';
+import Validate from './Authenticate/Validate';
 import Games from './Games';
 import Voice from './Authenticate/Voice';
 import Whatsapp from './Authenticate/Whatsapp';
 import Reset from './PasswordReset/Reset';
 import Login from './Authenticate/Login';
-
+import Profile from './Profile/Profile'
 
 
 const App = () => {
@@ -27,8 +27,11 @@ const App = () => {
                 <Route exact path='/validate'>
                     <Validate />
                 </Route>
-                <Route exact path='/profile/login'>
+                <Route exact path='/validate/login'>
                     <Login />
+                </Route>
+                <Route exact path='/profile'>
+                    <Profile />
                 </Route>
                 <Route exact path='/validate/voice'>
                     <Voice />

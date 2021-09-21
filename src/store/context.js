@@ -10,10 +10,10 @@ const initialState = {
     isLoggedIn: false,
     isSubmitted: false,
     loading: false,
-    newUsers: [],
     value: [],
     voice: '',
     whatsapp: '',
+    newALert: '',
     alert: [],
     game: [],
     days: [],
@@ -28,7 +28,7 @@ const initialState = {
 const AppProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
 
-    const addUser = (user) => {
+    const addAlert = (user) => {
         dispatch({ type: "ADD_USER", payload: user });
     }
 
@@ -115,6 +115,10 @@ const AppProvider = ({ children }) => {
         dispatch({type: "GET_VOICE", payload: event})
     }
 
+    const giveAccess = (event) => {
+        dispatch({type: "GIVE_LOGIN_ACCESS", payload: event})
+    }
+
     const showWhatsapp = (event) => {
         dispatch({ type: "GET_WHATSAPP", payload: event });
     }
@@ -142,7 +146,7 @@ const AppProvider = ({ children }) => {
     return (
         <AppContext.Provider value={{
             ...state,
-            addUser,
+            addAlert,
             getValues,
             validateRegistration,
             daysOfWeek,
@@ -151,6 +155,7 @@ const AppProvider = ({ children }) => {
             noUser,
             showVoice,
             showWhatsapp,
+            giveAccess,
             RegisterAlert
         }}>
             {children}

@@ -59,6 +59,10 @@ body{
     }
 }
 
+.nav_height{
+    height: fit-content;
+}
+
 
 
 .img_width{ 
