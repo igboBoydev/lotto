@@ -9,7 +9,7 @@ const initialState = {
 }
 
 const Login = () => {
-    const { giveAccess } = useGlobalContext();
+    const { giveAccess, logInSuccess } = useGlobalContext();
     const [success, setSuccess] = useState(false)
     const [users, setUsers] = useState(initialState)
     const [error, setError] = useState(null)
@@ -56,9 +56,7 @@ const Login = () => {
                     const { token } = result.success;
                     console.log(token)
                     giveAccess(token)
-                    if (token) {
-                        setSuccess(true)
-                    }
+                    
                 } else if (result.error) {
                     const { message } = result.error;
                     setError(message)

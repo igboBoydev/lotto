@@ -6,11 +6,9 @@ import { Redirect } from 'react-router';
 import logo from '../static/assets/logo4.png'
 
 const Navigation = () => {
-    let { giveAccess, isLoggedIn, showBoard, profile } = useGlobalContext();
-    const [success, setSuccess] = useState(false)
+    let { giveAccess, isLoggedIn, showBoard, logOut, logedIn } = useGlobalContext();
     const [error, setError] = useState(null)
     const [userLogin, setUserLogin] = useState({ mobile: '', password: '' });
-    const [showLogin, setShowLogin] = useState(false)
     const [showProfile, setShowProfile] = useState(false)
 
     const handleLogin = (e) => {
@@ -46,9 +44,6 @@ const Navigation = () => {
                 if (result.success) {
                     const { token } = result.success;
                     giveAccess(token)
-                    if (token) {
-                        setSuccess(true)
-                    }
                 } else if (result.error) {
                     const { message } = result.error;
                     setError(message)
@@ -85,6 +80,7 @@ const Navigation = () => {
                 if (result.success) {
                     const { data } = result.success;
                     showBoard(data)
+                    localStorage.setItem('user', JSON.stringify(data))
                     setShowProfile(true)
                 } else {
                     return;
@@ -95,8 +91,12 @@ const Navigation = () => {
                 });
     }
 
-    console.log(profile)
-
+    const handleLogOut = (e) => {
+        e.preventDefault()
+        localStorage.clear()
+        logOut(true)
+        setShowProfile(false)
+    }
 
 
 
@@ -106,33 +106,31 @@ const Navigation = () => {
             <Navbar.Brand href="/">
                 <img src={logo} width='200px' alt="" />
                 </Navbar.Brand>
-                {!success && 
+                {!logedIn  &&
                    <div className='d-flex'>
                     <Form onSubmit={handleSubmit} inline justify-content-center className="d-flex form_btn">
                         <Form.Control name="mobile" onChange={handleLogin} type="text" placeholder="090xxxxxxxx" className="mr-2" aria-label="Mobile" value={userLogin.mobile} />
                         <Form.Control onChange={handleLogin} type="password" name="password" placeholder="Password" className="mr-2" aria-label="Password" value={userLogin.password} />
-                        <Button type='submit' className='mr-3' variant="outline-success">{!showLogin ? "LogIn" : "LogOut"}</Button>
+                        <Button type='submit' className='mr-3' variant="outline-success">Login</Button>
                     </Form>
                     <span className='mt-2'>
-                        {!showLogin &&
-                            <Link className='register_btn' to='/register'>Register</Link>
-                        }
-                      
+                        <Link className='register_btn' to='/register'>Register</Link>
                     </span>
                        
                 </div>
                }
                 <section className='d-flex'>
-                    {success &&
+                    {logedIn &&
                      <div className='profile_link mr-2'>
-                        <Link className='mr-5' onClick={handleClick} className='link'>Profile</Link>
+                        <Link className='mr-5' onClick={handleClick} className='link'>Games</Link>
                     </div>
                     
                     }
                     {
                         showProfile &&
                          <div className='profile_link mr-2'>
-                        <Link className='link' to='/profile'>Play Games</Link>
+                            <Link className='link ml-2' to='/profile'>Profile</Link>
+                             <Link className='link ml-3' onClick={handleLogOut} >LogOut</Link>
                     </div>
                     }
                     
@@ -155,30 +153,28 @@ const Navigation = () => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
-                        {!success && 
+                        {!logedIn &&
                                <Form justify-content-center>
                                    <Form.Control name='mobile'  className='me-4 "mr-2' onChange={handleLogin} type="text" placeholder="090xxxxx" aria-label="Mobile" value={userLogin.mobile} />
                                    <Form.Control name='password' className='mt-2 "mr-2' onChange={handleLogin} type="password" placeholder="Password" aria-label="Password" value={userLogin.password}  />
-                            <Button className='m-2' onClick={handleSubmit} variant="outline-success">{!showLogin ? "LogIn" : "LogOut"}</Button>
-                            <span className='mt-4'>
-                        {!showLogin &&
+                            <Button className='m-2' onClick={handleSubmit} variant="outline-success">Login</Button>
+                        <span className='mt-4'>
                             <Link id='btn' className='register_btn' to='/register'>Register</Link>
-                        }
-                      
-                    </span>
+                        </span>
                                   
                         </Form>
                       }
                                         <section className=''>
-                    {success &&
+                    {logedIn &&
                      <div className='profile_link mr-2'>
                            <Link onClick={handleClick} className='link'>Profile</Link>
                     </div>
                             }
                             {
                         showProfile &&
-                         <div className='profile_link mr-2'>
-                        <Link className='link' to='/profile'>Play Games</Link>
+                         <div className='profile_link mr-2 d-flex flex-column'>
+                                    <Link className='link' to='/profile'>Play Games</Link>
+                                    <Link className='link mt-2' onClick={handleLogOut} >LogOut</Link>
                     </div>
                     }
                     
