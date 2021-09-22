@@ -4,13 +4,15 @@ import Home from './components/Home'
 import Navigation from './components/Navbar'
 import Footer from './components/Footer'
 import Register from './Authenticate/Register';
-import { Validate } from './Authenticate/Validate';
+import Validate from './Authenticate/Validate';
 import Games from './Games';
 import Voice from './Authenticate/Voice';
 import Whatsapp from './Authenticate/Whatsapp';
 import Reset from './PasswordReset/Reset';
 import Login from './Authenticate/Login';
-
+import Profile from './Profile/Profile'
+import ValidateReset from './PasswordReset/ValidateReset';
+import PasswordUp from './PasswordReset/PasswordUp'
 
 
 const App = () => {
@@ -27,8 +29,11 @@ const App = () => {
                 <Route exact path='/validate'>
                     <Validate />
                 </Route>
-                <Route exact path='/profile/login'>
+                <Route exact path='/validate/login'>
                     <Login />
+                </Route>
+                <Route exact path='/profile'>
+                    <Profile />
                 </Route>
                 <Route exact path='/validate/voice'>
                     <Voice />
@@ -41,6 +46,12 @@ const App = () => {
                 </Route>
                 <Route exact path='/profile/reset'>
                     <Reset />
+                </Route>
+                <Route exact path='/profile/reset/validate'>
+                    <ValidateReset />
+                </Route>
+                 <Route exact path='/profile/reset/password'>
+                    <PasswordUp />
                 </Route>
             </Switch>
             <Footer />

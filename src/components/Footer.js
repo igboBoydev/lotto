@@ -3,23 +3,17 @@ import { Container, Row, Col } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faApple, faGooglePlay, faFacebook, faYoutube, faTwitter, faInstagram } from '@fortawesome/free-brands-svg-icons'
 import { Link } from 'react-router-dom'
-import FetchRegister from '../Fetch/FetchRegister'
-import FetchVerify from '../Fetch/fetchVerify'
-import GetVoice from '../Fetch/GetVoice'
-import GetWhatsapp from '../Fetch/GetWhatsapp'
-import { useGlobalContext } from '../store/context'
 
 
 const Footer = () => {
-    const { voice, whatsapp } = useGlobalContext();
-    // console.log(voice.voices)
+    
     return (
         <footer className='footer py-5'>
             <section>
                 <Container>
                     <section>
             </section>
-                    <Row class="d-flex justify-content-center set_footer_display">
+                    <Row class=" d-flex justify-content-center set_footer_display">
                         <Col className='text-center' md='7'>
 
                             <section className='d-flex justify-content-center'>

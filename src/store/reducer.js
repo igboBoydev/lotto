@@ -1,23 +1,33 @@
 const reducer = (state, action) => {
     switch (action.type) {
         case 'ADD_USER':
-            const newUsers = { ...state.newUsers, user: action.payload }
             return {
                 ...state,
-                newUsers: newUsers,
+                newAlert: action.payload,
                 isSubmitted: true,
             }
         case "REGISTER_ALERT":
             const alerts = { ...state.alert, getAlert: action.payload };
-            console.log(alerts)
             return {
                 ...state,
                 alert: alerts
+            }
+        case "SHOW_PROFILE":
+            const getProfile = { ...state.profile, showProfile: action.payload };
+            return {
+                ...state,
+                profile: getProfile.showProfile
             }
         case "GET_VALUES":
             return {
                 ...state,
                 value: action.payload
+            }
+        case "GIVE_LOGIN_ACCESS":
+            const getToken = { ...state.isLoggedIn, showAlert: action.payload }
+            return {
+                ...state,
+                isLoggedIn: getToken.showAlert
             }
         case 'DISPLAY_GAMES':
             return { ...state, game: action.payload, loadimg: true };

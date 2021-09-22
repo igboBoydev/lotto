@@ -59,6 +59,10 @@ body{
     }
 }
 
+.nav_height{
+    height: fit-content;
+}
+
 
 
 .img_width{ 
@@ -279,7 +283,9 @@ h6.draw{
 }
 
 
-
+.btns.reset_validate_btn{
+    margin-top: .65rem !important;
+}
 
 
 

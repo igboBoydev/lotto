@@ -1,5 +1,4 @@
 import React from 'react'
-import { useGlobalContext } from '../store/context'
 import { Container, Carousel, Row, Col } from 'react-bootstrap';
 import logo from '../static/assets/logo4.png'
 import ball from '../static/assets/raffle-5870552_640.jpg'
@@ -10,21 +9,11 @@ import img3 from '../static/assets/4.png'
 import img4 from '../static/assets/5.png'
 import img5 from '../static/assets/6.png'
 import LottoApi from '../lottoApi';
-import FetchLogin from '../Fetch/fetchLogin';
-import FetchRegister from '../Fetch/FetchRegister';
 
 const Home = () => {
-    const { grantAccess, newUsers } = useGlobalContext()
-    // if (grantAccess.length !== 0) {
-    //     const {userLogin} = grantAccess
-    // }
 
-    // if (newUsers.user) {
-    //     console.log('Added A user')
-    //     console.log(newUsers)
-    // }
 
-    return (
+  return (
         <section className='section_container'>
         <Container className='mt-3'>
            <Carousel d-none d-md-inline>
@@ -104,11 +93,10 @@ const Home = () => {
                     </Col>
                 </Row>
             </Container>
-            <FetchLogin />
             
-        </section>
+         </section>
     )
-}
+};
 
 export default Home
 

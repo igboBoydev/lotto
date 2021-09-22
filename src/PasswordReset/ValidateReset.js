@@ -1,67 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Container, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 
-const Reset = () => {
+const ValidateReset = () => {
     const [user, setUser] = useState('')
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
+
+
     const handleSecondChange = (e) => {
         e.preventDefault()
         setUser(e.target.value)
   }
 
-  const handleSecondSubmit = (e) => {
-      e.preventDefault()
+    const handleSecondSubmit = (e) => {
+        e.preventDefault()
 
-      
-    var myHeaders = new Headers();
-    myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
-    myHeaders.append("Content-Type", "application/json");
+        var myHeaders = new Headers();
+        myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+        myHeaders.append("Content-Type", "application/json");
 
-    var raw = JSON.stringify({
-        "email": `${user}`
-    });
+        var raw = JSON.stringify({
+            "token": `${user.token}`
+        });
 
-    var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-    };
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
 
-      fetch("http://localhost:5016/api/v1/password-reset", requestOptions)
-          .then(response => response.json())
-          .then(result => {
-              if (result.success) {
-                  const { message } = result.success;
-                  setSuccess(message)
-              } else if (result.error) {
-                  const { message } = result.error;
-                  setError(message)
-              } else {
-                  return;
-             }
-          },
-              (error) => {
-                  console.log(error)
-              });
-    }
+        fetch("http://localhost:5016/api/v1/validate-token", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    const { message } = result.success;
+                    setSuccess(message)
+                } else if (result.error) {
+                    const { message } = result.error;
+                    setError(message)
+                } else {
+                    return;
+                }
+            },
+                (error) => {
+                    console.log(error)
+                });
     
+    }
 
-     useEffect(() => {
+    useEffect(() => {
         setTimeout(() => {
             setShowAlert(!showAlert)
         }, 3000)
     }, [success, error])
-
-  return (
-        <section className='register_section d-flex justify-content-center'>
+    
+    
+    return (
+        <div>
+             <section className='register_section d-flex justify-content-center'>
             <Container fluid='md'>
             <Row>
                 <Col className='mt-5' md={{ span: 12, offset: 1 }}>
-              {success ? <section>
+             {success ? <section>
                             {showAlert && <span>{success}</span>}
              </section> : <section>
                             {showAlert && <span>{error}</span>}
@@ -70,8 +72,8 @@ const Reset = () => {
       <Form onSubmit={handleSecondSubmit}>
           <Form.Label htmlFor="inputPassword5">Enter Email:</Form.Label>
           <Form.Control
-            type="email"
-                name='email'
+            type="text"
+                name='token'
                 className='input_width'
             onChange={handleSecondChange}s
             id="inputPassword5"
@@ -81,14 +83,14 @@ const Reset = () => {
             Please enter the your valid Email address.
         </Form.Text>
             <Button className='mb-2 ' type='submit' variant="outline-success">Submit</Button>
-            {alert && <Link className='btns ml-3 reset_validate_btn' to='/profile/reset/validate'>Validate Token</Link>}
       </Form>
                        
                 </Col>
             </Row>
         </Container>
    </section>
+        </div>
     )
 }
 
-export default Reset
+export default ValidateReset
