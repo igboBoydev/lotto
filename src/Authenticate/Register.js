@@ -7,9 +7,10 @@ const initialState = {
     mobile: ''
 }
 const Register = () => {
-    const [showValidate, setShowValidate] = useState(false)
     const [users, setUsers] = useState(initialState)
-    const [value, setValue] = useState([])
+    const [success, setSuccess] = useState(null)
+    const [error, setError] = useState(null)
+    const [showAlert, setShowAlert] = useState(false)
 
     const handleRegisterChange = (e) => {
         e.preventDefault();
@@ -27,7 +28,6 @@ const Register = () => {
             event.preventDefault();
             event.stopPropagation();
         }
-        setShowValidate(true)
 
         var myHeaders = new Headers();
      myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
@@ -50,11 +50,15 @@ const Register = () => {
 
 
         fetch("http://localhost:5016/api/v1/register", requestOptions)
-            .then(response => response.text())
-            .then(result => { 
-                setValue(result)
-                console.log(result)
-                setShowValidate(true)
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    const { message } = result.success;
+                    setSuccess(message)
+                } else {
+                    const { message } = result.error;
+                    setError(message)
+                }
             },
                 (error) => {
                     console.log(error)
@@ -66,7 +70,11 @@ const Register = () => {
         users.password = ''
     };
 
-    // let obj = Object.keys(value).length
+    useEffect(() => {
+        setTimeout(() => {
+            setShowAlert(!showAlert)
+        }, 3000)
+    }, [success, error])
 
     return (
         <section className='register_section d-flex justify-content-center'>
@@ -74,7 +82,11 @@ const Register = () => {
 
             <Row>
                     <Col className='mt-5' md={{ span: 12, offset: 1 }}>
-                        {showValidate ? <span>Registered Successfully</span> : <span>Enter Details</span>
+                        {success ? <section>
+                            {showAlert && <span>{success}</span>}
+             </section> : <section>
+                            {showAlert && <span>{error}</span>}
+             </section>
                         }
                           <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group as={Col} md="8" controlId="validationCustom01">
@@ -128,7 +140,7 @@ const Register = () => {
                         </Form.Group>
                         <Button variant='success' className='mb-3' type="submit">Submit</Button>
                         </Form>
-                        {showValidate && <Link className='register_btn toggle mt-3' variant='success' to='./Validate'>
+                        {success && <Link className='register_btn toggle mt-3 mb-3' variant='success' to='./Validate'>
                            Vaidate
                         </Link>
                         }

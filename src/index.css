@@ -283,7 +283,9 @@ h6.draw{
 }
 
 
-
+.btns.reset_validate_btn{
+    margin-top: .65rem !important;
+}
 
 
 

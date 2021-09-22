@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Container, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const Voice = () => {
   const [value, setValue] = useState([])
-    const [message, setMessage] = useState(null)
-    const [alert, setAlert] = useState(false)
+    const [success, setSuccess] = useState(null)
+    const [error, setError] = useState(null)
+    const [showAlert, setShowAlert] = useState(false)
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -43,19 +44,29 @@ const Voice = () => {
 
 
         fetch("http://localhost:5016/api/v1/resend-voice", requestOptions)
-            .then(response => response.text())
+            .then(response => response.json())
             .then(result => {
-                console.log(result)
-                let alerts = JSON.parse(result)
-                console.log(result)
-                setMessage(alerts)
-                setAlert(true)
+                if (result.success) {
+                    const { message } = result.success;
+                    setSuccess(message)
+                } else if (result.error) {
+                    const { message } = result.error;
+                    setError(message)
+                } else {
+                    return;
+               }
             },
                 (error) => {
                     console.log(error)
                 }
             )
     };
+
+    useEffect(() => {
+        setTimeout(() => {
+            setShowAlert(!showAlert)
+        }, 3000)
+    }, [success, error])
   
   
 
@@ -64,7 +75,12 @@ const Voice = () => {
             <Container fluid='md'>
             <Row>
                 <Col className='mt-5' md={{ span: 12, offset: 1 }}>
-            {alert ? <span>Voice message sent successfully</span> : <span>Enter your Mobile Number</span> }
+            {success ? <section>
+                            {showAlert && <span>{success}</span>}
+             </section> : <section>
+                            {showAlert && <span>{error}</span>}
+             </section>
+                        }
       <Form onSubmit={handleSubmit}>
           <Form.Label htmlFor="inputPassword5">OTP Via voice Call</Form.Label>
           <Form.Control
@@ -80,7 +96,7 @@ const Voice = () => {
         </Form.Text>
         <Button className='my-4 ' type='submit' variant="outline-success">Submit</Button>
                       </Form>
-                      {alert && <Link className='register_btn toggle mt-3' variant='success' to='./Validate'>
+                      {success && <Link className='register_btn toggle mt-3 mb-3' variant='success' to='/validate'>
                           Vaidate
                       </Link>
                       }

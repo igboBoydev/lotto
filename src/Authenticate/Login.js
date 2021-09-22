@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Container, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useGlobalContext } from '../store/context';
@@ -9,10 +9,11 @@ const initialState = {
 }
 
 const Login = () => {
-    const { isLoggedIn, giveAccess } = useGlobalContext();
-    const [showValidate, setShowValidate] = useState(false)
+    const { giveAccess } = useGlobalContext();
+    const [success, setSuccess] = useState(false)
     const [users, setUsers] = useState(initialState)
-    const [value, setValue] = useState([])
+    const [error, setError] = useState(null)
+    const [showAlert, setShowAlert] = useState(false)
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -30,10 +31,6 @@ const Login = () => {
             event.preventDefault();
             event.stopPropagation();
         }
-        setShowValidate(true)
-
-        console.log('hello world')
-
 
         var myHeaders = new Headers();
         myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
@@ -53,12 +50,21 @@ const Login = () => {
         };
 
         fetch("http://localhost:5016/api/v1/login", requestOptions)
-            .then(response => response.text())
+            .then(response => response.json())
             .then(result => {
-                setValue(result)
-                console.log(result)
-                setShowValidate(true)
-                giveAccess(true)
+                if (result.success) {
+                    const { token } = result.success;
+                    console.log(token)
+                    giveAccess(token)
+                    if (token) {
+                        setSuccess(true)
+                    }
+                } else if (result.error) {
+                    const { message } = result.error;
+                    setError(message)
+                }else{
+                    return;
+                }
             },
                 (error) => {
                     console.log(error)
@@ -70,12 +76,23 @@ const Login = () => {
         users.password = ''
     };
 
+    useEffect(() => {
+        setTimeout(() => {
+            setShowAlert(!showAlert)
+        }, 3000)
+    }, [success, error])
+
   return (
         <section className='register_section d-flex justify-content-center'>
             <Container fluid='md'>
             <Row>
                 <Col className='mt-5' md={{ span: 12, offset: 1 }}>
-
+                 {success ? <section>
+                            {showAlert && <span>LoggedIn successfully</span>}
+             </section> : <section>
+                            {showAlert && <span>{error}</span>}
+             </section>
+                        }
       <Form onSubmit={handleSubmit}>
           <Form.Label htmlFor="inputPassword5">Mobile</Form.Label>
           <Form.Control

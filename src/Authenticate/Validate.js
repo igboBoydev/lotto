@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -8,9 +8,10 @@ const initialState = {
 }
 
 const Validate = () => { 
-    const [showValidate, setShowValidate] = useState(false)
     const [users, setUsers] = useState(initialState)
-    const [value, setValue] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const [error, setError] = useState(null)
+    const [showAlert, setShowAlert] = useState(false)
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -29,9 +30,7 @@ const Validate = () => {
             event.preventDefault();
             event.stopPropagation();
       }
-       setShowValidate(true)
       
-
 
       var myHeaders = new Headers();
       myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
@@ -50,11 +49,17 @@ const Validate = () => {
       }
 
       fetch("http://localhost:5016/api/v1/validate-otp", requestOptions)
-        .then(response => response.text())
+        .then(response => response.json())
         .then(result => {
-          console.log(result)
-          let alerts = JSON.parse(result)
-          setValue(alerts)
+          if (result.success) {
+            const { message } = result.success;
+            setSuccess(message)
+          } else if(result.error) {
+            const { message } = result.error;
+            setError(message)
+          } else {
+            return;
+          }
         },
           (error) => {
             console.log(error)
@@ -64,13 +69,24 @@ const Validate = () => {
         users.otp = ''
         users.mobile = ''
   };
+
+  useEffect(() => {
+        setTimeout(() => {
+            setShowAlert(!showAlert)
+        }, 3000)
+    }, [success, error])
   
   return (
             <section className='register_section d-flex justify-content-center'>
             <Container fluid='md'>
             <Row>
           <Col className='mt-5' md={{ span: 12, offset: 1 }}>
-             {alert ? <span pb-3>Whatsapp message sent successfully, kindly check to verify</span> : <span>Enter your Mobile Number</span> }
+            {success ? <section>
+                            {showAlert && <span>{success}</span>}
+             </section> : <section>
+                            {showAlert && <span>{error}</span>}
+             </section>
+                        }
             <Form noValidate onSubmit={handleSubmit}>
               <Form.Group as={Col} md="8" controlId="validationCustom01">
                             <Form.Label>Otp</Form.Label>
@@ -103,7 +119,7 @@ const Validate = () => {
             Please provide the code sent to your registered mobile number or email.
         </Form.Text>
               <Button className='mt-2 mb-3' type='submit' variant="outline-success">Submit</Button>
-               {showValidate && <Link className='btns ml-3 login_btn' id='login_btn' to='/validate/Login'>Login</Link>}
+               {success && <Link className='btns ml-3 login_btn' id='login_btn' to='/validate/Login'>Login</Link>}
       </Form>
         
             <div className='mt-3'>

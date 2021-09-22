@@ -7,13 +7,14 @@ const AppContext = React.createContext()
 const initialState = {
     isLoading: false,
     isRegistered: false,
-    isLoggedIn: false,
+    isLoggedIn: '',
     isSubmitted: false,
     loading: false,
     value: [],
     voice: '',
     whatsapp: '',
     newALert: '',
+    profile: null,
     alert: [],
     game: [],
     days: [],
@@ -115,6 +116,10 @@ const AppProvider = ({ children }) => {
         dispatch({type: "GET_VOICE", payload: event})
     }
 
+    const showBoard = (event) => {
+        dispatch({type: "SHOW_PROFILE", payload: event})
+    } 
+
     const giveAccess = (event) => {
         dispatch({type: "GIVE_LOGIN_ACCESS", payload: event})
     }
@@ -154,6 +159,7 @@ const AppProvider = ({ children }) => {
             cancelGame,
             noUser,
             showVoice,
+            showBoard,
             showWhatsapp,
             giveAccess,
             RegisterAlert

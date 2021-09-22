@@ -11,6 +11,8 @@ import Whatsapp from './Authenticate/Whatsapp';
 import Reset from './PasswordReset/Reset';
 import Login from './Authenticate/Login';
 import Profile from './Profile/Profile'
+import ValidateReset from './PasswordReset/ValidateReset';
+import PasswordUp from './PasswordReset/PasswordUp'
 
 
 const App = () => {
@@ -44,6 +46,12 @@ const App = () => {
                 </Route>
                 <Route exact path='/profile/reset'>
                     <Reset />
+                </Route>
+                <Route exact path='/profile/reset/validate'>
+                    <ValidateReset />
+                </Route>
+                 <Route exact path='/profile/reset/password'>
+                    <PasswordUp />
                 </Route>
             </Switch>
             <Footer />
