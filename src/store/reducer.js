@@ -27,7 +27,13 @@ const reducer = (state, action) => {
             const getToken = { ...state.isLoggedIn, showAlert: action.payload }
             return {
                 ...state,
-                isLoggedIn: getToken.showAlert
+                isLoggedIn: getToken.showAlert,
+                logedIn: true
+            }
+        case "LOG_OUT":
+            return {
+                ...state,
+                logedIn: false
             }
         case 'DISPLAY_GAMES':
             return { ...state, game: action.payload, loadimg: true };
@@ -52,11 +58,6 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 days: action.payload
-            }
-        case 'LOADING':
-            return {
-                ...state,
-                loadimg: true
             }
         case "VALIDATE_SENT_TOKEN":
             return {}

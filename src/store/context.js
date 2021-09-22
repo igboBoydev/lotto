@@ -5,13 +5,11 @@ const url = "http://localhost:5016/api/v1/lotto"
 const AppContext = React.createContext()
 
 const initialState = {
-    isLoading: false,
-    isRegistered: false,
     isLoggedIn: '',
-    isSubmitted: false,
     loading: false,
     value: [],
     voice: '',
+    logedIn: false,
     whatsapp: '',
     newALert: '',
     profile: null,
@@ -39,6 +37,10 @@ const AppProvider = ({ children }) => {
 
     const getValues = (values) => {
         dispatch({type: "GET_VALUES", payload: values})
+    }
+
+    const logOut = (event) => {
+        dispatch({type: "LOG_OUT", payload: event})
     }
 
     const fetchData = async () => {
@@ -72,8 +74,7 @@ const AppProvider = ({ children }) => {
         }
 
         function MonthAsString(monthIndex) {
-            var d = new Date();
-            var month = new Array();
+            var month = [];
             month[0] = "January";
             month[1] = "February";
             month[2] = "March";
@@ -144,9 +145,7 @@ const AppProvider = ({ children }) => {
         dispatch({type: "CANCEL_GAME", payload: gameId})
     }
 
-    const logOut = (userId) => {
-        dispatch({type: "LOG_OUT", payload: userId})
-    }
+    
 
     return (
         <AppContext.Provider value={{
@@ -159,6 +158,7 @@ const AppProvider = ({ children }) => {
             cancelGame,
             noUser,
             showVoice,
+            logOut,
             showBoard,
             showWhatsapp,
             giveAccess,
