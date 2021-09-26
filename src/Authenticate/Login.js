@@ -9,7 +9,7 @@ const initialState = {
 }
 
 const Login = () => {
-    const { giveAccess, logInSuccess } = useGlobalContext();
+    const { giveAccess, showBoard, logInSuccess } = useGlobalContext();
     const [success, setSuccess] = useState(false)
     const [users, setUsers] = useState(initialState)
     const [error, setError] = useState(null)
@@ -56,7 +56,32 @@ const Login = () => {
                     const { token } = result.success;
                     console.log(token)
                     giveAccess(token)
-                    
+                    var myHeaders = new Headers();
+                    myHeaders.append("signatures", "5a1131f2eb747be50714281ec3e68b759476c6dc9e1faf5fc5d91c552cf8c230");
+                    myHeaders.append("Authorization", `Bearer ${token}`);
+
+
+
+                    var requestOptions = {
+                        method: 'GET',
+                        headers: myHeaders,
+                        redirect: 'follow'
+                    };
+
+                    fetch("http://localhost:5016/api/v2/auth/profile", requestOptions)
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                const { data } = result.success;
+                                showBoard(data)
+                                localStorage.setItem('user', JSON.stringify(data))
+                            } else {
+                                return;
+                            }
+                        },
+                            (error) => {
+                                console.log(error)
+                            });
                 } else if (result.error) {
                     const { message } = result.error;
                     setError(message)
