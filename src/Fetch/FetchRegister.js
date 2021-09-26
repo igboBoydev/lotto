@@ -1,55 +1,65 @@
-// import React, { useEffect, useState } from 'react';
-// import { useGlobalContext } from '../store/context';
+ 
+ 
+ 
+ 
+ 
+// const categories = [...new Set(game.map((item) => item.day))]
 
-
-// const FetchRegister = () => {
-//     const { newUsers, RegisterAlert } = useGlobalContext()
-//     // if (newUsers.length !== 0) {
-//     //     console.log(newUsers)
-//     // }
-
-//     var myHeaders = new Headers();
-//      myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
-//      myHeaders.append("Content-Type", "application/json");
-  
-    
-//     const [alertItem, setAlertItem] = useState([])
-//     if (newUsers.length > 0) {
-//         var { email, password, mobile } = newUsers.user
-//         var raw = JSON.stringify({
-//             "email": `${email}`,
-//             "password": `${password}`,
-//             "mobile": `${mobile}`
+//     const handleClick = (id) => {
+//         console.log(id)
+//         setActiveState((state) => {
+//             return {
+//                 ...state,
+//                 [id]: !state[id],
+//             };
 //         });
+        
 //     }
 
+//     const filterItems = (category, index) => {
+//         const newItems = game.filter((item) => item.day === category)
+//         setMenuItems(newItems)
 
-        
-    
-//     var requestOptions = {
-//         method: 'POST',
-//         headers: myHeaders,
-//         body: raw,
-//         redirect: 'follow'
-//     };
-
-
-//     useEffect(() => {
-//         fetch("http://localhost:5016/api/v1/register", requestOptions)
-//             .then(response => response.text())
-//             .then(result => {
-//                 setAlertItem(result)
-//             },
-//                 (error) => {
-//                     console.log(error)
-//                 }
-//             )
-//     }, [])
-//     console.log(alertItem)
-    
-//     return alertItem
-    
-// }
-
-
-// export default FetchRegister
+//         setActiveState((state) => {
+//             return {
+//                 ...state,
+//                 [index]: !state[index],
+//             };
+//         });
+//     }
+ 
+ 
+ 
+ 
+//  <h6 className='draw'>Choose A Draw</h6>
+//                         <section className='days pl-md-2'>
+//                     {obj.map((day) => {
+//                         const { id, date } = day;
+//                         return (
+//                             <section>
+//                                <h6 onClick={() => handleClick(id)} key={id} className='d-flex justify-content-between sidebar_dates'>
+//                                 {date}
+//                                 {activeState[id] ?  <FontAwesomeIcon icon={faCaretDown} /> : <FontAwesomeIcon icon={faCaretRight} /> }
+//                                </h6>
+//                             </section>
+//                         )
+//                     })}
+//                             <section>
+//                                 {
+//                                     categories.map((category, index) => {
+//                                         return (
+//                                             <section>
+//                                                 <h6 type='button' className='filter-btn' onClick={() => filterItems(category, index)} key={index}>{category}</h6>
+//                                                 { activeState[index] &&
+//                                                     menuItems.map((day) => {
+//                                                        return <p>{day.name}</p>
+//                                                     })
+//                                             }
+//                                         </section>
+//                                     )
+//                                     })
+//                                 }
+                        
+//                                 </section>
+                            
+//                </section>

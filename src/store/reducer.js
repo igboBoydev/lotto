@@ -23,6 +23,11 @@ const reducer = (state, action) => {
                 ...state,
                 value: action.payload
             }
+        case "SHOW_BUTTONS":
+            return {
+                ...state,
+                buttons: true
+            }
         case "GIVE_LOGIN_ACCESS":
             const getToken = { ...state.isLoggedIn, showAlert: action.payload }
             return {
@@ -70,12 +75,6 @@ const reducer = (state, action) => {
             }
         case "CANCEL_GAME":
             return {}
-        case "LOG_OUT":
-            return {
-                ...state,
-                user: [],
-                isLoggedIn: false
-            }
         default:
             return state;
 
