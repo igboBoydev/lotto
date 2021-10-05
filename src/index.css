@@ -8,6 +8,7 @@
 body{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 200;
+    line-height: 1;
 }
 
 .register_section{
@@ -18,10 +19,10 @@ body{
         border-radius: .25rem;
     }
 
-        .register_section:hover{
+.register_section:hover{
         box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
         transition: 1s ease-in;
-    }
+}
 
 @media(min-width: 840px) {
     .register_section{
@@ -39,6 +40,11 @@ body{
     }
 }
 
+select.form-select, select.form-select:focus, select.form-select::after{
+    border: none;
+    margin-left: 5rem;
+}
+
 .scrollbar{
     padding-left: 10px;
     overflow-x: hidden;
@@ -54,11 +60,13 @@ body{
     overflow-x: hidden;
     overflow-y: scroll;
 }
+
 }
 
 @media(max-width: 1000px){
     .form_input{
         width: 50vw;
+        font-size: .775rem;
     }
 }
 
@@ -76,33 +84,40 @@ p.category_p{
     cursor: pointer;
 }
 
-section.game_section{
-    width: 400px;
+.item{
+    font-size: 15px;
+}
+
+.btn-secondary, .btn-secondary:focus, .btn-secondary:hover{
+    background: none;
+    border: none;
+    color: gray;
+}
+
+.nav_dropdown.click{
+    margin-left: 5rem;
+}
+
+/* game_check */
+
+@media(min-width: 690px){
+    section.game_section{
     margin-top: 5rem;
     margin-bottom: 20px;
     justify-content: center;
     align-items: center;
 }
 
-.game_header{
-    color: #fff;
-    font-size: 20px;
-    font-weight: 100;
-    margin-left: 2rem;
+.register_btn{
+    color: #28a745 !important;
+    border: 1px solid #28a745;
+    font-size: .875rem;
+    border-radius: .15rem;
+    padding: .55rem .5rem;
+    margin-top: 5px !important;
 }
 
-.game_type_desc{
-    margin-top: 8rem;
-    color: #fff;
-    font-weight: 100;
-}
-
-
-.game_col{
-    background: rgb(46, 46, 46);
-}
-
-.game_btn{
+/* .game_btn{
    display: inline;
    width: 40px;
    background: none;
@@ -114,11 +129,188 @@ section.game_section{
    color: #fff;
    align-items: center;
    justify-content: center;
+} */
+
+.game_btn{
+   display: inline;
+   width: 30px;
+   font-size: 15px;
+   background: none;
+   border-radius: 50%;
+   margin: 2px;
+   background: rgb(82, 79, 79);
+   flex-direction: column;
+   color: #fff;
+   align-items: center;
+   justify-content: center;
 }
 
-/* .form_width{
-    width: 25vw
-} */
+.game_type_desc{
+    margin-top: 8rem;
+    color: #fff;
+    font-weight: 100;
+}
+
+.betHistory_section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80vw;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: .6rem;
+    font-size: 11px;
+    border: 1px solid grey;
+    padding: .2rem;
+    border-radius: .3rem;
+    background: #28a745;
+}
+
+.p_bets{
+    padding-top: .2rem;
+    color: #fff;
+    margin-right: .4rem;
+    padding-right: .4rem;
+    border-right: 1px solid #fff;
+}
+
+.p_bets:last-child{
+    border: none;
+}
+
+.bets_span{
+    color: yellow;
+}
+}
+
+
+
+@media(max-width: 689px){
+    section.game_section{
+    width: 80vw;
+    margin-top: 2rem;
+    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .game_btn{
+   display: inline;
+   width: 6vw;
+   font-size: 15px;
+   background: none;
+   border-radius: 50%;
+   margin: 2px;
+   background: rgb(82, 79, 79);
+   flex-direction: column;
+   color: #fff;
+   align-items: center;
+   justify-content: center;
+}
+
+
+    .footer_section_md{
+        width: 80px;
+    }
+
+    .h5_small{
+        font-size: 10px;
+    }
+
+    .betHistory_section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60vw;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: .2rem;
+    font-size: 10px;
+    border: 1px solid grey;
+    padding: .2rem;
+    border-radius: .3rem;
+    background: #28a745;
+}
+
+.p_bets{
+    padding-top: .2rem;
+    color: #fff;
+    padding-bottom: .4rem;
+    border-bottom: 1px solid #fff;
+}
+
+.p_bets:last-child{
+    border: none;
+}
+
+.bets_span{
+    color: yellow;
+}
+
+    .game_type_desc{
+    margin-left: 1.2rem;
+    margin-top: 1rem;
+    color: #fff;
+    font-weight: 100;
+    }
+
+    .small_message{
+        font-size: 11px;
+        margin: 10px;
+    }
+
+    .small_class{
+        margin-right: 10px;
+    }
+
+    .register_btn{
+    color: #28a745 !important;
+    border: 1px solid #28a745;
+    font-size: .875rem;
+    border-radius: .15rem;
+    padding: .25rem .5rem;
+    margin-top: 10px !important;
+}
+}
+
+.btn_class{
+    margin: 8px;
+    margin-left: 1.2rem;
+}
+
+@media(max-width: 500px){
+    .form-control{
+       width: 70%;
+       margin-left: 20px;
+    }
+}
+
+
+
+
+.small{
+    margin-left: 10px;
+}
+
+
+
+
+
+
+.game_header{
+    color: #fff;
+    font-size: 20px;
+    font-weight: 100;
+    margin-left: 2rem;
+}
+
+
+
+
+.game_col{
+    background: rgb(46, 46, 46);
+}
+
 .sidebar_dates{
     color: #fff;
     font-weight: 100;
@@ -150,7 +342,7 @@ p.category_p:hover, p.category_p:focus{
 
 @media(min-width: 998px){
     .img_width:first-child{
-        margin-left: 3rem;
+        margin-left: 2rem;
     }
 
     .img_width{
@@ -171,12 +363,6 @@ p.category_p:hover, p.category_p:focus{
 
 .nav_height{
     height: fit-content;
-}
-
-
-
-.img_width{ 
-    width: 10em;
 }
 
 footer.footer{
@@ -243,11 +429,6 @@ footer.footer{
 
 div.games-container{
     width: 80vw;
-}
-
-.mb-5{
-    border-bottom: 2px solid #fff;
-    padding-bottom: 50px;
 }
 
 section.games-card{
@@ -335,8 +516,15 @@ h6.draw{
     height: fit-content;
 }
 
+.d{
+    background: #28a745;
+    border-radius: .35rem;
+    height: 50px;
+}
+
 .game_back{
-    margin: 5px;
+    margin: .2rem;
+    font-size: 11px;
 }
 
 .bet_section{
@@ -360,10 +548,12 @@ h6.draw{
 .game_h6{
     color: #fff;
     font-weight: 200;
+    font-size: 11px;
 }
 
 .p_type{
     color: #fff;
+    margin-bottom: 10px;
 }
 
 @media(max-width: 1000px){
@@ -375,15 +565,22 @@ h6.draw{
 
 .cancel_game{
     cursor: pointer;
+    width: 7px;
 }
 
 .get_line{
     border: 2px solid grey;
     border-radius: .35rem;
     padding: 5px;
+    font-size: 11px !important;
     margin-bottom: 10px;
     background: rgb(163, 138, 138);
 }
+
+.get_line > button.games{
+    margin-top: 1px;
+}
+
 
 .news{
     background: grey;
@@ -409,6 +606,10 @@ h6.draw{
     padding: .35rem;
 }
 
+.error_message{
+    color: hsl(0, 100%, 50%);
+}
+
 .btns:hover, .btns:focus{
     background: #28a745;
     color: #fff;
@@ -420,13 +621,6 @@ h6.draw{
     margin-bottom: .2rem;
 }
 
-.register_btn{
-    color: #28a745 !important;
-    border: 1px solid #28a745;
-    border-radius: .15rem;
-    padding: .35rem;
-    margin-top: 10px !important;
-}
 
 .register_btn:focus, .register_btn:hover{
     background: #28a745;
@@ -471,13 +665,31 @@ h6.draw{
 button.profile_btn{
     background: none;
     border: none;
-    font-weight: 400;
+    font-weight: 200;
+    font-size: 12px;
     color: rgb(67, 65, 65);
+}
+
+select.select{
+    border: none;
+}
+
+.nav_dropdown{
+    background: none !important;
 }
 
 a.links{
     text-decoration: none;
     color: grey;
+}
+
+.width{
+    width: 60vw;
+}
+
+.header_class{
+    line-height: 1.2;
+    line-break: auto;
 }
 
 p.profile_paragraph:first-child{
@@ -496,7 +708,7 @@ div.paragraph_header{
 }
 
 p.profile_paragraph{
-    font-size: 20px;
+    font-size: 12px;
     color: #fff;
 }
 
@@ -505,6 +717,115 @@ button.profile_btn:hover, button.profile_btn:focus{
     border-bottom: 2px solid grey;
 }
 
+.disabled{
+    pointer-events: none;
+}
+
+.game_section_svg{
+    width: 23vw;
+}
+
+.svg_img{
+    width: 50vw;
+}
+
+.red{
+    background: red;
+}
+
+.game_span{
+    font-size: 10px;
+}
+
+/* lotto_express */
+
+.bet_header{
+    font-size: 20px;
+    color: #28a745;
+    margin-top: 5rem;
+}
+
+main.express_section{
+    margin: 2rem;
+    width: 430px;
+}
+
+.express_p{
+    color: #28a745;
+    border: 1px solid #28a745;
+    border-radius: .2rem;
+    padding: .8rem;
+    width: fit-content;
+}
+
+.express_p:hover, .express_p:focus{
+    background: #28a745;
+    color: #fff;
+}
+
+.lotto_btns{
+    width: 3%;
+    padding: .3rem 1.3rem .5rem .5rem;
+    border: 1px solid grey;
+    border-radius: .2rem;
+    background: none;
+    margin: 5px;
+}
+
+.lottoExpress{
+    background: red;
+    color: #fff;
+}
+
+.p_red{
+    color: red;
+}
+
+.express_border{
+    border-right: 5px solid #28a745;
+}
+
+.green{
+    color: #28a745;
+}
+
+.submit_section{
+    width: 50%;
+    padding-bottom: 10px;
+    margin: .8rem auto;
+}
+
+.sub_div{
+    border: 1px solid #28a745;
+    width: 30vw;
+    border-radius: .3rem;
+    padding: 5px;
+    margin-bottom: 2px;
+}
+
+.sub_section{
+    overflow-y: scroll;
+}
+
+
+.App {
+  display: flex;
+  justify-content: space-around;
+  font-family: sans-serif;
+  text-align: center;
+  padding-top: 10px;
+}
+
+.time {
+  font-size: 32px;
+}
+
+.result_border{
+    border: 1px solid #28a745;
+    font-style: sans-serif;
+    border-radius: .3rem;
+    padding: 10px;
+}
 
 
 

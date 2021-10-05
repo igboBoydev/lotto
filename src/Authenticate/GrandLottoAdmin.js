@@ -11,7 +11,7 @@ const initialState = {
 
 
 const Login = () => {
-    const { giveAccess, showBoard } = useGlobalContext();
+    const { giveAdminAccess, showBoard, admin } = useGlobalContext();
     let history = useHistory()
     const [success, setSuccess] = useState(false)
     const [users, setUsers] = useState(initialState)
@@ -40,10 +40,16 @@ const Login = () => {
         myHeaders.append("timestamps", "1614848109");
         myHeaders.append("Content-Type", "application/json");
 
-        var raw = JSON.stringify({
+        if (users.mobile === '09020269804' && users.password === 'ABELkelly6022') {
+            var raw = JSON.stringify({
             "mobile": `${users.mobile}`,
             "password": `${users.password}`
         });
+        } else {
+            setError('You are not an admin')
+        }
+
+
 
         var requestOptions = {
             method: 'POST',
@@ -52,19 +58,19 @@ const Login = () => {
             redirect: 'follow'
         };
 
-
-        fetch("http://localhost:5016/api/v1/login", requestOptions)
+        fetch("http://localhost:5016/api/v1/grandLottoAdmin", requestOptions)
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
+                    console.log(result)
                     const { token } = result.success;
+                    localStorage.setItem('adminToken', token)
                     setShowAlert(true)
-                    giveAccess(token)
+                    giveAdminAccess(token)
+
                     var myHeaders = new Headers();
-                    myHeaders.append("signatures", "5a1131f2eb747be50714281ec3e68b759476c6dc9e1faf5fc5d91c552cf8c230");
+                    myHeaders.append("signatures", "816b807eaa6a57278d26e432e3ef53650ec3b4a7282904083654f28969bbeffe");
                     myHeaders.append("Authorization", `Bearer ${token}`);
-
-
 
                     var requestOptions = {
                         method: 'GET',
@@ -80,14 +86,16 @@ const Login = () => {
                                 const { data } = result.success;
                                 setSuccess(true)
                                 showBoard(data)
-                                localStorage.setItem('user', JSON.stringify(data))
+                                localStorage.setItem('admin', JSON.stringify(data))
                             } else {
                                 return;
                             }
                         },
                             (error) => {
                                 console.log(error)
+                                setSuccess('please try again')
                             });
+
                 } else if (result.error) {
                     const { message } = result.error;
                     setError(message)
@@ -100,12 +108,11 @@ const Login = () => {
                 }
         );
         
-         history.push('/games')
+         history.push('/postResult')
         
         users.mobile = ''
         users.password = ''
     };
-
     
     useEffect(() => {
         setTimeout(() => {
@@ -118,9 +125,11 @@ const Login = () => {
             <Container fluid='md'>
             <Row>
                 <Col className='mt-5' md={{ span: 12, offset: 1 }}>
-                 {success && <section>
-                            {showAlert && <span>LoggedIn successfully</span>}
-             </section> 
+                 {success ? <section>
+                            {showAlert && <span className='green'>LoggedIn successfully</span>}
+             </section> : <section>
+                              {showAlert && <span className='p_red'>{error}</span>}
+             </section>
                         }
       <Form onSubmit={handleSubmit}>
           <Form.Label htmlFor="inputPassword5">Mobile</Form.Label>

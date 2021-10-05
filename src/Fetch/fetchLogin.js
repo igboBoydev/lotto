@@ -1,46 +1,61 @@
-// import React from 'react';
-// import { useGlobalContext } from '../store/context';
+// import React from "react";
+// import { CountdownCircleTimer } from "react-countdown-circle-timer";
 
-// const FetchLogin = () => {
-//   const { grantAccess } = useGlobalContext()
-//   if (grantAccess.length !== 0) {
-//     var myHeaders = new Headers();
-// myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
-// myHeaders.append("timestamps", "1614848109");
-// myHeaders.append("Content-Type", "application/json");
+// const minuteSeconds = 60;
+// const hourSeconds = 3600;
 
-// var raw = JSON.stringify({
-//   "mobile": `${grantAccess.userLogin.mobile}`,
-//   "password": `${grantAccess.userLogin.password}`
-// });
-
-// var requestOptions = {
-//   method: 'POST',
-//   headers: myHeaders,
-//   body: raw,
-//   redirect: 'follow'
+// const timerProps = {
+//   isPlaying: true,
+//   size: 120,
+//   strokeWidth: 6
 // };
 
-// fetch("http://localhost:5016/api/v1/login", requestOptions)
-//   .then(response => response.text())
-//   .then(result => console.log(result))
-//   .catch(error => console.log('error', error));
+// const renderTime = (dimension, time) => {
+//   return (
+//     <div className="time-wrapper">
+//       <div className="time">{time}</div>
+//       <div>{dimension}</div>
+//     </div>
+//   );
+// };
 
+// const getTimeSeconds = (time) => (minuteSeconds - time) | 0;
+// const getTimeMinutes = (time) => ((time % hourSeconds) / minuteSeconds) | 0;
 
+// export default function FetchLogin() {
+//   const stratTime = Date.now() / 1000; // use UNIX timestamp in seconds
+//   const endTime = stratTime + 243248; // use UNIX timestamp in seconds
 
+//   const remainingTime = endTime - stratTime;
 
-
-//   }
-
-
-
-//     return (
-//         <div>
-//             hello
-//         </div>
-//     )
+//   return (
+//     <div className="App">
+//       <CountdownCircleTimer
+//         {...timerProps}
+//         colors={[["#EF798A"]]}
+//         duration={hourSeconds}
+//         initialRemainingTime={remainingTime % hourSeconds}
+//         onComplete={(totalElapsedTime) => [
+//           remainingTime - totalElapsedTime > minuteSeconds
+//         ]}
+//       >
+//         {({ elapsedTime }) =>
+//           renderTime("minutes", getTimeMinutes(hourSeconds - elapsedTime))
+//         }
+//       </CountdownCircleTimer>
+//       <CountdownCircleTimer
+//         {...timerProps}
+//         colors={[["#218380"]]}
+//         duration={minuteSeconds}
+//         initialRemainingTime={remainingTime % minuteSeconds}
+//         onComplete={(totalElapsedTime) => [
+//           remainingTime - totalElapsedTime > 0
+//         ]}
+//       >
+//         {({ elapsedTime }) =>
+//           renderTime("seconds", getTimeSeconds(elapsedTime))
+//         }
+//       </CountdownCircleTimer>
+//     </div>
+//   );
 // }
-
-// export default FetchLogin
-
-

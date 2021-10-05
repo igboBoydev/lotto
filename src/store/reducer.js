@@ -1,79 +1,102 @@
+import {
+    ADD_USER,
+    REGISTER_ALERT,
+    GET_VALUES,
+    LOG_OUT,
+    DISPLAY_GAMES,
+    GET_DAYS_IN_WEEK,
+    GET_VOICE,
+    SHOW_PROFILE,
+    ADMIN_PRIVILEDGE,
+    GIVE_LOGIN_ACCESS,
+    GET_WHATSAPP,
+    VALIDATE_SENT_TOKEN,
+    LOGIN,
+    NO_USER,
+    CANCEL_GAME,
+} from './actions'
+
+
 const reducer = (state, action) => {
     switch (action.type) {
-        case 'ADD_USER':
+        case ADD_USER:
             return {
                 ...state,
                 newAlert: action.payload,
                 isSubmitted: true,
             }
-        case "REGISTER_ALERT":
+        case 'ADMIN_PRIVILEDGE':
+            let adminToken = { ...state.admin, tokens: action.payload }
+            return {
+                ...state,
+                adminToken: adminToken.tokens,
+                admin: true,
+                logedIn: true
+
+            }
+        case REGISTER_ALERT:
             const alerts = { ...state.alert, getAlert: action.payload };
             return {
                 ...state,
                 alert: alerts
             }
-        case "SHOW_PROFILE":
+        case SHOW_PROFILE:
             const getProfile = { ...state.profile, showProfile: action.payload };
             return {
                 ...state,
                 profile: getProfile.showProfile
             }
-        case "GET_VALUES":
+        case GET_VALUES:
             return {
                 ...state,
                 value: action.payload
             }
-        case "SHOW_BUTTONS":
-            return {
-                ...state,
-                buttons: true
-            }
-        case "GIVE_LOGIN_ACCESS":
-            const getToken = { ...state.isLoggedIn, showAlert: action.payload }
+        case GIVE_LOGIN_ACCESS:
+            const getToken = { ...state, showAlert: action.payload }
             return {
                 ...state,
                 isLoggedIn: getToken.showAlert,
                 logedIn: true
             }
-        case "LOG_OUT":
+        case LOG_OUT:
             return {
                 ...state,
                 logedIn: false
             }
-        case 'DISPLAY_GAMES':
+        case DISPLAY_GAMES:
             return { ...state, game: action.payload, loadimg: true };
-        case 'NO_USER':
+        case NO_USER:
             return {
                 ...state,
                 isSubmitted: false
             }
-        case "GET_VOICE":
+        case GET_VOICE:
             const voice = { ...state.voice, voices: action.payload };
             return {
                 ...state,
                 voice: voice
             }
-        case "GET_WHATSAPP":
+        case GET_WHATSAPP:
             const whatsapp = { ...state.whatsapp, whatsapps: action.payload };
             return {
                 ...state,
                 whatsapp: whatsapp
             }
-        case "GET_DAYS_IN_WEEK":
+        case GET_DAYS_IN_WEEK:
             return {
                 ...state,
                 days: action.payload
             }
-        case "VALIDATE_SENT_TOKEN":
+        case VALIDATE_SENT_TOKEN:
             return {}
-        case "LOGIN":
+        case LOGIN:
             let grantAccess = { ...state.userLogin, userLogin: action.payload }
             return {
                 ...state,
                 grantAccess: grantAccess,
                 isLoggedIn: true
             }
-        case "CANCEL_GAME":
+        case CANCEL_GAME:
             return {}
         default:
             return state;
