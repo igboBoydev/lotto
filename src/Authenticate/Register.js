@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col, Container } from 'react-bootstrap';
+import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 const initialState = {
     email: '',
@@ -8,6 +9,7 @@ const initialState = {
 }
 const Register = () => {
     const [users, setUsers] = useState(initialState)
+    let history = useHistory()
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
@@ -70,6 +72,11 @@ const Register = () => {
         users.password = ''
     };
 
+    const handleLogin = (e) => {
+        e.preventDefault()
+        history.push('/validate/login')
+    }
+
     useEffect(() => {
         setTimeout(() => {
             setShowAlert(!showAlert)
@@ -78,7 +85,7 @@ const Register = () => {
 
     return (
         <section className='register_section d-flex justify-content-center'>
-            <Container fluid='md'>
+            <Container fluid='md' className='ml-3'>
 
             <Row>
                     <Col className='mt-5' md={{ span: 12, offset: 1 }}>
@@ -138,13 +145,18 @@ const Register = () => {
                                 feedbackType="invalid"
                             />
                         </Form.Group>
-                        <Button variant='success' className='mb-3' type="submit">Submit</Button>
-                        </Form>
-                        {success && <Link className='register_btn toggle mt-3 mb-3' variant='success' to='./Validate'>
+                            <Button variant='success' className='mb-2' type="submit">Submit</Button>
+                             {success && <Link className='register_btn toggle ml-4 mb-5' variant='success' to='./Validate'>
                            Vaidate
                         </Link>
                         }
-                       
+                        </Form>
+                        {!success &&
+                        <div>
+                            <h6>Already have an account ?</h6>
+                            <Button variant='success' onClick={handleLogin} className='mb-3' >Login</Button>
+                            </div>
+                        }
                 </Col>
             </Row>
         </Container>

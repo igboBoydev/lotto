@@ -1,15 +1,36 @@
 import React, { useEffect, useContext, useReducer } from 'react';
 import reducer from './reducer'
+import {
+    ADD_USER,
+    REGISTER_ALERT,
+    GET_VALUES,
+    LOG_OUT,
+    DISPLAY_GAMES,
+    GET_DAYS_IN_WEEK,
+    GET_VOICE,
+    SHOW_PROFILE,
+    GIVE_LOGIN_ACCESS,
+    GET_WHATSAPP,
+    VALIDATE_SENT_TOKEN,
+    LOGIN,
+    NO_USER,
+    CANCEL_GAME,
+    ADMIN_PRIVILEDGE
+} from './actions'
+
+
 const url = "http://localhost:5016/api/v1/lotto"
 
 const AppContext = React.createContext()
 
 const initialState = {
     isLoggedIn: '',
+    adminToken: '',
     loading: false,
     value: [],
     voice: '',
     logedIn: false,
+    admin: false,
     whatsapp: '',
     newALert: '',
     profile: null,
@@ -28,28 +49,31 @@ const AppProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
 
     const addAlert = (user) => {
-        dispatch({ type: "ADD_USER", payload: user });
+        dispatch({ type: ADD_USER, payload: user });
     }
 
     const RegisterAlert = (prop) => {
-        dispatch({ type: "REGISTER_ALERT", payload: prop });
+        dispatch({ type: REGISTER_ALERT, payload: prop });
+    }
+
+    const giveAdminAccess = (token) => {
+        dispatch({type: ADMIN_PRIVILEDGE, payload: token});
     }
 
     const getValues = (values) => {
-        dispatch({type: "GET_VALUES", payload: values})
+        dispatch({type: GET_VALUES, payload: values})
     }
 
     const logOut = (event) => {
-        dispatch({type: "LOG_OUT", payload: event})
+        dispatch({type: LOG_OUT, payload: event})
     }
 
     const fetchData = async () => {
-        dispatch({type: 'LOADING'})
         try {
             const res = await fetch(url)
             const data = await res.json()
             const arr = data.lotto
-            dispatch({type: "DISPLAY_GAMES", payload: arr})
+            dispatch({type: DISPLAY_GAMES, payload: arr})
         } catch (err) {
             console.log(`hello error from the api server:  ${err}`)
         }
@@ -107,7 +131,7 @@ const AppProvider = ({ children }) => {
 
         var startDate = new Date();
         var aryDates = GetDates(startDate, 7);
-        dispatch({type: "GET_DAYS_IN_WEEK", payload: aryDates})
+        dispatch({type: GET_DAYS_IN_WEEK, payload: aryDates})
     }
 
     useEffect(() => {
@@ -115,35 +139,35 @@ const AppProvider = ({ children }) => {
     }, [])
 
     const showVoice = (event) => {
-        dispatch({type: "GET_VOICE", payload: event})
+        dispatch({type: GET_VOICE, payload: event})
     }
 
     const showBoard = (event) => {
-        dispatch({type: "SHOW_PROFILE", payload: event})
+        dispatch({type: SHOW_PROFILE, payload: event})
     } 
 
-    const giveAccess = (event) => {
-        dispatch({type: "GIVE_LOGIN_ACCESS", payload: event})
+    const giveAccess = (token) => {
+        dispatch({type: GIVE_LOGIN_ACCESS, payload: token})
     }
 
     const showWhatsapp = (event) => {
-        dispatch({ type: "GET_WHATSAPP", payload: event });
+        dispatch({ type: GET_WHATSAPP, payload: event });
     }
     
     const validateRegistration = () => {
-        dispatch({type: "VALIDATE_SENT_TOKEN"})
+        dispatch({type: VALIDATE_SENT_TOKEN})
     }
     
     const loggingIn = (userLogin) => {
-        dispatch({type: "LOGIN", payload: userLogin})
+        dispatch({type: LOGIN, payload: userLogin})
     }
 
     const noUser = () => {
-        dispatch({ type: "NO_USER" });
+        dispatch({ type: NO_USER });
     }
 
     const cancelGame = (gameId) => {
-        dispatch({type: "CANCEL_GAME", payload: gameId})
+        dispatch({type: CANCEL_GAME, payload: gameId})
     }
 
     
@@ -163,7 +187,8 @@ const AppProvider = ({ children }) => {
             showBoard,
             showWhatsapp,
             giveAccess,
-            RegisterAlert
+            RegisterAlert,
+            giveAdminAccess
         }}>
             {children}
         </AppContext.Provider>

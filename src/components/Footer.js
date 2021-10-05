@@ -6,33 +6,35 @@ import { Link } from 'react-router-dom'
 
 
 const Footer = () => {
+
+    let getYear = new Date().getFullYear()
     
     return (
-        <footer className='footer py-5'>
-            <section>
+        <footer className='footer pt-5 pb-2'>
+            <section className='footer_section_md'>
                 <Container>
                     <section>
             </section>
                     <Row class=" d-flex justify-content-center set_footer_display">
-                        <Col className='text-center' md='7'>
+                        <Col className='text-center'>
 
                             <section className='d-flex justify-content-center'>
                                 <div class="p-1 px-2 apple_btn d-flex align-items-center">
                                     <Link to='https://www.applestore.com'>
-                                        <FontAwesomeIcon className='color1' size='3x' icon={faApple} />
+                                        <FontAwesomeIcon className='color1' size-md='3x' icon={faApple} />
                                     </Link>  
                                         <div class="pl-2">
                                             <small>Download on the </small>
-                                            <h5>App Store</h5>
+                                            <h5 className='h5_small'>App Store</h5>
                                        </div>   
                             </div>
                                 <div class="p-1 px-2 apple_btn d-flex align-items-center">
                                     <Link to='https://www.googleplay.com'>
-                                        <FontAwesomeIcon className='color2' size='3x' icon={faGooglePlay} />
+                                        <FontAwesomeIcon className='color2' size-md='3x' icon={faGooglePlay} />
                                     </Link>
                                 <div class="pl-2">
                                     <small>Download on the </small>
-                                    <h5>Google Store</h5>
+                                    <h5 className='h5_small'>Google Store</h5>
                                 </div>     
                                 </div>
                             </section>
@@ -40,16 +42,16 @@ const Footer = () => {
                                 <Col>
                                     <div class="mt-5 mb-5 d-flex justify-content-center">
                                         <Link to='https://www.facebook.com'>
-                                           <FontAwesomeIcon className=' backg color3' size='2x' icon={faFacebook} />
+                                           <FontAwesomeIcon className=' backg color3' size-mode='2x' icon={faFacebook} />
                                         </Link>
                                         <Link to='https://www.twitter.com'>
-                                           <FontAwesomeIcon className='ml-5 mr-5 backg color4' size='2x' icon={faTwitter} />
+                                           <FontAwesomeIcon className='ml-5 mr-5 backg color4' size-md='2x' icon={faTwitter} />
                                         </Link>
                                         <Link to='https://www.instagram.com'>
-                                           <FontAwesomeIcon className='mr-5 backg color5' size='2x' icon={faInstagram} />
+                                           <FontAwesomeIcon className='mr-5 backg color5' size-md='2x' icon={faInstagram} />
                                         </Link>
                                         <Link to='https://www.youtube.com'>
-                                           <FontAwesomeIcon className=' backg color6'  size='2x' icon={faYoutube} />
+                                           <FontAwesomeIcon className=' backg color6'  size-md='2x' icon={faYoutube} />
                                         </Link>       
                                 </div>
                                 </Col>
@@ -69,7 +71,11 @@ const Footer = () => {
                                 <a href="#" class="text-white mx-2">Privacy Policy</a>
                                 <a href="#" class="text-white mx-2">RSS</a>
                                 <a href="#" class="text-white mx-2">Contact Us</a>
-                            </div>
+                        </div>
+                        <div className='d-flex justify-content-center'>
+                           <p className='p_type'>	&copy; {getYear} GrandLotto </p>
+                        </div>
+                            
                         </Col>
                </Container>
             </section>

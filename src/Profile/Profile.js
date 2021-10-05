@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGlobalContext } from '../store/context';
-import { Container, Col, Row, Form, Button } from 'react-bootstrap';
+import { Container, Col, Row, Form, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 
 const initialState = {
@@ -24,21 +24,19 @@ const initialState = {
 
 const Profile = () => {
     let history = useHistory()
-    const { logedIn, giveAccess, game, isLoggedIn, days, week } = useGlobalContext();
+    const { logedIn, giveAccess, game, isLoggedIn, token} = useGlobalContext();
     const [user, setUser] = useState([])
     const [users, setUsers] = useState(initialState)
-    const { profile, games } = useGlobalContext();
     const [getProfile, setGetProfile] = useState(true)
     const [kyc, setKyc] = useState(false)
     const [bank, setBank] = useState(false)
     const [password, setPasword] = useState(false)
     const [withdrawalPin, setWithdrawalPin] = useState(false)
     const [fundTransfer, setFundTransfer] = useState(false)
-    const [isClicked, setIsClicked] = useState(false);
-    const [menuItems, setMenuItems] = useState(game)
 
     const handleClick = (e) => {
         e.preventDefault()
+        console.log(e.target)
         if (e.target.name === 'profile') {
             setGetProfile(true)
             setKyc(false)
@@ -91,14 +89,11 @@ const Profile = () => {
         }
     }
 
-    
-
     useEffect(() => {
         const loggedInUser = localStorage.getItem('user')
         if (loggedInUser ) {
             const foundUser = JSON.parse(loggedInUser)
             setUser(foundUser)
-            giveAccess(isLoggedIn)
         }
     }, [])
 
@@ -122,9 +117,6 @@ const Profile = () => {
         e.preventDefault()
         history.push('/games')
     }
-
-    //  const nums  = Array.from({ length: 100 }).map((_, idx) => idx)
-    // console.log(nums)
 
     return (
         <main>
@@ -150,7 +142,7 @@ const Profile = () => {
                                 </div>
                         </section>
                         
-                        <section className='d-flex pt-3 justify-content-between'>
+                        <section className='d-none d-lg-flex pt-3 justify-content-between'>
                             <div>
                                 <button className='profile_btn profile' name='profile' onClick={handleClick}>MY PROFILE</button>
                             </div>
@@ -170,11 +162,33 @@ const Profile = () => {
                               <button className='profile_btn bank' name='bank' onClick={handleClick}> BANK</button>
                             </div>
                         </section>
+                            <section className='d-lg-none mt-2 ml-5'>
+                            <DropdownButton
+                                className='nav_dropdown click'
+                                variant='secondary'
+                                size='sm'
+                                menuAlign="right"
+                                title="Updates"
+                                id="dropdown-menu-align-right"
+                            >
+                                    <Dropdown.Item className='item' name='profile' onClick={handleClick}>MY PROFILE</Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item className='item' name='kyc' onClick={handleClick}>KYC DOCUMENTATION</Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item className='item' name='transfer' onClick={handleClick}>FUND TRANSFER</Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item className='item' name='password' onClick={handleClick}>CHANGE PASSWORD</Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item className='item' name='pin' onClick={handleClick}>WITHDRAWAL PIN</Dropdown.Item>
+                                    <Dropdown.Divider />
+                                <Dropdown.Item className='item' name='bank' onClick={handleClick}>FUND ACCOUNT</Dropdown.Item>
+                            </DropdownButton>
+                        </section>
                         <section className='d-flex justify-content-center mt-4'>
                             {getProfile &&
-                              <article>
-                                <h5>Update Profile</h5>
-                            <p>Please fill the form below to setup your profile information. Kindly note that your name must match your bank account name.</p>
+                              <article className='width'>
+                                <h5 className='ml-lg-3'>Update Profile</h5>
+                            <p className='header_class ml-lg-3'>Please fill the form below to setup your profile information. <br />  Kindly note that your name must match your bank account name.</p>
                              <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group as={Col} md="8" controlId="validationCustom01">
                             <Form.Label>First Name</Form.Label>
@@ -189,7 +203,7 @@ const Profile = () => {
                             />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="8" controlId="validationCustom02">
+                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom02">
                             <Form.Label>Last Name</Form.Label>
                             <Form.Control
                                 required
@@ -201,7 +215,7 @@ const Profile = () => {
                                 />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="8" controlId="validationCustomUsername">
+                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustomUsername">
                             <Form.Label>Date Of Birth</Form.Label>
                             <Form.Control
                                 required
@@ -216,7 +230,7 @@ const Profile = () => {
                                 Please Enter A valid Date Of Birth.
                             </Form.Control.Feedback>
                                 </Form.Group>
-                                <Form.Group as={Col} md="8" controlId="validationCustomUsername">
+                                <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustomUsername">
                             <Form.Label>Gender</Form.Label>
                             <Form.Control
                                 type="text"
@@ -231,16 +245,16 @@ const Profile = () => {
                                 Gender.
                             </Form.Control.Feedback>
                         </Form.Group>
-                        <Button variant='success' className='mb-3 mt-3' type="submit">Submit</Button>
+                        <Button variant='success' className='mb-3 mt-3 ml-3' type="submit">Submit</Button>
                         </Form>
                             </article>
                             }
                             {kyc && 
-                               <article>
-                                <h5>KYC Update</h5>
-                            <p>Uploading your KYC documents is very essential so as to remove the limitations in withdrawing funds to your accounts.</p>
+                               <article className='width'>
+                                <h5 className='ml-lg-3'>KYC Update</h5>
+                            <p className='header_class ml-lg-3'>Uploading your KYC documents is very essential so as to remove the <br />  limitations in withdrawing funds to your accounts.</p>
                              <Form noValidate onSubmit={handleSubmit}>
-                        <Form.Group as={Col} md="8" controlId="validationCustom01">
+                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom01">
                             <Form.Label>BVN</Form.Label>
                             <Form.Control
                                 required
@@ -252,9 +266,9 @@ const Profile = () => {
                             />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="8" className='mt-4' controlId="validationCustom02">
+                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom02">
                             <Form.Label className='mr-3'>ID Type</Form.Label>
-                            <Form.Select aria-label="Default select example">
+                            <Form.Select className='select' aria-label="Default select example">
                               <option>Select Your Idebtity Type</option>
                               <option value={users.id_type}>National ID (NIN)</option>
                               <option value={users.id_type}>International Passport</option>
@@ -263,25 +277,18 @@ const Profile = () => {
                             </Form.Select>
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                                <Form.Group as={Col} md="8" controlId="validationCustomUsername">
-                            <Form.Label>ID Document</Form.Label>
-                            <Form.Control
-                                required
-                                type="file"
-                                name="id_url"
-                                onChange={handleRegisterChange}
-                                placeholder="1234xxxxxxxxxxxxx"
-                                required
-                            />
+                        <Form.Group as={Col} md="8" controlId="formFile" className="mb-3 mt-3">
+                          <Form.Label>ID Document</Form.Label>
+                          <Form.Control required name='id_url' onChange={handleRegisterChange} type="file" size="sm"/>
                         </Form.Group>
-                        <Button variant='success' className='mb-3 mt-3' type="submit">Submit</Button>
+                        <Button variant='success' className='mb-3 mt-3 ml-3' type="submit">Submit</Button>
                         </Form>
                             </article>
                             }
                             {fundTransfer && 
-                               <article>
-                                <h5>Fund Transfer</h5>
-                            <p>Uploading your KYC documents is very essential so as to remove the limitations in withdrawing funds to your accounts.</p>
+                               <article className='width'>
+                                <h5 className='ml-lg-3'>Fund Transfer</h5>
+                            <p className='header_class ml-lg-3'>Uploading your KYC documents is very essential so as to remove the <br />  limitations in withdrawing funds to your accounts.</p>
                              <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group as={Col} md="8" controlId="validationCustom01">
                             <Form.Label>Receiver ID</Form.Label>
@@ -296,11 +303,11 @@ const Profile = () => {
                             />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="8" controlId="validationCustom02">
+                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom02">
                             <Form.Label>Amount</Form.Label>
                             <Form.Control
-                                    required
-                                            value={users.amount}
+                                required
+                                value={users.amount}
                                 type="text"
                                 name="amount"
                                 onChange={handleRegisterChange}
@@ -309,7 +316,7 @@ const Profile = () => {
                             />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="8" controlId="validationCustomUsername">
+                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustomUsername">
                             <Form.Label>Sender ID</Form.Label>
                             <Form.Control
                                 type="text"
@@ -329,9 +336,9 @@ const Profile = () => {
                             </article>
                             }
                             {password &&  
-                               <article>
-                                    <h5>Update Password</h5>
-                                    <p>Uploading your KYC documents is very essential so as to remove the limitations in withdrawing funds to your accounts.</p>
+                               <article className='width'>
+                                    <h5 className='ml-lg-3'>Update Password</h5>
+                                    <p className='header_class ml-lg-3'>Uploading your KYC documents is very essential so as to remove the <br />  limitations in withdrawing funds to your accounts.</p>
                              <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group as={Col} md="8" controlId="validationCustom01">
                             <Form.Label>New Password</Form.Label>
@@ -346,7 +353,7 @@ const Profile = () => {
                             />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                             </Form.Group>
-                            <Form.Group as={Col} md="8" controlId="validationCustom01">
+                            <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom01">
                             <Form.Label>Verify Password</Form.Label>
                             <Form.Control
                                     required
@@ -364,12 +371,12 @@ const Profile = () => {
                             </article>
                             }
                              {withdrawalPin && 
-                               <article>
-                                    <h5>WithDrawal Pin</h5>
-                                    <p>Uploading your KYC documents is very essential so as to remove the limitations in withdrawing funds to your accounts.</p>
+                               <article className='width'>
+                                    <h5 className='ml-lg-3'>WithDrawal Pin</h5>
+                                    <p className='header_class ml-lg-3'>Uploading your KYC documents is very essential so as to remove the <br /> limitations in withdrawing funds to your accounts.</p>
                             <p>Set your withdrawal pin</p>
                              <Form noValidate onSubmit={handleSubmit}>
-                        <Form.Group as={Col} md="8" controlId="validationCustom01">
+                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom01">
                             <Form.Label>Withdrawal Pin</Form.Label>
                             <Form.Control
                                     required
@@ -382,7 +389,7 @@ const Profile = () => {
                             />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                             </Form.Group>
-                            <Form.Group as={Col} md="8" controlId="validationCustom01">
+                            <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom01">
                             <Form.Label>Verify Withdrawal Pin Pin</Form.Label>
                             <Form.Control
                                     required
