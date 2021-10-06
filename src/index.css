@@ -827,6 +827,18 @@ main.express_section{
     padding: 10px;
 }
 
+a.game_links{
+    box-sizing: border-box;
+    color: green;
+}
+
+a.game_links:hover, a.game_links:focus{
+    text-decoration: none;
+    background: green;
+    color: #fff;
+    border-radius: .3rem;
+}
+
 
 
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Form, Button } from 'react-bootstrap';
 
 const Result = () => {
     const [odds, setOdds] = useState('')
@@ -10,17 +9,18 @@ const Result = () => {
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
+    const [type, setType] = useState('')
+    const [lottoE, setLottoE] = useState('')
+    const [lottoS, setLottoS] = useState('')
 
     const handleSubmit = (e) => {
         e.preventDefault()
         setGameType(name)
         setArr(odds)
 
-        if (gameType && arr.length >= 1) {
-            let token = localStorage.getItem('adminToken')
-            let str = JSON.stringify(arr)
-            console.log(str)
+        let token = localStorage.getItem('adminToken')
 
+        if (gameType && arr.length >= 1) {
             var myHeaders = new Headers();
             myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
             myHeaders.append("timestamps", "1614848109");
@@ -42,20 +42,110 @@ const Result = () => {
             fetch("http://localhost:5016/api/v2/auth/postResult", requestOptions)
                 .then(response => response.json())
                 .then(result => {
-                if (result.success) {
-                    const { message } = result.success;
-                    setSuccess(message)
-                } else {
-                    const { message } = result.error;
-                    setError(message)
-                }
-            },
-                (error) => {
-                    console.log(error)
-                }
-        )
+                    if (result.success) {
+                        const { message } = result.success;
+                        setSuccess(message)
+                    } else {
+                        const { message } = result.error;
+                        setError(message)
+                    }
+                },
+                    (error) => {
+                        console.log(error)
+                    }
+                )
+        } else if (lottoE) {
+            var myHeaders = new Headers();
+            myHeaders.append("timestamps", "1614848109");
+            myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+            myHeaders.append("Authorization", `Bearer ${token}`);
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify({
+                "odds": `${lottoE}`
+            });
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            fetch("http://localhost:5016/api/v2/auth/postLottoExpressOdds", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        const { message } = result.success;
+                        setSuccess(message)
+                    } else {
+                        const { message } = result.error;
+                        setError(message)
+                    }
+                },
+                    (error) => {
+                        console.log(error)
+                    }
+                )
+        } else if (lottoS && type) {
+            var myHeaders = new Headers();
+            myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+            myHeaders.append("timestamps", "1614848109");
+            myHeaders.append("Authorization", `Bearer ${token}`);
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify({
+                "type": `${type}`,
+                "odds": `${lottoS}`
+            });
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            fetch("http://localhost:5016/api/v2/auth/postSoftLottoOdds", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        const { message } = result.success;
+                        setSuccess(message)
+                    } else {
+                        const { message } = result.error;
+                        setError(message)
+                    }
+                },
+                    (error) => {
+                        console.log(error)
+                    }
+                )
+        } else {
+            setSuccess('Please kindly feel atleast one of the update items')
+            return;
         }
     }
+
+    const handleExpress = (e) => {
+        e.preventDefault()
+        console.log(e.target.name)
+        setLottoE(e.target.value)
+        console.log(lottoE)
+    }
+
+    const handleSoft = (e) => {
+        e.preventDefault()
+        setLottoS(e.target.value)
+    }
+
+
+    const handleType = (e) => {
+        e.preventDefault()
+        setType(e.target.value)
+    }
+
+
     const handleChange = (e) => {
         e.preventDefault()
         let value = e.target.value;
@@ -109,6 +199,38 @@ const Result = () => {
                                 placeholder="22,33,2,17,88"
                                 required
                             />
+                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='mt-2' controlId="validationCustom01">
+                            <Form.Label>Lotto Express Odd</Form.Label>
+                            <Form.Control
+                                required
+                                type="text"
+                                name="Lotto Express"
+                                onChange={handleExpress}
+                                placeholder="400"
+                                required
+                            />
+                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='mt-2' controlId="validationCustom01">
+                            <Form.Label>Soft Lotto Odd for Regular</Form.Label>
+                            <Form.Control
+                                required
+                                type="text"
+                                name="Sofft Lotto For Regular"
+                                onChange={handleSoft}
+                                placeholder="240"
+                                required
+                            />
+                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='mt-2' controlId="validationCustom01">
+                            <Form.Label>Soft Lotto Odd for Ordered Games</Form.Label>
+                            <Form.Control as="select" onChange={handleType} custom>
+                                <option value='Regular'>Rgeular</option>
+                                <option value='Ordered'>Ordered</option>
+                            </Form.Control>
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
           

@@ -27,8 +27,9 @@ const Bets = () => {
             fetch(url, requestOptions)
                 .then(response => response.json())
                 .then(result => {
+                    console.log(result)
                     const data = result.success.result.user.filter((bets) => {
-                            return [ bets.id, bets.bet_id, bets.amount, bets.odd, bets.possibleWinning, bets.staked, bets.stakes, bets.stakes1, bets.stakes2, ]       
+                            return [ bets.id, bets.bet_id, bets.amount, bets.odd, bets.min_possibleWinning, bets.max_possibleWinning, bets.possibleWinning, bets.staked, bets.stakes, bets.stakes1, bets.stakes2, ]       
                     })
                      setArr(data)
                 })
@@ -70,7 +71,7 @@ const Bets = () => {
     )
 }
 
-const BetHistory = ({ amount, bet_id, type, odd, possibleWinning, staked, stakes, stakes1, stakes2, gameResult }) => {
+const BetHistory = ({ amount, bet_id, type, odd, min_possibleWinning, max_possibleWinning, possibleWinning, staked, stakes, stakes1, stakes2 }) => {
     
     return (
         <main className='mt-2 ml-4 ml-lg-5'>
@@ -78,12 +79,14 @@ const BetHistory = ({ amount, bet_id, type, odd, possibleWinning, staked, stakes
             <p className='p_bets'>Game Type: <span className='bets_span'>{type}</span></p>
             <p className='p_bets'>Game ID: <span className='bets_span'>{bet_id}</span></p>
             <p className='p_bets'>Odd: <span className='bets_span'>{odd}</span></p>
-            <p className='p_bets'>Possible Winning: <span className='bets_span'>&#x20A6;{possibleWinning}</span></p>
+            {possibleWinning > 0 && <p className='p_bets'>Possible Winning: <span className='bets_span'>&#x20A6;{possibleWinning}</span></p>}
             <p className='p_bets'>Stake Amount: <span className='bets_span'>&#x20A6;{staked}</span></p>
             {stakes && <p className='p_bets'>Numbers: <span className='bets_span'>{stakes}</span></p>}
             {stakes1 && <p className='p_bets'>Against 1: <span className='bets_span'>{stakes1}</span></p>}
             {stakes2 && <p className='p_bets'>Agaisnt 2: <span className='bets_span'>{stakes2}</span></p>}
-            <p className='p_bets'>Amount: <span className='bets_span'>&#x20A6;{amount}</span></p>
+                <p className='p_bets'>Amount: <span className='bets_span'>&#x20A6;{amount}</span></p>
+                {max_possibleWinning > 0 && <p className='p_bets'>max_possibleWinning: <span className='bets_span'>&#x20A6;{max_possibleWinning}</span></p>}
+                {min_possibleWinning > 0 && <p className='p_bets'>min_possibleWinning: <span className='bets_span'>&#x20A6;{min_possibleWinning}</span></p>}
             </section>
         </main>
         
