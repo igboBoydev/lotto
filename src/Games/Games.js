@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Row, Col, Container, Form, Button } from 'react-bootstrap'
 import { useGlobalContext } from '../store/context'
 import { FaTimes } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import Data from '../Fetch/Data.json'
 import play from '../svg/play.svg'
 
@@ -215,9 +216,10 @@ const Games = () => {
         fetch("http://localhost:5016/api/v1/placeStake", requestOptions)
             .then(response => response.json())
             .then(result => {
+                console.log(result)
                 let show = result.result.map((res) => res)
                 if (show[0].type === 'AGAINST') {
-                    const { type, amount, odd, staked, possibleWinning, stakes1, stakes2 } = show[0];
+                    const { type, amount, odd, staked, max_possibleWinning, min_possibleWinning, possibleWinning, stakes1, stakes2 } = show[0];
                     let response1 = stakes1.toString()
                     let response2 = stakes2.toString()
                     var myHeaders = new Headers();
@@ -229,6 +231,8 @@ const Games = () => {
                         "amount": `${amount}`,
                         "type": `${type}`,
                         "odd": `${odd}`,
+                        "max_possibleWinning": `${max_possibleWinning}`,
+                        "min_possibleWinning": `${min_possibleWinning}`,
                         "possibleWinning": `${possibleWinning}`,
                         "staked": `${staked}`,
                         "stakes1": `${response1}`,
@@ -252,8 +256,7 @@ const Games = () => {
 
                     
                 } else {
-                    const { type, amount, odd, staked, possibleWinning, stakes } = show[0];
-                    console.log(stakes)
+                    const { type, amount, odd, staked, max_possibleWinning, min_possibleWinning, possibleWinning, stakes } = show[0];
                     let response = stakes.toString()
                     var myHeaders = new Headers();
                     myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
@@ -264,6 +267,8 @@ const Games = () => {
                         "amount": `${amount}`,
                         "type": `${type}`,
                         "odd": `${odd}`,
+                        "max_possibleWinning": `${max_possibleWinning}`,
+                        "min_possibleWinning": `${min_possibleWinning}`,
                         "possibleWinning": `${possibleWinning}`,
                         "staked": `${staked}`,
                         "stakes": `${response}`
@@ -473,6 +478,11 @@ const Games = () => {
                         <Row>
                             <Col>
                                 <section className='game_section'>
+                                    <div className='d-md-flex mb-4'>
+                                    <Link className='game_links first' to='/lottoexpress'>Lotto Express</Link>
+                                    <Link className='game_links ml-3' to='/softlotto'>Soft Lotto</Link>
+                                    </div>
+                                    
                                     <div className='d-flex justify-content-between'>
                                         <h4 className='game_header'>
                                             {games}

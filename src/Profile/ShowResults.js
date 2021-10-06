@@ -40,7 +40,6 @@ const ShowResults = () => {
         }
 
     }, [url]);
-        
 
     const handleClick = (e) => {
         e.preventDefault()
@@ -74,3 +73,43 @@ const ShowResults = () => {
 }
 
 export default ShowResults
+
+
+
+
+
+
+
+
+
+
+
+
+        // arr.filter((a) => {
+        //     const { value, numbers } = a;
+
+            // var raw = JSON.stringify({
+            //     "stakes": [
+            //         {
+            //             "value": `${value}`,
+            //             "numbers": `${numbers}`
+            //         }
+            //     ]
+            // });
+
+            // var requestOptions = {
+            //     method: 'POST',
+            //     headers: myHeaders,
+            //     body: raw,
+            //     redirect: 'follow'
+            // };
+
+            // fetch("http://localhost:5016/api/v1/placeLottoExpressStake", requestOptions)
+            //     .then(response => response.json())
+            //     .then(result => {
+            //         let show = result.result.map((res) => res)
+            //         const { type, odd, staked, possibleWinning, stakes } = show[0]
+                    
+            //     })
+            //     .catch(error => console.log('error', error));
+        // });

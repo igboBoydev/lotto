@@ -4,6 +4,7 @@ import { Navbar, NavDropdown, Nav, Form, Button, Dropdown, DropdownButton } from
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import logo from '../static/assets/logo4.png'
+import GrandLotto from '../svg/GrandLotto.svg'
 
 const Navigation = () => {
     let { giveAccess, giveAdminAccess, showBoard, logOut, logedIn, isLoggedIn, adminToken } = useGlobalContext();
@@ -106,11 +107,6 @@ const Navigation = () => {
         history.push('/profile/betHistory')
     }
 
-    const handleHistory = (e) => {
-        e.preventDefault()
-        console.log(e.target)
-    }
-
     const handleSettings = (e) => {
         e.preventDefault()
         console.log(e.target)
@@ -120,10 +116,6 @@ const Navigation = () => {
         e.preventDefault()
         history.push('/profile/transactions')
     }
-
-    // if (adminToken) {
-    //     console.log(adminToken)
-    // }
 
 
     useEffect(() => {
@@ -150,7 +142,7 @@ const Navigation = () => {
         <main>
         <Navbar bg="light" expand="lg" className='d-none d-lg-flex justify-content-between'>
             <Navbar.Brand href="./">
-                    <img src={logo} width='200px' alt="" />
+                    <img src={GrandLotto} width='200px' alt="" />
                     {
                         logedIn &&
                         <Link className='links ml-2' to='/'>Home</Link>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container, Button, Form } from 'react-bootstrap'
 import Countdown from "react-countdown";
+import { Link } from 'react-router-dom';
 import { useGlobalContext } from '../store/context';
 import { FaTimes } from 'react-icons/fa';
 
@@ -9,17 +10,129 @@ const LottoExpress = () => {
     const { logedIn } = useGlobalContext();
     let [array, setArray] = useState([])
     let [day, setDay] = useState(1633292094629)
-    const [numbers, setNumbers] = useState('')
+    const [numbers, setNumbers] = useState([])
     const [error, setError] = useState('')
     const [amount, setAmount] = useState('')
     const [show, setShow] = useState(false)
     const [getBet, setGetBet] = useState(false)
     const [arr, setArr] = useState([])
+    const [success, setSuccess] = useState('')
 
     let nums = []
 
     for (let i = 1; i < 91; i++) {
         nums.push(i)
+    }
+    const get = localStorage.getItem('token')
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        console.log('from submit button handleSubmit')
+        var myHeaders = new Headers();
+        myHeaders.append("signatures", "95631547ca07a9ca16e1116e577199003e96bf55fb110b3ccbc9ed1c1b2092e8");
+        myHeaders.append("Authorization", `Bearer ${get}`);
+        myHeaders.append("Content-Type", "application/json");
+
+        arr.filter((a) => {
+            const { value, numbers } = a;
+
+            var raw = JSON.stringify({
+                "stakes": [
+                    {
+                        "value": `${value}`,
+                        "numbers": `${numbers}`
+                    }
+                ]
+            });
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            fetch("http://localhost:5016/api/v1/placeLottoExpressStake", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    let show = result.result.map((res) => res)
+                    const { type, odd, staked, possibleWinning, stakes, amount } = show[0]
+                    let response = stakes.toString()
+                    var myHeaders = new Headers();
+                    myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+                    myHeaders.append("Authorization", `Bearer ${get}`);
+                    myHeaders.append("Content-Type", "application/json");
+
+                    var raw = JSON.stringify({
+                        "amount": `${amount}`,
+                        "type": `${type}`,
+                        "odd": `${odd}`,
+                        "possibleWinning": `${possibleWinning}`,
+                        "staked": `${staked}`,
+                        "stakes": `${response}`
+                    });
+
+                    var requestOptions = {
+                        method: 'POST',
+                        headers: myHeaders,
+                        body: raw,
+                        redirect: 'follow'
+                    };
+
+                    fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
+                        .then(response => response.json())
+                        .then(result => {
+                            const { message } = result.success;
+                            setSuccess(message)
+                        })
+                        .catch(error => console.log('error', error));
+                })
+                .catch(error => console.log('error', error));
+        });
+        setActiveNums(false)
+        setArray([])
+    }
+
+    
+    const handleBetSubmit = (e) => {
+        e.preventDefault()
+        if (array.length < 5) {
+            setError('Please Choose numbers to play')
+            return;
+        } else if (amount < 50) {
+            setError('Please add an amount from 50 naira')
+            return;
+        } else {
+            setShow(true)
+            const newItem = { id: new Date().getTime().toString(), value: amount, numbers: numbers }
+            setArr([...arr, newItem])
+        }
+
+    }
+
+
+    const handleClick = (e) => {
+        e.preventDefault()
+        setAmount(e.target.value)
+    }
+
+    const handleInputChange = (e) => {
+        e.preventDefault()
+        setAmount(e.target.value)
+    }
+    
+
+    const handlePlaceBets = (e) => {
+        e.preventDefault()
+        if (array.length >= 5) {
+            setNumbers(array.toString())
+            setActiveNums(false)
+            setGetBet(true)
+        } else {
+            setError('Please Select up to five Numbers')
+            return;
+        }
+        
     }
 
     const handleClass = (i) => {
@@ -37,77 +150,16 @@ const LottoExpress = () => {
             }
         } else {
             array.push(i)
-            if (array.length > 5) {
-                setActiveNums(false)
-                array.length = 5
-                return;
-            }
         }
         
     }
 
-    const handleClick = (e) => {
-        e.preventDefault()
-        setAmount(e.target.value)
-    }
 
-    const handleInputChange = (e) => {
-        e.preventDefault()
-        setAmount(e.target.value)
-    }
-    
-    const Completionist = () => {
+    const Completionist = ({setDay}) => {
+        setDay(Date.now())
         return <p>Games Drawn</p>
     }
 
-    const handleGameSubmit = (e) => {
-        e.preventDefault()
-        if(numbers.length < 5){
-            setError('Please Choose numbers to play')
-            return;
-        } else if (amount < 50) {
-            setError('Please add an amount from 50 naira')
-            return;
-        }else{
-             setShow(true)
-            const newItem = { id: new Date().getTime().toString(), value: amount, numbers: numbers, odd: ''}
-            setArr([...arr, newItem])
-            setArray([])
-        }
-
-    }
-
-    const handleBets = (e) => {
-        e.preventDefault()
-        if (array.length === 5) {
-            setNumbers(array.toString())
-            setActiveNums(false)
-            setGetBet(true)
-        } else {
-            setError('Please Select up to five Numbers')
-            return;
-        }
-        
-    }
-
-    if (day !== (new Date().getTime() + 30 * 60000)) {
-        // setDay(Date.now())
-        console.log('hello world')
-    }
-
-
-    // console.log(day)
-
-
-    // const timer = new Date().getTime()
-    // console.log(timer)
-
-    // const time = Date.now()
-    // console.log(time)
-
-    // 1600000
-
-    // 1810000)
 
     useEffect(() => {
         setTimeout(() => {
@@ -116,15 +168,16 @@ const LottoExpress = () => {
     }, [error])
 
     useEffect(() => {
+        
         let y = setInterval(() => {
-            if (day !== (new Date().getTime() + 30 * 60000)) {
+            if (day !== (new Date().getTime() + 1800000)) {
                 setDay(Date.now())
-                localStorage.setItem('time', day)
             }
-        }, 1810000)
+        }, 1800000)
         
         return () => clearInterval(y)
     });
+
 
     const removeItem = (id) => {
         let newItem = arr.filter((item) => item.id !== id)
@@ -146,11 +199,15 @@ const LottoExpress = () => {
                 <Col className='express_border'>
                     <main className='express_section'>
                         <section>
+                        <div className='d-md-flex mb-4'>
+                            <Link className='game_links first' to='/games'>Regular Lotto</Link>
+                            <Link className='game_links ml-3' to='/softlotto'>Soft Lotto</Link>
+                        </div>
                            <div>
                             <p className='express_p'>Please Pick Five(5) numbers</p>
                             <p className='p_red'>Games will will be Drawn in:
                                 <Countdown key={Date.now()} className='ml-2' date={day + 1800000}>
-                                    <Completionist />
+                                        <Completionist setDay={setDay}/>
                                 </Countdown>
                             </p>
                         </div>
@@ -160,17 +217,16 @@ const LottoExpress = () => {
                         </section>
                         
                         
-                        <Button className='mt-2' onClick={handleBets} variant="outline-secondary">Place Bet</Button>
+                        <Button className='mt-2' onClick={handlePlaceBets} variant="outline-secondary">Place Bet</Button>
                         <p className='p_red mt-2'>{error && error}</p>
                     </main>
                 </Col>
                 <Col>
                     <section className='mt-3 submit_section'>
                         <p>Numbers: <span className='green'>{numbers}</span></p>
-                        <p>Odd: <span className='green'></span></p>
                         <p>Amount per Line: <span className='green'>&#x20A6;{amount}</span></p>
                         <Form>
-                            <Form.Control size='sm' className='form_input' onChange={handleInputChange} type="text" placeholder="&#x20A6;10000" />
+                            <Form.Control size='sm' value={amount} className='form_input' onChange={handleInputChange} type="text" placeholder="&#x20A6;10000" />
                         </Form>
                         <div className='mt-2 d-flex justify-content-lg-between'>
                             <Button className='mr-2 mr-lg-0 games game' value='50' size='sm' onClick={handleClick}>&#x20A6;50</Button>
@@ -180,7 +236,7 @@ const LottoExpress = () => {
                             <Button className='mr-2 mr-lg-0 'size='sm' value='400' size='sm' onClick={handleClick}>&#x20A6;400</Button>
                             <Button className='mr-2 mr-lg-0' size='sm' value='500' size='sm' onClick={handleClick}>&#x20A6;500</Button>
                         </div>
-                        <Button className={`mt-3 ${!getBet && !logedIn && 'disabled'} `} onClick={handleGameSubmit} variant="outline-success">{`${!logedIn ? 'Login to Place bet' : 'Submit'}`}</Button>
+                        <Button className={`mt-3 ${!getBet || !logedIn && 'disabled'} `} onClick={handleBetSubmit} variant="outline-success">{`${!logedIn ? 'Login to Place bet' : 'Submit'}`}</Button>
                     </section>
 
                     {
@@ -200,13 +256,13 @@ const LottoExpress = () => {
                                                 />
                                             </div>
                                              <p>Numbers: <span className='p_red'>{numbers}</span></p>
-                                             <p>Stake Amount: <span className='p_red'>&#x20A6;{parseInt(value) * 5}</span></p>
-                                             <p>Odd:</p>
+                                             <p>Stake Amount: <span className='p_red'>&#x20A6;{parseInt(value) * array.length}</span></p>
                                         </div>
                                     )
                                 })
                             }
 
+                        <Button onClick={handleSubmit} variant='outline-success'>Submit</Button>
                     </section>
                     }
                     

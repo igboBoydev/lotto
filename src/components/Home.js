@@ -10,6 +10,7 @@ import img2 from '../static/assets/3.png'
 import img3 from '../static/assets/4.png'
 import img4 from '../static/assets/5.png'
 import img5 from '../static/assets/6.png'
+import GrandLotto from '../svg/GrandLotto.svg'
 
 const Home = () => {
   let history = useHistory()
@@ -29,7 +30,7 @@ const Home = () => {
         width={600}
         height={400}
         className="d-block w-100"
-        src={logo}
+        src={GrandLotto}
         alt="First slide"
     />
     <Carousel.Caption>
