@@ -5,6 +5,7 @@ import { FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Data from '../Fetch/Data.json'
 import play from '../svg/play.svg'
+import moment from 'moment'
 
 const Games = () => {
     const { game, logedIn } = useGlobalContext();
@@ -22,6 +23,7 @@ const Games = () => {
     let [betSlip, setBetSlip] = useState([])
     const [showAlert, setShowAlert] = useState(false)
     const [hideButton, setHideButton] = useState(false)
+    const [timer, setTimer] = useState(null)
 
 
     const categories = [...new Set(game.map((item) => {
@@ -219,7 +221,7 @@ const Games = () => {
                 console.log(result)
                 let show = result.result.map((res) => res)
                 if (show[0].type === 'AGAINST') {
-                    const { type, amount, odd, staked, max_possibleWinning, min_possibleWinning, possibleWinning, stakes1, stakes2 } = show[0];
+                    const { type, amount, odd, staked, date, max_possibleWinning, min_possibleWinning, possibleWinning, stakes1, stakes2 } = show[0];
                     let response1 = stakes1.toString()
                     let response2 = stakes2.toString()
                     var myHeaders = new Headers();
@@ -236,7 +238,8 @@ const Games = () => {
                         "possibleWinning": `${possibleWinning}`,
                         "staked": `${staked}`,
                         "stakes1": `${response1}`,
-                        "stakes2": `${response2}`
+                        "stakes2": `${response2}`,
+                        "date": `${date}`
                     });
 
                     var requestOptions = {
@@ -256,7 +259,7 @@ const Games = () => {
 
                     
                 } else {
-                    const { type, amount, odd, staked, max_possibleWinning, min_possibleWinning, possibleWinning, stakes } = show[0];
+                    const { type, amount, odd, staked, date, max_possibleWinning, min_possibleWinning, possibleWinning, stakes } = show[0];
                     let response = stakes.toString()
                     var myHeaders = new Headers();
                     myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
@@ -271,7 +274,8 @@ const Games = () => {
                         "min_possibleWinning": `${min_possibleWinning}`,
                         "possibleWinning": `${possibleWinning}`,
                         "staked": `${staked}`,
-                        "stakes": `${response}`
+                        "stakes": `${response}`,
+                        "date": `${date}`
                     });
 
                     var requestOptions = {
@@ -284,7 +288,6 @@ const Games = () => {
                     fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
                         .then(response => response.json())
                         .then(result => {
-                            console.log(result)
                             const { message } = result.success;
                             setSuccess(message)
                         })
@@ -322,6 +325,9 @@ const Games = () => {
                 setError('Your game type has been automatically changed to PERM 2 because the numbers picked are greater than 2; kindly choose 2 numbers only for NAP 2 and proceed or continue with the PERM 2 game type')
                 createSlip()
                 setShowGames(true)
+            } else if (arr.length > 15) {
+                setError('Please Select atmost 15 numbers')
+                return;
             }
             else {
                 createSlip()
@@ -338,6 +344,9 @@ const Games = () => {
                 setError('Your game type has been automatically changed to PERM 2 because the numbers picked are greater than 2; kindly choose 2 numbers only for NAP 2 and proceed or continue with the PERM 2 game type')
                 createSlip()
                  setShowGames(true)
+            } else if (arr.length > 15) {
+                setError('Please Select atmost 15 numbers')
+                return;
             } else {
                 createSlip()
                  setShowGames(true)
@@ -352,6 +361,9 @@ const Games = () => {
                 setError('Your game type has been automatically changed to PERM 2 because the numbers picked are greater than 3; kindly choose 3 numbers only for NAP 2 and proceed or continue with the PERM 2 game type')
                 createSlip()
                  setShowGames(true)
+            } else if (arr.length > 15) {
+                setError('Please Select atmost 15 numbers')
+                return;
             } else {
                 createSlip()
                  setShowGames(true)
@@ -366,6 +378,9 @@ const Games = () => {
                 setError('Your game type has been automatically changed to PERM 2 because the numbers picked are greater than 4; kindly choose 4 numbers only for NAP 2 and proceed or continue with the PERM 2 game type')
                 createSlip()
                 setShowGames(true)
+            } else if (arr.length > 15) {
+                setError('Please Select atmost 15 numbers')
+                return;
             } else {
                 createSlip()
                  setShowGames(true)
@@ -380,6 +395,9 @@ const Games = () => {
                 setError('Your game type has been automatically changed to PERM 2 because the numbers picked are greater than 5; kindly choose 5 numbers only for NAP 2 and proceed or continue with the PERM 2 game type')
                 createSlip()
                  setShowGames(true)
+            } else if (arr.length > 15) {
+                setError('Please Select atmost 15 numbers')
+                return;
             } else {
                 createSlip()
                 setShowGames(true)
@@ -388,6 +406,9 @@ const Games = () => {
             if (arr.length < 3) {
                 setError('Please Select atleast 3 numbers')
                 return
+            } else if (arr.length > 15) {
+                setError('Please Select atmost 15 numbers')
+                return;
             } else {
                 createSlip()
                 setShowGames(true)
@@ -395,6 +416,9 @@ const Games = () => {
         } else if (gameType === 'PERM 3') {
             if (arr.length < 4) {
                 setError('Please Select atleast 4 numbers')
+                return;
+            } else if (arr.length > 15) {
+                setError('Please Select atmost 15 numbers')
                 return;
             } else {
                 createSlip()
@@ -404,6 +428,9 @@ const Games = () => {
             if (arr.length < 5) {
                 setError('Please Select atleast 5 numbers')
                 return;
+            } else if (arr.length > 15) {
+                setError('Please Select atmost 15 numbers')
+                return;
             } else {
                 createSlip()
                 setShowGames(true)
@@ -411,6 +438,9 @@ const Games = () => {
         } else if (gameType === 'PERM 5') {
             if (arr.length < 6) {
                 setError('Please Select atleast 6 numbers')
+                return;
+            } else if (arr.length > 15) {
+                setError('Please Select atmost 15 numbers')
                 return;
             } else {
                 createSlip()
@@ -426,12 +456,20 @@ const Games = () => {
             setShowGames(true)
             createSlip()
         } else if (gameType === 'AGAINST') {
+            let max = 10
+            let min = 1
             const first_against = arr.slice(0, arr.indexOf(0))
             const second_against = arr.slice(arr.indexOf(0) + 1, arr[arr.length - 1])
             if ((first_against.length === 0 || second_against.length === 0)) {
                 setError('please choose numbers')
                 return;
-            } else {
+            } else if (first_against.length === min && second_against.length === min) {
+                setError('please choose atleast one 1 number for either side of the games and more than one number for the other side')
+                return;
+            } else if (first_against.length > max || second_against.length > max) {
+                setError('please choose atmost 10 numbers for either of the against games')
+                return;
+            }else {
                 createSlip()
                 setShowGames(true)
             }
@@ -454,11 +492,19 @@ const Games = () => {
         calculateTotalStake()
     }
 
+    useEffect(() => {
+        const timeInterval = setInterval(() => {
+          setTimer(moment().format('LTS'))
+        }, 1000)
+
+        return () => clearInterval(timeInterval)
+    })
+
 
     return (
         <section>
-            <div className='news pl-3'>
-                hello
+            <div className='news pl-5 pb-2 pt-2 p_white'>
+                {timer}
              </div>
             <Container fluid>
                  <Row>

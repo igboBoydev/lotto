@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container, Button, Form } from 'react-bootstrap'
-import Countdown from "react-countdown";
 import { Link } from 'react-router-dom';
 import { useGlobalContext } from '../store/context';
 import { FaTimes } from 'react-icons/fa';
+import moment from 'moment'
 
 const LottoExpress = () => {
     const [activeNums, setActiveNums] = useState(false)
@@ -17,6 +17,7 @@ const LottoExpress = () => {
     const [getBet, setGetBet] = useState(false)
     const [arr, setArr] = useState([])
     const [success, setSuccess] = useState('')
+    const [timer, setTimer] = useState(moment().format('LTS'))
 
     let nums = []
 
@@ -55,8 +56,9 @@ const LottoExpress = () => {
             fetch("http://localhost:5016/api/v1/placeLottoExpressStake", requestOptions)
                 .then(response => response.json())
                 .then(result => {
+                    console.log(result)
                     let show = result.result.map((res) => res)
-                    const { type, odd, staked, possibleWinning, stakes, amount } = show[0]
+                    const { type, odd, staked, date, possibleWinning, stakes, amount } = show[0]
                     let response = stakes.toString()
                     var myHeaders = new Headers();
                     myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
@@ -69,7 +71,8 @@ const LottoExpress = () => {
                         "odd": `${odd}`,
                         "possibleWinning": `${possibleWinning}`,
                         "staked": `${staked}`,
-                        "stakes": `${response}`
+                        "stakes": `${response}`,
+                        "date": `${date}`
                     });
 
                     var requestOptions = {
@@ -155,29 +158,11 @@ const LottoExpress = () => {
     }
 
 
-    const Completionist = ({setDay}) => {
-        setDay(Date.now())
-        return <p>Games Drawn</p>
-    }
-
-
     useEffect(() => {
         setTimeout(() => {
         setError('')
     }, 3000)
     }, [error])
-
-    useEffect(() => {
-        
-        let y = setInterval(() => {
-            if (day !== (new Date().getTime() + 1800000)) {
-                setDay(Date.now())
-            }
-        }, 1800000)
-        
-        return () => clearInterval(y)
-    });
-
 
     const removeItem = (id) => {
         let newItem = arr.filter((item) => item.id !== id)
@@ -192,9 +177,20 @@ const LottoExpress = () => {
         }
     }, [])
 
+    useEffect(() => {
+        const timeInterval = setInterval(() => {
+          setTimer(moment().format('LTS'))
+        }, 500)
+
+        return () => clearInterval(timeInterval)
+    })
+
     return (
 
         <Container fluid>
+            <div className='news pl-5 pb-2 pt-2 p_white'>
+                {timer}
+            </div>
             <Row>
                 <Col className='express_border'>
                     <main className='express_section'>
@@ -205,11 +201,7 @@ const LottoExpress = () => {
                         </div>
                            <div>
                             <p className='express_p'>Please Pick Five(5) numbers</p>
-                            <p className='p_red'>Games will will be Drawn in:
-                                <Countdown key={Date.now()} className='ml-2' date={day + 1800000}>
-                                        <Completionist setDay={setDay}/>
-                                </Countdown>
-                            </p>
+                            <p className='p_red'>Games will will be Drawn after every thirty (30) minutes Intervals</p>
                         </div>
                        {nums.map((i)=> {
                          return <button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) && 'lottoExpress' } lotto_btns`}>{i}</button>
