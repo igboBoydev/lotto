@@ -108,6 +108,15 @@ p.category_p{
     align-items: center;
 }
 
+.submit_section{
+    width: 70%;
+    padding: 15px;
+    margin: .8rem auto;
+    border: 1px solid grey;
+    border-radius: .3rem;
+    box-sizing: content-box;
+}
+
 .register_btn{
     color: #28a745 !important;
     border: 1px solid #28a745;
@@ -117,19 +126,23 @@ p.category_p{
     margin-top: 5px !important;
 }
 
-/* .game_btn{
-   display: inline;
-   width: 40px;
-   background: none;
-   border-radius: 50%;
-   padding: 3px;
-   margin: 2px;
-   background: rgb(82, 79, 79);
-   flex-direction: column;
-   color: #fff;
-   align-items: center;
-   justify-content: center;
-} */
+    .express_border{
+        border-right: 5px solid #28a745;
+    }
+
+    main.express_section{
+    margin: 2rem;
+    width: 430px;
+}
+
+.lotto_btns{
+    width: 3%;
+    padding: .3rem 1.3rem .5rem .5rem;
+    border: 1px solid grey;
+    border-radius: .2rem;
+    background: none;
+    margin: 5px;
+}
 
 .game_btn{
    display: inline;
@@ -181,25 +194,74 @@ p.category_p{
 .bets_span{
     color: yellow;
 }
+
+.small{
+    margin-left: 10px;
+}
+
+.sub_div{
+    border: 1px solid #28a745;
+    width: 30vw;
+    border-radius: .3rem;
+    padding: 5px;
+    margin-bottom: 2px;
+    margin-left: 5rem;
+}
+
+.margin{
+    margin-left: 5rem;
+    margin-top: 5px;
+}
 }
 
 
 
 @media(max-width: 689px){
     section.game_section{
-    width: 80vw;
+    width: 100vw;
     margin-top: 2rem;
     margin-bottom: 20px;
     justify-content: center;
     align-items: center;
     }
 
-    .game_btn{
+.small{
+    margin-left: auto;
+    width: 97vw;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.lotto_btns{
+    width: 9vw;
+    padding: .3rem;
+    border: 1px solid grey;
+    border-radius: .2rem;
+    background: none;
+    margin: 2px;
+}
+
+.smalls{
+    margin-left: auto;
+    width: 97vw;
+    justify-content: center;
+    align-items: center;
+}
+
+main.express_section{
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+}
+
+.game_btn{
    display: inline;
-   width: 6vw;
-   font-size: 15px;
+   width: 9vw;
+   font-size: 14px;
+   height: 25px;
    background: none;
-   border-radius: 50%;
+   border-radius: 40%;
    margin: 2px;
    background: rgb(82, 79, 79);
    flex-direction: column;
@@ -207,11 +269,6 @@ p.category_p{
    align-items: center;
    justify-content: center;
 }
-
-
-    /* .footer_section_md{
-        width: 80px;
-    } */
 
     .h5_small{
         font-size: 10px;
@@ -230,6 +287,19 @@ p.category_p{
     padding: .2rem;
     border-radius: .3rem;
     background: #28a745;
+}
+
+.sub_div{
+    border: 1px solid #28a745;
+    border-radius: .3rem;
+    padding: 5px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
+
+.margin{
+    margin-left: 5px;
+    margin-bottom: 5px;
 }
 
 .p_bets{
@@ -271,7 +341,15 @@ p.category_p{
     padding: .25rem .5rem;
     margin-top: 10px !important;
 }
+
+.submit_section{
+    padding: 1rem;
+    margin: .4rem;
+    border: 1px solid grey;
+    border-radius: .3rem;
 }
+}
+
 
 .btn_class{
     margin: 8px;
@@ -280,14 +358,12 @@ p.category_p{
 
 @media(max-width: 500px){
     .form-control{
-       width: 70%;
-       margin-left: 20px;
+       width: 90%;
+       margin-left: 10px;
     }
 }
 
-.small{
-    margin-left: 10px;
-}
+
 
 .game_header{
     color: #fff;
@@ -333,21 +409,20 @@ p.category_p:hover, p.category_p:focus{
     .img_width:first-child{
         margin-left: 2rem;
     }
-
-    .img_width{
-        width: 150px;
-        height: 150px;
-    }
 }
 
 @media(min-width: 695px){
-    .section_container{
-        margin-left: 50px !important;
-    }
 
     .input_width{
         width: 80%;
     }
+}
+
+
+
+.img_width{
+    width: 15vw;
+    height: 20vh;
 }
 
 .nav_height{
@@ -734,10 +809,6 @@ button.profile_btn:hover, button.profile_btn:focus{
     margin-top: 5rem;
 }
 
-main.express_section{
-    margin: 2rem;
-    width: 430px;
-}
 
 .express_p{
     color: #28a745;
@@ -752,14 +823,6 @@ main.express_section{
     color: #fff;
 }
 
-.lotto_btns{
-    width: 3%;
-    padding: .3rem 1.3rem .5rem .5rem;
-    border: 1px solid grey;
-    border-radius: .2rem;
-    background: none;
-    margin: 5px;
-}
 
 .lottoExpress{
     background: red;
@@ -770,27 +833,10 @@ main.express_section{
     color: red;
 }
 
-.express_border{
-    border-right: 5px solid #28a745;
-}
-
 .green{
     color: #28a745;
 }
 
-.submit_section{
-    width: 50%;
-    padding-bottom: 10px;
-    margin: .8rem auto;
-}
-
-.sub_div{
-    border: 1px solid #28a745;
-    width: 30vw;
-    border-radius: .3rem;
-    padding: 5px;
-    margin-bottom: 2px;
-}
 
 .sub_section{
     overflow-y: scroll;

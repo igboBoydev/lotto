@@ -2,7 +2,6 @@ import React from 'react'
 import { Container, Carousel, Row, Col, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
-import logo from '../static/assets/logo4.png'
 import ball from '../static/assets/raffle-5870552_640.jpg'
 import roles from '../static/assets/balls-6077901_640.jpg'
 import img1 from '../static/assets/1.png'
@@ -64,13 +63,11 @@ const Home = () => {
             
         </Container>
 
-        <Container className='games_types '>
-                <Row>
-                    <Col xl={{offset: 1, width: 200}}>
-              <section className='d-flex mt-5'>
+        <Container fluid>
+              <section className='d-flex mt-5 ml-3 ml-lg-5'>
                 <Link to='/games'>
                   <img 
-                    className='img_width ml-4' 
+                    className='img_width mr-2' 
                     src={img4} 
                     alt=""
                   />
@@ -98,18 +95,13 @@ const Home = () => {
                 </Link>
                 <Link to='/games'>
                   <img 
-                    className='img_width ml-4 mr-4 d-none d-lg-inline'
+                    className='img_width ml-4 mr-4'
                     src={img5} 
                     alt=""
                   />
                 </Link>
             </section>
-                    </Col>
-                </Row>
-            </Container>
-    </section>
-    <section className='d-lg-none d-flex justify-content-center m-2'>
-      <Button size='sm' onClick={handleClick} variant='primary'>Play Game</Button>
+         </Container>
     </section>
     </main>
     )

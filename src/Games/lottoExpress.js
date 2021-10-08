@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Container, Button, Form } from 'react-bootstrap'
 import { Link } from 'react-router-dom';
 import { useGlobalContext } from '../store/context';
+import Countdown from "react-countdown";
 import { FaTimes } from 'react-icons/fa';
 import moment from 'moment'
 
@@ -16,6 +17,7 @@ const LottoExpress = () => {
     const [show, setShow] = useState(false)
     const [getBet, setGetBet] = useState(false)
     const [arr, setArr] = useState([])
+    const [showAlert, setShowAlert] = useState(false)
     const [success, setSuccess] = useState('')
     const [timer, setTimer] = useState(moment().format('LTS'))
 
@@ -169,6 +171,17 @@ const LottoExpress = () => {
         setArr(newItem)
     }
 
+    const Completionist = ({setDay}) => {
+        setDay(Date.now())
+        return <p>Games Drawn</p>
+    }
+
+    useEffect(() => {
+        setTimeout(() => {
+            setShowAlert(!showAlert)
+        }, 3000)
+    }, [success]);
+
     useEffect(() => {
         const loggedInUser = localStorage.getItem('time')
         if (loggedInUser ) {
@@ -188,24 +201,34 @@ const LottoExpress = () => {
     return (
 
         <Container fluid>
-            <div className='news pl-5 pb-2 pt-2 p_white'>
+            <div className='news pl-1 pl-lg-5 pb-2 pt-2 p_white'>
                 {timer}
             </div>
             <Row>
                 <Col className='express_border'>
                     <main className='express_section'>
                         <section>
-                        <div className='d-md-flex mb-4'>
+                        <div className='d-md-flex mb-4 p-2 p-lg-0'>
                             <Link className='game_links first' to='/games'>Regular Lotto</Link>
                             <Link className='game_links ml-3' to='/softlotto'>Soft Lotto</Link>
                         </div>
-                           <div>
-                            <p className='express_p'>Please Pick Five(5) numbers</p>
+                            <div>
+                                <div className='d-flex'>
+                                    <p className='express_p'>Please Pick Five(5) numbers</p>
+                                    {success && <section className='small_message ml-3 mt-3'>
+                                        {showAlert && <span className='green'>{success}</span>}
+                                    </section>}
+                                </div>
                             <p className='p_red'>Games will will be Drawn after every thirty (30) minutes Intervals</p>
-                        </div>
-                       {nums.map((i)=> {
-                         return <button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) && 'lottoExpress' } lotto_btns`}>{i}</button>
-                       })}
+                                <Countdown key={Date.now()} className='ml-2' date={day + 1800000}>
+                                  <Completionist setDay={setDay}/>
+                                </Countdown>
+                            </div>
+                            <div className='smalls'>
+                                {nums.map((i)=> {
+                                    return <button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) && 'lottoExpress' } lotto_btns`}>{i}</button>
+                                })}
+                            </div>
                         </section>
                         
                         
@@ -218,26 +241,26 @@ const LottoExpress = () => {
                         <p>Numbers: <span className='green'>{numbers}</span></p>
                         <p>Amount per Line: <span className='green'>&#x20A6;{amount}</span></p>
                         <Form>
-                            <Form.Control size='sm' value={amount} className='form_input' onChange={handleInputChange} type="text" placeholder="&#x20A6;10000" />
+                            <Form.Control size='sm' value={amount} className='form_input' onChange={handleInputChange} type="text" placeholder="Amount" />
                         </Form>
                         <div className='mt-2 d-flex justify-content-lg-between'>
-                            <Button className='mr-2 mr-lg-0 games game' value='50' size='sm' onClick={handleClick}>&#x20A6;50</Button>
-                            <Button className='mr-2 mr-lg-0 'size='sm' value='100' size='sm' onClick={handleClick}>&#x20A6;100</Button>
-                            <Button className='mr-2 mr-lg-0 'size='sm' value='200' size='sm' onClick={handleClick}>&#x20A6;200</Button>
-                            <Button className='mr-2 mr-lg-0 'size='sm' value='300' size='sm' onClick={handleClick}>&#x20A6;300</Button>
-                            <Button className='mr-2 mr-lg-0 'size='sm' value='400' size='sm' onClick={handleClick}>&#x20A6;400</Button>
-                            <Button className='mr-2 mr-lg-0' size='sm' value='500' size='sm' onClick={handleClick}>&#x20A6;500</Button>
+                            <Button className='mr-1 mr-lg-0 games game' value='50' size='sm' onClick={handleClick}>&#x20A6;50</Button>
+                            <Button className='mr-1 mr-lg-0 'size='sm' value='100' size='sm' onClick={handleClick}>&#x20A6;100</Button>
+                            <Button className='mr-1 mr-lg-0 'size='sm' value='200' size='sm' onClick={handleClick}>&#x20A6;200</Button>
+                            <Button className='mr-1 mr-lg-0 'size='sm' value='300' size='sm' onClick={handleClick}>&#x20A6;300</Button>
+                            <Button className='mr-1 mr-lg-0 'size='sm' value='400' size='sm' onClick={handleClick}>&#x20A6;400</Button>
+                            <Button className='mr-1 mr-lg-0' size='sm' value='500' size='sm' onClick={handleClick}>&#x20A6;500</Button>
                         </div>
                         <Button className={`mt-3 ${!getBet || !logedIn && 'disabled'} `} onClick={handleBetSubmit} variant="outline-success">{`${!logedIn ? 'Login to Place bet' : 'Submit'}`}</Button>
                     </section>
 
                     {
-                        show &&
+                        arr.length > 0 &&
                         <section className={`${arr.length > 2 && 'sub_section'}`}>
                             {
                                 arr.length >= 1 &&
                                 arr.map((a) => {
-                                    const { id, value, numbers, odd } = a;
+                                    const { id, value, numbers } = a;
                                     return (
                                         <div key={id} className='sub_div'>
                                             <div className='d-flex justify-content-end'>
@@ -254,9 +277,12 @@ const LottoExpress = () => {
                                 })
                             }
 
-                        <Button onClick={handleSubmit} variant='outline-success'>Submit</Button>
-                    </section>
-                    }
+                            <Button onClick={handleSubmit} className='margin' variant='outline-success'>Place Bet</Button>
+                            {success && <section className='small_message ml-3 mt-3'>
+                                        {showAlert && <span className='green'>{success}</span>}
+                                    </section>}
+                                </section>
+                             }
                     
                 </Col>
             </Row>
