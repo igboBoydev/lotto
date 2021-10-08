@@ -40,6 +40,7 @@ const ShowResults = () => {
         }
 
     }, [url]);
+        
 
     const handleClick = (e) => {
         e.preventDefault()

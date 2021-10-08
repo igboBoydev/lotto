@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container, Button, Form } from 'react-bootstrap'
-import Countdown from "react-countdown";
 import { useGlobalContext } from '../store/context';
 import { Link } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
+import moment from 'moment'
 
 const LottoExpress = () => {
     const [activeNums, setActiveNums] = useState(false)
@@ -18,15 +18,13 @@ const LottoExpress = () => {
     const [arr, setArr] = useState([])
     const [gameType, setGameType] = useState('Regular')
     const [success, setSuccess] = useState('')
+    const [timer, setTimer] = useState(null)
  
     let nums = []
 
     for (let i = 1; i < 11; i++) {
         nums.push(i)
     }
-
-    // const timer = Date.now()
-    // console.log(timer)
 
     const handleClass = (i) => {
         setActiveNums((state) => {
@@ -91,8 +89,9 @@ const LottoExpress = () => {
         fetch("http://localhost:5016/api/v1/placeSoftLotto", requestOptions)
             .then(response => response.json())
             .then(result => {
+                console.log(result)
                     let show = result.result.map((res) => res)
-                    const { type, odd, staked, possibleWinning, stakes, amount } = show[0]
+                    const { type, odd, staked, date, possibleWinning, stakes, amount } = show[0]
                     let response = stakes.toString()
                     var myHeaders = new Headers();
                     myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
@@ -105,7 +104,8 @@ const LottoExpress = () => {
                         "odd": `${odd}`,
                         "possibleWinning": `${possibleWinning}`,
                         "staked": `${staked}`,
-                        "stakes": `${response}`
+                        "stakes": `${response}`,
+                        "date": `${date}`
                     });
 
                     var requestOptions = {
@@ -170,14 +170,13 @@ const LottoExpress = () => {
     }, 3000)
     }, [error])
 
-    // useEffect(() => {
-    //     let y = setInterval(() => {
-    //         if(day !== (new Date().getTime() + 300000))
-    //         setDay(Date.now())
-    //     }, 300000)
-        
-    //     return () => clearInterval(y)
-    // });
+    useEffect(() => {
+        const timeInterval = setInterval(() => {
+          setTimer(moment().format('LTS'))
+        }, 1000)
+
+        return () => clearInterval(timeInterval)
+    })
 
     const removeItem = (id) => {
         let newItem = arr.filter((item) => item.id !== id)
@@ -194,6 +193,9 @@ const LottoExpress = () => {
 
     return (
         <Container fluid>
+            <div className='news pl-5 pb-2 pt-2 p_white'>
+                {timer}
+             </div>
             <Row>
                 <Col className='express_border'>
                     <main className='express_section'>
@@ -204,17 +206,9 @@ const LottoExpress = () => {
                         </div>
                            <div>
                                 <p className='express_p'>Please atleast Pick Five(3) numbers</p>
-                                {gameType === 'Ordered' && <p className='green'>When you choose type as regular your if you play a game and all your choices are exactly as it is from the draw results then you win more</p>}
-                                {gameType === 'Regular' && <p className='green'>If you choose type regular if you win your possible winning would be normal no extra wins</p>}
-                            <p className='p_red'>Games will will be Drawn in:
-                                    <Countdown
-                                        key={Date.now()}
-                                        className='ml-2'
-                                        date={day + 300000}
-                                    >
-                                    <Completionist setDay={setDay} />
-                                    </Countdown>
-                            </p>
+                                {gameType === 'Ordered' && <p className='green'>Extra Odds are added if you choose type as Ordered; if your picked numbers tallies exactly with the numbers drawn your odds would be higher</p>}
+                                {gameType === 'Regular' && <p className='green'>No added odds</p>}
+                            <p className='p_red'>Games will will be Drawn after every five (5) minutes intervals</p>
                             </div>
                     <Form.Control as="select" required onChange={handleSelect} className='mb-3' custom>
                     <option name='NAP 1' value='Regular'>Regular</option>

@@ -209,9 +209,9 @@ p.category_p{
 }
 
 
-    .footer_section_md{
+    /* .footer_section_md{
         width: 80px;
-    }
+    } */
 
     .h5_small{
         font-size: 10px;
@@ -263,7 +263,7 @@ p.category_p{
         margin-right: 10px;
     }
 
-    .register_btn{
+.register_btn{
     color: #28a745 !important;
     border: 1px solid #28a745;
     font-size: .875rem;
@@ -285,17 +285,9 @@ p.category_p{
     }
 }
 
-
-
-
 .small{
     margin-left: 10px;
 }
-
-
-
-
-
 
 .game_header{
     color: #fff;
@@ -303,9 +295,6 @@ p.category_p{
     font-weight: 100;
     margin-left: 2rem;
 }
-
-
-
 
 .game_col{
     background: rgb(46, 46, 46);
@@ -837,6 +826,10 @@ a.game_links:hover, a.game_links:focus{
     background: green;
     color: #fff;
     border-radius: .3rem;
+}
+
+.p_white{
+    color: #fff;
 }
 
 
