@@ -19,6 +19,7 @@ const LottoExpress = () => {
     const [gameType, setGameType] = useState('Regular')
     const [success, setSuccess] = useState('')
     const [timer, setTimer] = useState(null)
+    const [showAlert, setShowAlert] = useState(false)
  
     let nums = []
 
@@ -170,6 +171,13 @@ const LottoExpress = () => {
     }, 3000)
     }, [error])
 
+
+        useEffect(() => {
+        setTimeout(() => {
+            setShowAlert(!showAlert)
+        }, 3000)
+    }, [success]);
+
     useEffect(() => {
         const timeInterval = setInterval(() => {
           setTimer(moment().format('LTS'))
@@ -204,8 +212,13 @@ const LottoExpress = () => {
                             <Link className='game_links first' to='/games'>Regular Lotto</Link>
                             <Link className='game_links ml-3' to='/lottoexpress'>Lotto Express</Link>
                         </div>
-                           <div>
-                                <p className='express_p'>Please atleast Pick Five(3) numbers</p>
+                            <div>
+                                <div className='d-flex'>
+                                    <p className='express_p'>Please atleast Pick Five(3) numbers</p>
+                                    {success && <section className='small_message ml-3 mt-3'>
+                                        {showAlert && <span className='green'>{success}</span>}
+                                    </section>}
+                                </div>
                                 {gameType === 'Ordered' && <p className='green'>Extra Odds are added if you choose type as Ordered; if your picked numbers tallies exactly with the numbers drawn your odds would be higher</p>}
                                 {gameType === 'Regular' && <p className='green'>No added odds</p>}
                             <p className='p_red'>Games will will be Drawn after every five (5) minutes intervals</p>
@@ -243,7 +256,7 @@ const LottoExpress = () => {
                     </section>
 
                     {
-                        show &&
+                        arr.length > 0 &&
                         <section className={`${arr.length > 2 && 'sub_section'}`}>
                             {
                                 arr.length >= 1 &&
@@ -264,9 +277,12 @@ const LottoExpress = () => {
                                     )
                                 })
                             }
-                            <Button onClick={handleSubmit} className='m-2'>Submit</Button>
+                            <Button className='margin' onClick={handleSubmit} variant='outline-success'>Submit</Button>
+                            {success && <section className='small_message ml-3 mt-3'>
+                                        {showAlert && <span className='green'>{success}</span>}
+                                    </section>}
                         </section>
-                        
+                    
                     }
                     
                 </Col>
