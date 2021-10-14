@@ -65,7 +65,7 @@ const LottoExpress = () => {
         e.preventDefault()
         console.log(arr)
         arr.filter((a) => {
-            const { value, numbers, type } = a;
+        const { value, numbers, type } = a;
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -90,9 +90,8 @@ const LottoExpress = () => {
         fetch("http://localhost:5016/api/v1/placeSoftLotto", requestOptions)
             .then(response => response.json())
             .then(result => {
-                console.log(result)
                     let show = result.result.map((res) => res)
-                    const { type, odd, staked, date, possibleWinning, stakes, amount } = show[0]
+                const { type, kind, odd, staked, date, possibleWinning, stakes, amount } = show[0]
                     let response = stakes.toString()
                     var myHeaders = new Headers();
                     myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
@@ -100,8 +99,9 @@ const LottoExpress = () => {
                     myHeaders.append("Content-Type", "application/json");
 
                     var raw = JSON.stringify({
-                        "amount": `${amount}`,
+                        "amount": `${amount * stakes.length}`,
                         "type": `${type}`,
+                        "kind": `${kind}`,
                         "odd": `${odd}`,
                         "possibleWinning": `${possibleWinning}`,
                         "staked": `${staked}`,
@@ -119,7 +119,6 @@ const LottoExpress = () => {
                     fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
                         .then(response => response.json())
                         .then(result => {
-                            console.log(result)
                             const { message } = result.success;
                             setSuccess(message)
                         })
@@ -201,40 +200,42 @@ const LottoExpress = () => {
 
     return (
         <Container fluid>
-            <div className='news pl-5 pb-2 pt-2 p_white'>
+            <div className='news pl-1 pl-lg-5 pb-2 pt-2 p_white'>
                 {timer}
              </div>
             <Row>
                 <Col className='express_border'>
                     <main className='express_section'>
                         <section>
-                        <div className='d-md-flex mb-4'>
+                        <div className='d-md-flex mb-4 p-2 p-lg-0'>
                             <Link className='game_links first' to='/games'>Regular Lotto</Link>
                             <Link className='game_links ml-3' to='/lottoexpress'>Lotto Express</Link>
                         </div>
                             <div>
                                 <div className='d-flex'>
-                                    <p className='express_p'>Please atleast Pick Five(3) numbers</p>
+                                    <p className='express_p ml-3 ml-lg-0'>Please atleast Pick Five(3) numbers</p>
                                     {success && <section className='small_message ml-3 mt-3'>
                                         {showAlert && <span className='green'>{success}</span>}
                                     </section>}
                                 </div>
-                                {gameType === 'Ordered' && <p className='green'>Extra Odds are added if you choose type as Ordered; if your picked numbers tallies exactly with the numbers drawn your odds would be higher</p>}
-                                {gameType === 'Regular' && <p className='green'>No added odds</p>}
-                            <p className='p_red'>Games will will be Drawn after every five (5) minutes intervals</p>
+                                {gameType === 'Ordered' && <p className='green ml-3 ml-lg-0'>Extra Odds are added if you choose type as Ordered; if your picked numbers tallies exactly with the numbers drawn your odds would be higher</p>}
+                                {gameType === 'Regular' && <p className='green ml-3 ml-lg-0'>No extra odds</p>}
+                            <p className='p_red ml-3 ml-lg-0'>Games will will be Drawn after every five (5) minutes intervals</p>
                             </div>
                     <Form.Control as="select" required onChange={handleSelect} className='mb-3' custom>
                     <option name='NAP 1' value='Regular'>Regular</option>
                     <option name='NAP 2' value='Ordered'>Ordered</option>
                 </Form.Control>
-                       {nums.map((i)=> {
+                    <div className='smalls'>
+                        {nums.map((i)=> {
                          return <button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) && 'lottoExpress' } lotto_btns`}>{i}</button>
                        })}
+                    </div>
                         </section>
                         
                         
-                        <Button className='mt-2' onClick={handleBets} variant="outline-secondary">Place Bet</Button>
-                        <p className='p_red mt-2'>{error && error}</p>
+                        <Button className='mt-2 ml-2 ml-lg-0' onClick={handleBets} variant="outline-secondary">Place Bet</Button>
+                        <p className='p_red mt-2 ml-2 ml-lg-0'>{error && error}</p>
                     </main>
                 </Col>
                 <Col>
@@ -245,12 +246,12 @@ const LottoExpress = () => {
                             <Form.Control size='sm' className='form_input' onChange={handleInputChange} type="text" placeholder="&#x20A6;10000" />
                         </Form>
                         <div className='mt-2 d-flex justify-content-lg-between'>
-                            <Button className='mr-2 mr-lg-0 games game' value='50' size='sm' onClick={handleClick}>&#x20A6;50</Button>
-                            <Button className='mr-2 mr-lg-0 'size='sm' value='100' size='sm' onClick={handleClick}>&#x20A6;100</Button>
-                            <Button className='mr-2 mr-lg-0 'size='sm' value='200' size='sm' onClick={handleClick}>&#x20A6;200</Button>
-                            <Button className='mr-2 mr-lg-0 'size='sm' value='300' size='sm' onClick={handleClick}>&#x20A6;300</Button>
-                            <Button className='mr-2 mr-lg-0 'size='sm' value='400' size='sm' onClick={handleClick}>&#x20A6;400</Button>
-                            <Button className='mr-2 mr-lg-0' size='sm' value='500' size='sm' onClick={handleClick}>&#x20A6;500</Button>
+                            <Button className='mr-1 mr-lg-0 games game' value='50' size='sm' onClick={handleClick}>&#x20A6;50</Button>
+                            <Button className='mr-1 mr-lg-0 'size='sm' value='100' size='sm' onClick={handleClick}>&#x20A6;100</Button>
+                            <Button className='mr-1 mr-lg-0 'size='sm' value='200' size='sm' onClick={handleClick}>&#x20A6;200</Button>
+                            <Button className='mr-1 mr-lg-0 'size='sm' value='300' size='sm' onClick={handleClick}>&#x20A6;300</Button>
+                            <Button className='mr-1 mr-lg-0 'size='sm' value='400' size='sm' onClick={handleClick}>&#x20A6;400</Button>
+                            <Button className='mr-1 mr-lg-0' size='sm' value='500' size='sm' onClick={handleClick}>&#x20A6;500</Button>
                         </div>
                         <Button className={`mt-3 ${!getBet && !logedIn && 'disabled'} `} onClick={handleGameSubmit} variant="outline-success">{`${!logedIn ? 'Login to Place bet' : 'Submit'}`}</Button>
                     </section>

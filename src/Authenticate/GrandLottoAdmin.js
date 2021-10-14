@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Container, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import { useGlobalContext } from '../store/context';
 import { useHistory } from 'react-router';
 
@@ -42,14 +41,12 @@ const Login = () => {
 
         if (users.mobile === '09020269804' && users.password === 'ABELkelly6022') {
             var raw = JSON.stringify({
-            "mobile": `${users.mobile}`,
-            "password": `${users.password}`
-        });
+                "mobile": `${users.mobile}`,
+                "password": `${users.password}`
+            });
         } else {
             setError('You are not an admin')
         }
-
-
 
         var requestOptions = {
             method: 'POST',
@@ -62,7 +59,6 @@ const Login = () => {
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
-                    console.log(result)
                     const { token } = result.success;
                     localStorage.setItem('adminToken', token)
                     setShowAlert(true)
@@ -81,18 +77,15 @@ const Login = () => {
                     fetch("http://localhost:5016/api/v2/auth/profile", requestOptions)
                         .then(response => response.json())
                         .then(result => {
-                            console.log(result)
                             if (result.success) {
                                 const { data } = result.success;
                                 setSuccess(true)
                                 showBoard(data)
-                                localStorage.setItem('admin', JSON.stringify(data))
                             } else {
                                 return;
                             }
                         },
                             (error) => {
-                                console.log(error)
                                 setSuccess('please try again')
                             });
 
@@ -104,7 +97,7 @@ const Login = () => {
                 }
             },
                 (error) => {
-                    console.log(error)
+                    setSuccess('please refresh and try again')
                 }
         );
         
@@ -132,28 +125,28 @@ const Login = () => {
              </section>
                         }
       <Form onSubmit={handleSubmit}>
-          <Form.Label htmlFor="inputPassword5">Mobile</Form.Label>
+          <Form.Label htmlFor="inputPassword5" className='ml-2 ml-lg-0'>Mobile</Form.Label>
           <Form.Control
             type="text"
-                name='mobile'
-                className='input_width'
+            name='mobile'
+            className='input_width'
             onChange={handleChange}
             id="inputPassword5"
             aria-describedby="passwordHelpBlock"
-                          />
-                          <Form.Label htmlFor="inputPassword5">Password</Form.Label>
+          />
+          <Form.Label htmlFor="inputPassword5" className='ml-2 ml-lg-0'>Password</Form.Label>
           <Form.Control
             type="Password"
-                name='password'
-                className='input_width'
+            name='password'
+            className='input_width'
             onChange={handleChange}
             id="inputPassword5"
             aria-describedby="passwordHelpBlock"
               />
-          <Form.Text id="passwordHelpBlock" muted>
+          <Form.Text id="passwordHelpBlock" className='ml-2 ml-lg-0' muted>
             Please Kindly Ensure your Login Details are correct.
         </Form.Text>
-        <Button variant='success'  className='mb-3' type="submit">Submit</Button>
+        <Button variant='success' className='mb-3 ml-2 ml-lg-0 mt-2' type="submit">Submit</Button>
       </Form>
                        
                 </Col>

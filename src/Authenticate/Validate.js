@@ -101,7 +101,7 @@ const Validate = () => {
                             />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-          <Form.Group as={Col} md="8" controlId="validationCustom01">
+          <Form.Group as={Col} md="8" controlId="validationCustom01" className='mt-2'>
                             <Form.Label>Mobile</Form.Label>
                             <Form.Control
                                     required
@@ -115,14 +115,14 @@ const Validate = () => {
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
           
-          <Form.Text id="passwordHelpBlock" muted>
+          <Form.Text id="passwordHelpBlock" muted className='ml-2 ml-lg-0 mt-2'>
             Please provide the code sent to your registered mobile number or email.
         </Form.Text>
-              <Button className='mt-2 mb-3' type='submit' variant="outline-success">Submit</Button>
+              <Button className='mt-2 mb-3 ml-2 ml-lg-0' type='submit' variant="outline-success">Submit</Button>
                {success && <Link className='btns ml-3 login_btn' id='login_btn' to='/validate/Login'>Login</Link>}
       </Form>
         
-            <div className='mt-3'>
+            <div className='mb-3 ml-3 ml-lg-0'>
               <div className='mb-4'>
                 <span className="validate_span">Not Seen ? Get verified via:</span> <br />
               </div>

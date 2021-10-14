@@ -27,9 +27,8 @@ const Bets = () => {
             fetch(url, requestOptions)
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result)
                     const data = result.success.result.user.filter((bets) => {
-                            return [ bets.id, bets.bet_id, bets.amount, bets.odd, bets.min_possibleWinning, bets.max_possibleWinning, bets.possibleWinning, bets.staked, bets.stakes, bets.stakes1, bets.stakes2, bets.date ]       
+                            return [ bets.id, bets.bet_id, bets.kind, bets.status, bets.amount, bets.odd, bets.min_possibleWinning, bets.max_possibleWinning, bets.possibleWinning, bets.staked, bets.stakes, bets.stakes1, bets.stakes2, bets.date ]       
                     })
                      setArr(data)
                 })
@@ -53,10 +52,10 @@ const Bets = () => {
         <div>
             {arr.length ?
             
-            <section className='bets_history_section d-flex flex-wrap'>
+            <section className='bets_history_section d-md-flex flex-md-wrap justify-content-md-center'>
                 {arr.map((a) => {
                     return (
-                          <BetHistory key={a.id} {...a} />
+                        <BetHistory key={a.id} {...a} />
                     )
                 })}
                 </section>
@@ -64,22 +63,24 @@ const Bets = () => {
                 <section className='bet_header_section d-flex justify-content-center align-items-center flex-column'>
                     <img className='svg_img' src={noBet} alt="" />
                     <h1 className='bet_header'>Please Place a bet and try again... </h1>
-                     <Button size='sm' onClick={handleClick} className='ml-5 mt-2 mb-2' variant='primary'>Play Game</Button>
                 </section>
             }
+            <Button size='sm' onClick={handleClick} className='bets_btn' variant='primary'>Play Game</Button>
         </div>
     )
 }
 
-const BetHistory = ({ amount, bet_id, type, odd, min_possibleWinning, max_possibleWinning, possibleWinning, staked, stakes, stakes1, stakes2, date }) => {
+const BetHistory = ({ amount, bet_id, type, odd, kind, status, min_possibleWinning, max_possibleWinning, possibleWinning, staked, stakes, stakes1, stakes2, date }) => {
 
+    console.log(date)
     let dates = new Date(date)
     let playTime = dates.toString().slice(0, 24)
     
     return (
-        <main className='mt-2 ml-4 ml-lg-5'>
+        <main className=' ml-md-4 ml-lg-5 main_sec'>
             <section className='betHistory_section ml-lg-4'>
             <p className='p_bets'>Game Type: <span className='bets_span'>{type}</span></p>
+            {kind && <p className='p_bets'>Soft Lotto: <span className='bets_span'>{kind}</span></p>}
             <p className='p_bets'>Game Time: <span className='bets_span'>{playTime}</span></p>
             <p className='p_bets'>Game ID: <span className='bets_span'>{bet_id}</span></p>
             <p className='p_bets'>Odd: <span className='bets_span'>{odd}</span></p>
@@ -91,6 +92,7 @@ const BetHistory = ({ amount, bet_id, type, odd, min_possibleWinning, max_possib
                 <p className='p_bets'>Amount: <span className='bets_span'>&#x20A6;{amount}</span></p>
                 {max_possibleWinning > 0 && <p className='p_bets'>max_possibleWinning: <span className='bets_span'>&#x20A6;{max_possibleWinning}</span></p>}
                 {min_possibleWinning > 0 && <p className='p_bets'>min_possibleWinning: <span className='bets_span'>&#x20A6;{min_possibleWinning}</span></p>}
+                <p className='p_bets'>Status: <span className='bets_span'>{status}</span></p>
             </section>
         </main>
         

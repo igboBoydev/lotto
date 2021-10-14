@@ -43,6 +43,7 @@ const Result = () => {
                 .then(response => response.json())
                 .then(result => {
                     if (result.success) {
+                        console.log(result)
                         const { message } = result.success;
                         setSuccess(message)
                     } else {
@@ -121,10 +122,7 @@ const Result = () => {
                         console.log(error)
                     }
                 )
-        } else {
-            setSuccess('Please kindly feel atleast one of the update items')
-            return;
-        }
+        } 
     }
 
     const handleExpress = (e) => {

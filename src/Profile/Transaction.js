@@ -14,7 +14,6 @@ const Transaction = () => {
         let isCancelled = false
         const fetchData = async () => {
             var myHeaders = new Headers();
-            var myHeaders = new Headers();
             myHeaders.append("signatures", "a0451a967f04a3ac7dc526086749599249a53b3d9e81b71afeb4f3efab8214d5");
             myHeaders.append("Authorization", `Bearer ${get}`);
 
@@ -27,7 +26,6 @@ const Transaction = () => {
         fetch(url, requestOptions)
             .then(response => response.json())
             .then(result => {
-                console.log(result.success.result.user);
                 const data = result.success.result.user.filter((items) => {
                     return [items.id, items.balance, items.description, items.status, items.amount]
                 })
@@ -51,7 +49,7 @@ const Transaction = () => {
 
 
     return (
-        <div>
+        <div className='main_sec mt-5'>
             {arr.length ?
             
             <section className='bets_history_section d-flex flex-wrap'>
@@ -65,16 +63,16 @@ const Transaction = () => {
                 <section className='bet_header_section d-flex justify-content-center align-items-center flex-column mt-3'>
                     <img className='svg_img' src={notPaid} alt="" />
                     <h1 className='bet_header'>You are yet to perform a financial transaction on this platform... </h1>
-                    <Button size='sm' onClick={handleClick} className='ml-5 mt-2 mb-2' variant='primary'>Play Game</Button>
                 </section>
             }
+            <Button size='sm' onClick={handleClick} className='ml-1 ml-lg-5 mt-2 mb-2' variant='primary'>Play Game</Button>
         </div>
     )
 }
 
 const TransactionHistory = ({balance, description, status, amount}) => {
     return (
-        <main className='mt-2 ml-4 ml-lg-5'>
+        <main className='ml-lg-5 sec_width'>
             <section className='betHistory_section ml-lg-4'>
             <p className='p_bets'>Description: <span className='bets_span'>{description}</span></p>
             <p className='p_bets'>Amount: <span className='bets_span'>&#x20A6;{amount}</span></p>
