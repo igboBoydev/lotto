@@ -21,7 +21,7 @@ const Navigation = () => {
         const name = e.target.name;
         const value = e.target.value;
         setUserLogin({ ...userLogin, [name]: value })
-    }
+    };
 
     // useEffect(() => {
     //     if (get) {
