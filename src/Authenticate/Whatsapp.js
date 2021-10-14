@@ -67,9 +67,9 @@ const Whatsapp = () => {
             <Row>
                 <Col className='mt-5' md={{ span: 12, offset: 1 }}>
             {success ? <section>
-                            {showAlert && <span>{success}</span>}
+                {showAlert && <span>{success}</span>}
              </section> : <section>
-                            {showAlert && <span>{error}</span>}
+                {showAlert && <span>{error}</span>}
              </section>
                         }
       <Form onSubmit={handleSubmit}>

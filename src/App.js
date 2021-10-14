@@ -30,7 +30,7 @@ const App = () => {
     return (
         <Router>
            <Navigation />
-           <Switch>
+            <Switch>
                 <Route exact path='/'>
                     <Home />
                 </Route>

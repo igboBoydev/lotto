@@ -53,6 +53,7 @@ const ShowResults = () => {
         <Container>
            <div className='mt-4 mb-4'>
             {arr.map((a) => {
+                console.log(new Date(43200001))
                 const { name, odds, dates } = a;
                 let date = new Date(dates)
                 let playtime = date.toString().slice(0, 24)

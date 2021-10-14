@@ -7,12 +7,16 @@ const initialState = {
     password: '',
     mobile: ''
 }
+
+
 const Register = () => {
     const [users, setUsers] = useState(initialState)
     let history = useHistory()
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
+    const [password, setPassword] = useState('password')
+    const [color, setColor] = useState(false)
 
     const handleRegisterChange = (e) => {
         e.preventDefault();
@@ -21,6 +25,12 @@ const Register = () => {
         const value = e.target.value;
         setUsers({ ...users, [name]: value })
     }
+
+    const handleShow = (e) => {
+       e.preventDefault()
+       password === 'password' ? setPassword('text') && setColor(true) : setPassword('password') && setColor(false)
+    }
+    
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -109,7 +119,7 @@ const Register = () => {
                             />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="8" controlId="validationCustom02">
+                        <Form.Group as={Col} md="8" controlId="validationCustom02" className='mt-2'>
                             <Form.Label>Mobile</Form.Label>
                             <Form.Control
                                 required
@@ -122,22 +132,31 @@ const Register = () => {
                                 />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="8" controlId="validationCustomUsername">
-                            <Form.Label>Password</Form.Label>
+                        <Form.Group as={Col} md="8" controlId="validationCustomUsername" className='mt-2'>
+                                <Form.Label>Password</Form.Label>
+                                <div className='d-flex'>
                             <Form.Control
-                                type="password"
+                                type={password}
                                 placeholder="xxxxxxxxxxxxxxxx"
                                     name="password"
                                     value={users.password}
                                 onChange={handleRegisterChange}
                                 aria-describedby="inputGroupPrepend"
-                                required
-                                />
+                                    required
+                                    />
+                                    {
+                                        users.password &&
+                                        <span onClick={handleShow} className={`${color ? 'back show_password' : 'show_password'}`}>
+                                            <p className='m-2'>Show</p> 
+                                        </span>
+                                    }
+
+                                </div>
                             <Form.Control.Feedback type="invalid">
                                 Please choose a username.
                             </Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className="mb-3">
+                        <Form.Group className="mb-3" className='mt-2'>
                             <Form.Check
                                 required
                                 label="Agree to terms and conditions"
@@ -145,7 +164,7 @@ const Register = () => {
                                 feedbackType="invalid"
                             />
                         </Form.Group>
-                            <Button variant='success' className='mb-2' type="submit">Submit</Button>
+                            <Button variant='success' className='mb-2 mt-2' type="submit">Submit</Button>
                              {success && <Link className='register_btn toggle ml-4 mb-5' variant='success' to='./Validate'>
                            Vaidate
                         </Link>

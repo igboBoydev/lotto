@@ -13,7 +13,7 @@ const Games = () => {
     const [showGames, setShowGames] = useState(false)
     const [activeNums, setActiveNums] = useState(false)
     let [gameType, setGameType] = useState('NAP 1')
-    const [games, setGames] = useState('EMBASSEY')
+    const [games, setGames] = useState('EMBASSY')
     const [totalStake, setTotalStake] = useState('')
     const [subValue, setSubValue] = useState(null)
     const [value, setValue] = useState('')
@@ -109,7 +109,6 @@ const Games = () => {
     const createSlip = () => {
         if (arr.length > 0) {
             var n = arr.length
-            console.log(n)
         }
       var lines
       if (gameType == 'PERM 2' || gameType == 'NAP 2') {
@@ -151,7 +150,6 @@ const Games = () => {
       }
         setTotalStake(total)
     }
-
 
     const get = localStorage.getItem('token')
 
@@ -218,7 +216,6 @@ const Games = () => {
         fetch("http://localhost:5016/api/v1/placeStake", requestOptions)
             .then(response => response.json())
             .then(result => {
-                console.log(result)
                 let show = result.result.map((res) => res)
                 if (show[0].type === 'AGAINST') {
                     const { type, amount, odd, staked, date, max_possibleWinning, min_possibleWinning, possibleWinning, stakes1, stakes2 } = show[0];
@@ -230,7 +227,7 @@ const Games = () => {
                     myHeaders.append("Content-Type", "application/json");
 
                     var raw = JSON.stringify({
-                        "amount": `${amount}`,
+                        "amount": `${amount * stakes1.length * stakes2.length}`,
                         "type": `${type}`,
                         "odd": `${odd}`,
                         "max_possibleWinning": `${max_possibleWinning}`,
@@ -258,7 +255,7 @@ const Games = () => {
                         .catch(error => console.log('error', error));
 
                     
-                } else {
+                } else if(show[0].type === '1 BANKER'){
                     const { type, amount, odd, staked, date, max_possibleWinning, min_possibleWinning, possibleWinning, stakes } = show[0];
                     let response = stakes.toString()
                     var myHeaders = new Headers();
@@ -267,7 +264,42 @@ const Games = () => {
                     myHeaders.append("Content-Type", "application/json");
 
                     var raw = JSON.stringify({
-                        "amount": `${amount}`,
+                        "amount": `${amount * 89}`,
+                        "type": `${type}`,
+                        "odd": `${odd}`,
+                        "max_possibleWinning": `${max_possibleWinning}`,
+                        "min_possibleWinning": `${min_possibleWinning}`,
+                        "possibleWinning": `${possibleWinning}`,
+                        "staked": `${staked}`,
+                        "stakes": `${response}`,
+                        "date": `${date}`
+                    });
+
+                    var requestOptions = {
+                        method: 'POST',
+                        headers: myHeaders,
+                        body: raw,
+                        redirect: 'follow'
+                    };
+
+                    fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
+                        .then(response => response.json())
+                        .then(result => {
+                            const { message } = result.success;
+                            setSuccess(message)
+                        })
+                        .catch(error => console.log('error', error));
+                } else {
+                    const { type, amount, odd, staked, date, max_possibleWinning, min_possibleWinning, possibleWinning, stakes } = show[0];
+                    console.log(stakes)
+                    let response = stakes.toString()
+                    var myHeaders = new Headers();
+                    myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+                    myHeaders.append("Authorization", `Bearer ${get}`);
+                    myHeaders.append("Content-Type", "application/json");
+
+                    var raw = JSON.stringify({
+                        "amount": `${amount * lines}`,
                         "type": `${type}`,
                         "odd": `${odd}`,
                         "max_possibleWinning": `${max_possibleWinning}`,
@@ -503,7 +535,7 @@ const Games = () => {
 
     return (
         <section>
-            <div className='news pl-5 pb-2 pt-2 p_white'>
+            <div className='news pl-1 pl-lg-5 pb-2 pt-2 p_white'>
                 {timer}
              </div>
             <Container fluid>
@@ -512,8 +544,8 @@ const Games = () => {
                 <h6 className='draw'>Play Game</h6>
                 <section className='days scrollContent'>
                          
-                    {categories.map((category) => {
-                        return <p onClick={handleCategory} className='category_p'>{category[0]}
+                    {categories.map((category, index) => {
+                        return <p key={index} onClick={handleCategory} className='category_p'>{category[0]}
                         </p>
                     })}
                            
@@ -536,9 +568,8 @@ const Games = () => {
                                         {gameType === 'AGAINST' && <Button variant='danger' onClick={handleAgainst} className={`small_class ${arr.length > 0 ? '' : 'disabled' }`}>Against</Button>}
                                     </div>
                                     
-                                    <Form className='mb-3 form_width' onChange={handleChange}>
+                                    <Form className='mb-3 mt-2 form_width' onChange={handleChange}>
                                         <Form.Group controlId="exampleForm.SelectCustom">
-                                        <Form.Label>NAP 1</Form.Label>
                                             <Form.Control as="select" custom>
                                             <option value='NAP 1'>NAP 1</option>
                                             <option value='NAP 2'>NAP 2</option>
@@ -642,7 +673,7 @@ const Games = () => {
                                                     handleInputSubmit(data)
                                                 }
                                                 }>
-                                                <Form.Control size='sm' className='form_input' value={value} onChange={handleInputChange} type="text" placeholder="&#x20A6;10000" />
+                                                <Form.Control size='sm' className='form_input' value={value} onChange={handleInputChange} type="text" placeholder={`${data.amount || value || 'Amount'}`} />
                                             </Form>
                                             <div className='mt-2 d-flex justify-content-lg-between'>
                                                 <Button className='mr-2 mr-lg-0 games game' value='50' size='sm' onClick={() => {

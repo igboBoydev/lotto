@@ -7,13 +7,13 @@ import logo from '../static/assets/logo4.png'
 import GrandLotto from '../svg/GrandLotto.svg'
 
 const Navigation = () => {
-    let { giveAccess, giveAdminAccess, showBoard, logOut, logedIn, isLoggedIn, adminToken } = useGlobalContext();
+    let { giveAccess, giveAdminAccess, showBoard, logOut, logedIn, isLoggedIn } = useGlobalContext();
     const isMounted = useRef(true)
     let history = useHistory()
     const [error, setError] = useState(null)
     const [userLogin, setUserLogin] = useState({ mobile: '', password: '' });
     const [user, setUser] = useState(null)
-    const [showAdmin, setShowAdmin] = useState(null)
+     let get = localStorage.getItem('token')
 
     const handleLogin = (e) => {
         e.preventDefault()
@@ -22,6 +22,31 @@ const Navigation = () => {
         const value = e.target.value;
         setUserLogin({ ...userLogin, [name]: value })
     }
+
+    // useEffect(() => {
+    //     if (get) {
+    //         let inter = setInterval(() => {
+    //             var myHeaders = new Headers();
+    //             myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+    //             myHeaders.append("timestamps", "1614848109");
+    //             myHeaders.append("Authorization", `Bearer ${get}`);
+
+    //             var requestOptions = {
+    //                 method: 'GET',
+    //                 headers: myHeaders,
+    //                 redirect: 'follow'
+    //             };
+
+    //             fetch("http://localhost:5016/api/v2/auth/games/results", requestOptions)
+    //                 .then(response => response.json())
+    //                 .then(result => console.log(result))
+    //                 .catch(error => console.log('error', error));
+            
+    //         }, 180000)
+            
+    //         return () => clearInterval(inter)
+    //     }
+    // })
 
 
       const handleSubmit = (e) => {
@@ -67,7 +92,7 @@ const Navigation = () => {
                               if (result.success) {
                                   const { data } = result.success;
                                   showBoard(data)
-                                  localStorage.setItem('user', JSON.stringify(data))
+                                //   localStorage.setItem('user', JSON.stringify(data))
                               } else {
                                   return;
                               }
@@ -117,15 +142,27 @@ const Navigation = () => {
         history.push('/profile/transactions')
     }
 
-
     useEffect(() => {
-        const loggedInUser = localStorage.getItem('user')
-        if (loggedInUser ) {
-            const foundUser = JSON.parse(loggedInUser)
-            setUser(foundUser)
-            giveAccess(isLoggedIn)
-        }
-    }, [])
+        var myHeaders = new Headers();
+        myHeaders.append("signatures", "3b55227b019105b2f8550792916ee41321b53fb2104fd0149e81c360811ef027");
+        myHeaders.append("Authorization", `Bearer ${get}`);
+
+
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        fetch("http://localhost:5016/api/v2/auth/profile", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                setUser(result.success.data)
+                giveAccess(isLoggedIn)
+            })
+            .catch(error => console.log('error', error));
+    }, []);
+
 
     useEffect(() => {
         const loggedInAdmin = localStorage.getItem('adminToken')
@@ -142,7 +179,7 @@ const Navigation = () => {
         <main>
         <Navbar bg="light" expand="lg" className='d-none d-lg-flex justify-content-between'>
             <Navbar.Brand href="./">
-                    <img src={GrandLotto} width='200px' alt="" />
+                    <img src={GrandLotto} width='200px' alt="" className='nav_img' />
                     {
                         logedIn &&
                         <Link className='links ml-2' to='/'>Home</Link>
@@ -188,7 +225,8 @@ const Navigation = () => {
 
         <Navbar className='nav_height' bg="light" expand="lg" className='d-flex d-lg-none'>
                 <Navbar.Brand href="./">
-                    <img src={logo} width='200px' alt="" />
+                    <img src={logo} width='150px' alt="" className='nav_img' />
+                    
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">

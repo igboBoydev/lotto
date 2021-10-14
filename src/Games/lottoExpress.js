@@ -30,7 +30,6 @@ const LottoExpress = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log('from submit button handleSubmit')
         var myHeaders = new Headers();
         myHeaders.append("signatures", "95631547ca07a9ca16e1116e577199003e96bf55fb110b3ccbc9ed1c1b2092e8");
         myHeaders.append("Authorization", `Bearer ${get}`);
@@ -58,7 +57,6 @@ const LottoExpress = () => {
             fetch("http://localhost:5016/api/v1/placeLottoExpressStake", requestOptions)
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result)
                     let show = result.result.map((res) => res)
                     const { type, odd, staked, date, possibleWinning, stakes, amount } = show[0]
                     let response = stakes.toString()
@@ -68,7 +66,7 @@ const LottoExpress = () => {
                     myHeaders.append("Content-Type", "application/json");
 
                     var raw = JSON.stringify({
-                        "amount": `${amount}`,
+                        "amount": `${amount * stakes.length}`,
                         "type": `${type}`,
                         "odd": `${odd}`,
                         "possibleWinning": `${possibleWinning}`,
@@ -95,7 +93,6 @@ const LottoExpress = () => {
                 .catch(error => console.log('error', error));
         });
         setActiveNums(false)
-        setArray([])
     }
 
     
@@ -219,10 +216,10 @@ const LottoExpress = () => {
                                         {showAlert && <span className='green'>{success}</span>}
                                     </section>}
                                 </div>
-                            <p className='p_red'>Games will will be Drawn after every thirty (30) minutes Intervals</p>
-                                <Countdown key={Date.now()} className='ml-2' date={day + 1800000}>
+                            <p className='p_red ml-3 ml-lg-0'>Games will will be Drawn after every thirty (30) minutes Intervals</p>
+                                {/* <Countdown key={Date.now()} className='ml-2' date={day + 1800000}>
                                   <Completionist setDay={setDay}/>
-                                </Countdown>
+                                </Countdown> */}
                             </div>
                             <div className='smalls'>
                                 {nums.map((i)=> {
@@ -232,8 +229,8 @@ const LottoExpress = () => {
                         </section>
                         
                         
-                        <Button className='mt-2' onClick={handlePlaceBets} variant="outline-secondary">Place Bet</Button>
-                        <p className='p_red mt-2'>{error && error}</p>
+                        <Button className='mt-2 ml-2 ml-lg-0' onClick={handlePlaceBets} variant="outline-secondary">Place Bet</Button>
+                        <p className='p_red mt-2 ml-2 ml-lg-0'>{error && error}</p>
                     </main>
                 </Col>
                 <Col>

@@ -17,6 +17,8 @@ const Login = () => {
     const [users, setUsers] = useState(initialState)
     const [error, setError] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
+    const [password, setPassword] = useState('password')
+    const [color, setColor] = useState(false)
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -24,6 +26,11 @@ const Login = () => {
         const name = e.target.name;
         const value = e.target.value;
         setUsers({ ...users, [name]: value })
+    }
+
+    const handleShow = (e) => {
+        e.preventDefault()
+        password === 'password' ? setPassword('text') && setColor(true) : setPassword('password') && setColor(false)
     }
 
     const handleSubmit = (event) => {
@@ -80,7 +87,7 @@ const Login = () => {
                                 const { data } = result.success;
                                 setSuccess(true)
                                 showBoard(data)
-                                localStorage.setItem('user', JSON.stringify(data))
+                                // localStorage.setItem('user', JSON.stringify(data))
                             } else {
                                 return;
                             }
@@ -123,7 +130,7 @@ const Login = () => {
              </section> 
                         }
       <Form onSubmit={handleSubmit}>
-          <Form.Label htmlFor="inputPassword5">Mobile</Form.Label>
+          <Form.Label htmlFor="inputPassword5" className='ml-2 ml-lg-0'>Mobile</Form.Label>
           <Form.Control
             type="text"
                 name='mobile'
@@ -132,19 +139,27 @@ const Login = () => {
             id="inputPassword5"
             aria-describedby="passwordHelpBlock"
                           />
-                          <Form.Label htmlFor="inputPassword5">Password</Form.Label>
-          <Form.Control
-            type="Password"
+                          <Form.Label htmlFor="inputPassword5" className='ml-2 ml-lg-0 mt-3'>Password</Form.Label>
+                          <div className='d-flex'>
+                      <Form.Control
+            type={password}
                 name='password'
                 className='input_width'
             onChange={handleChange}
             id="inputPassword5"
             aria-describedby="passwordHelpBlock"
-              />
-          <Form.Text id="passwordHelpBlock" muted>
+                              />
+                              {
+                                  users.password &&
+                                <span onClick={handleShow} className={`${color ? 'back show_password' : 'show_password'}`}>
+                                    <p className='m-2'>Show</p> 
+                                </span>
+                              }
+                          </div>             
+          <Form.Text id="passwordHelpBlock" muted className='ml-2 ml-lg-0 mt-2'>
             Please Kindly Ensure your Login Details are correct.
         </Form.Text>
-        <Button variant='success'  className='mb-3' type="submit">Submit</Button>
+        <Button variant='success'  className='mb-3 ml-2 ml-lg-0 mt-2'type="submit">Submit</Button>
       </Form>
                        
                 </Col>
