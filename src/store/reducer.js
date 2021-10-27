@@ -64,7 +64,9 @@ const reducer = (state, action) => {
                 logedIn: false
             }
         case DISPLAY_GAMES:
-            return { ...state, game: action.payload, loadimg: true };
+            // console.log(action.payload)
+            const getGames = { ...state, games: action.payload };
+            return { ...state, game: getGames.games, loadimg: true };
         case NO_USER:
             return {
                 ...state,
@@ -83,9 +85,12 @@ const reducer = (state, action) => {
                 whatsapp: whatsapp
             }
         case GET_DAYS_IN_WEEK:
+            // console.log('hello world')
+            // console.log(action.payload)
+            const getDays = { ...state, day: action.payload };
             return {
                 ...state,
-                days: action.payload
+                days: getDays.day
             }
         case VALIDATE_SENT_TOKEN:
             return {}

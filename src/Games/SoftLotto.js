@@ -3,7 +3,9 @@ import { Row, Col, Container, Button, Form } from 'react-bootstrap'
 import { useGlobalContext } from '../store/context';
 import { Link } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
+import { useHistory } from 'react-router';
 import moment from 'moment'
+import GetWhatsapp from '../Fetch/GetWhatsapp'
 
 const LottoExpress = () => {
     const [activeNums, setActiveNums] = useState(false)
@@ -13,6 +15,7 @@ const LottoExpress = () => {
     const [numbers, setNumbers] = useState('')
     const [error, setError] = useState('')
     const [amount, setAmount] = useState('')
+    const [getNums, setGetNums] = useState(false)
     const [show, setShow] = useState(false)
     const [getBet, setGetBet] = useState(false)
     const [arr, setArr] = useState([])
@@ -20,6 +23,8 @@ const LottoExpress = () => {
     const [success, setSuccess] = useState('')
     const [timer, setTimer] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
+    const history = useHistory()
+      const [showModal, setShowModal] = useState(false)
  
     let nums = []
 
@@ -41,7 +46,16 @@ const LottoExpress = () => {
                 array.splice(index, 1)
             }
         } else {
-            array.push(i)
+            if (array.length < 3) {
+                array.push(i)
+            } else {
+                setGetNums((state) => {
+                    return {
+                        ...state,
+                        [i]: !state[i],
+                    };
+                });
+            }
         }
         
     }
@@ -171,7 +185,7 @@ const LottoExpress = () => {
     }, [error])
 
 
-        useEffect(() => {
+    useEffect(() => {
         setTimeout(() => {
             setShowAlert(!showAlert)
         }, 3000)
@@ -218,7 +232,7 @@ const LottoExpress = () => {
                                         {showAlert && <span className='green'>{success}</span>}
                                     </section>}
                                 </div>
-                                {gameType === 'Ordered' && <p className='green ml-3 ml-lg-0'>Extra Odds are added if you choose type as Ordered; if your picked numbers tallies exactly with the numbers drawn your odds would be higher</p>}
+                                {gameType === 'Ordered' && <p className='green ml-3 ml-lg-0'>Extra Odds are added to your stake odds when you choose type as Ordered; if your picked numbers tallies exactly with the numbers drawn your odds would be higher</p>}
                                 {gameType === 'Regular' && <p className='green ml-3 ml-lg-0'>No extra odds</p>}
                             <p className='p_red ml-3 ml-lg-0'>Games will will be Drawn after every five (5) minutes intervals</p>
                             </div>
@@ -228,13 +242,14 @@ const LottoExpress = () => {
                 </Form.Control>
                     <div className='smalls'>
                         {nums.map((i)=> {
-                         return <button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) && 'lottoExpress' } lotto_btns`}>{i}</button>
+                         return <button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) ? 'lottoExpress' : getNums && 'grey' } lotto_btns`}>{i}</button>
                        })}
                     </div>
                         </section>
                         
                         
                         <Button className='mt-2 ml-2 ml-lg-0' onClick={handleBets} variant="outline-secondary">Place Bet</Button>
+                        {success && <Button className='mb-1 btn_class' onClick={() => {history.push('/profile/betHistory')}} variant="outline-secondary">View Bets</Button>}
                         <p className='p_red mt-2 ml-2 ml-lg-0'>{error && error}</p>
                     </main>
                 </Col>
@@ -243,7 +258,7 @@ const LottoExpress = () => {
                         <p>Numbers: <span className='green'>{numbers}</span></p>
                         <p>Amount per Line: <span className='green'>&#x20A6;{amount}</span></p>
                         <Form>
-                            <Form.Control size='sm' className='form_input' onChange={handleInputChange} type="text" placeholder="&#x20A6;10000" />
+                            <Form.Control size='sm' className='form_input' onChange={handleInputChange} type="text" placeholder={`${amount}`} />
                         </Form>
                         <div className='mt-2 d-flex justify-content-lg-between'>
                             <Button className='mr-1 mr-lg-0 games game' value='50' size='sm' onClick={handleClick}>&#x20A6;50</Button>
@@ -253,9 +268,11 @@ const LottoExpress = () => {
                             <Button className='mr-1 mr-lg-0 'size='sm' value='400' size='sm' onClick={handleClick}>&#x20A6;400</Button>
                             <Button className='mr-1 mr-lg-0' size='sm' value='500' size='sm' onClick={handleClick}>&#x20A6;500</Button>
                         </div>
-                        <Button className={`mt-3 ${!getBet && !logedIn && 'disabled'} `} onClick={handleGameSubmit} variant="outline-success">{`${!logedIn ? 'Login to Place bet' : 'Submit'}`}</Button>
+                        {!logedIn && <Button size='sm' className={`mt-3 align-item-center mb-2 game`} variant='success' onClick={() => setShowModal(!showModal)} variant="outline-success">Login To Place Bet</Button>}
+                        {logedIn &&
+                            <Button size='sm' className={`mt-3 align-item-center mb-2 game`} variant='success' onClick={handleGameSubmit} variant="outline-success">Place Bet</Button>
+                        }
                     </section>
-
                     {
                         arr.length > 0 &&
                         <section className={`${arr.length > 2 && 'sub_section'}`}>
@@ -278,7 +295,7 @@ const LottoExpress = () => {
                                     )
                                 })
                             }
-                            <Button className='margin' onClick={handleSubmit} variant='outline-success'>Submit</Button>
+                            <Button className='margin mb-2' onClick={handleSubmit} variant='outline-success'>Submit</Button>
                             {success && <section className='small_message ml-3 mt-3'>
                                         {showAlert && <span className='green'>{success}</span>}
                                     </section>}
@@ -288,6 +305,7 @@ const LottoExpress = () => {
                     
                 </Col>
             </Row>
+            {showModal && <GetWhatsapp />}
         </Container>
     )
 }

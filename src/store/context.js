@@ -19,7 +19,7 @@ import {
 } from './actions'
 
 
-const url = "http://localhost:5016/api/v1/lotto"
+const url = "http://localhost:5016/api/v1/site-settings"
 
 const AppContext = React.createContext()
 
@@ -72,7 +72,7 @@ const AppProvider = ({ children }) => {
         try {
             const res = await fetch(url)
             const data = await res.json()
-            const arr = data.lotto
+            const arr = data.success.data
             dispatch({type: DISPLAY_GAMES, payload: arr})
         } catch (err) {
             console.log(`hello error from the api server:  ${err}`)
@@ -82,7 +82,7 @@ const AppProvider = ({ children }) => {
 
     useEffect(() => {
         fetchData()
-    }, [])
+    }, [url])
 
     const daysOfWeek = () => {
         function GetDates(startDate, daysToAdd) {
@@ -117,22 +117,24 @@ const AppProvider = ({ children }) => {
 
         function DayAsString(dayIndex) {
             var weekdays = new Array(7);
-            weekdays[0] = "Sun";
-            weekdays[1] = "Mon";
-            weekdays[2] = "Tue";
-            weekdays[3] = "Wed";
-            weekdays[4] = "Thu";
-            weekdays[5] = "Fri";
-            weekdays[6] = "Sat";
+            weekdays[0] = "Sunday";
+            weekdays[1] = "Monday";
+            weekdays[2] = "Tuesday";
+            weekdays[3] = "Wednesday";
+            weekdays[4] = "Thursday";
+            weekdays[5] = "Friday";
+            weekdays[6] = "Saturday";
 
             return weekdays[dayIndex];
         }
 
 
         var startDate = new Date();
-        var aryDates = GetDates(startDate, 7);
+        var aryDates = GetDates(startDate, 3);
         dispatch({type: GET_DAYS_IN_WEEK, payload: aryDates})
     }
+
+   
 
     useEffect(() => {
         daysOfWeek()

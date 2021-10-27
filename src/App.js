@@ -5,7 +5,7 @@ import Navigation from './components/Navbar'
 import Footer from './components/Footer'
 import Register from './Authenticate/Register';
 import { useGlobalContext } from './store/context';
-import Result from './Games/Result'
+import Result from './Admin/Result'
 import Validate from './Authenticate/Validate';
 import Games from './Games/Games';
 import LottoExpress from './Games/lottoExpress';
@@ -14,7 +14,7 @@ import Voice from './Authenticate/Voice';
 import Whatsapp from './Authenticate/Whatsapp';
 import Reset from './PasswordReset/Reset';
 import Login from './Authenticate/Login';
-import GrandLottoAdmin from './Authenticate/GrandLottoAdmin'
+import GrandLottoAdmin from './Admin/GrandLottoAdmin'
 import Profile from './Profile/Profile'
 import ValidateReset from './PasswordReset/ValidateReset';
 import PasswordUp from './PasswordReset/PasswordUp'
@@ -70,7 +70,7 @@ const App = () => {
                  <Route exact path='/softlotto'>
                     <SoftLotto />
                 </Route>
-                <Route exact path='/profile/reset'>
+                <Route exact path='/profile/passwordreset'>
                     <Reset />
                 </Route>
                 <Route exact path='/profile/betHistory'>
