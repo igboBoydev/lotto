@@ -10,7 +10,7 @@ const Navigation = () => {
     let { giveAccess, giveAdminAccess, showBoard, logOut, logedIn, isLoggedIn } = useGlobalContext();
     const isMounted = useRef(true)
     let history = useHistory()
-    const [error, setError] = useState(null)
+    const [error, setError] = useState(false)
     const [userLogin, setUserLogin] = useState({ mobile: '', password: '' });
     const [user, setUser] = useState(null)
      let get = localStorage.getItem('token')
@@ -102,7 +102,7 @@ const Navigation = () => {
                               });
                   } else if (result.error) {
                       const { message } = result.error;
-                      setError(message)
+                      setError(true)
                   } else {
                       return;
                   }
@@ -176,9 +176,9 @@ const Navigation = () => {
 
 
     return (
-        <main>
-        <Navbar bg="light" expand="lg" className='d-none d-lg-flex justify-content-between'>
-            <Navbar.Brand href="./">
+        <main className='position' >
+        <Navbar bg="light" expand="lg" className='d-none d-lg-flex nav_height justify-content-between'>
+            <Navbar.Brand href="/">
                     <img src={GrandLotto} width='200px' alt="" className='nav_img' />
                     {
                         logedIn &&
@@ -216,16 +216,15 @@ const Navigation = () => {
                                 <Dropdown.Item onClick={() => {
                                     history.push('/profile/results')
                                 }}>Draw Results</Dropdown.Item>
-                                <Dropdown.Item onClick={handleSettings}>Site Settings</Dropdown.Item>
                             </DropdownButton> 
                     </section>
                 }
         </Navbar>
         
 
-        <Navbar className='nav_height' bg="light" expand="lg" className='d-flex d-lg-none'>
-                <Navbar.Brand href="./">
-                    <img src={logo} width='150px' alt="" className='nav_img' />
+        <Navbar bg="light" expand="lg" className='d-flex d-lg-none nav_height'>
+                <Navbar.Brand href="/">
+                    <img src={GrandLotto} width='150px' alt="" className='nav_img' />
                     
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -260,7 +259,6 @@ const Navigation = () => {
                                 <Dropdown.Item onClick={() => {
                                     history.push('/profile/results')
                                 }}>Draw Results</Dropdown.Item>
-                                <Dropdown.Item onClick={handleSettings}>Site Settings</Dropdown.Item>
                             </DropdownButton>
                    
                             </section>

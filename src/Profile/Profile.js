@@ -3,20 +3,21 @@ import { useGlobalContext } from '../store/context';
 import { Container, Col, Row, Form, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import FundWallet from '../Games/FundWallet'
+import Axios from 'axios';
+import profile from '../svg/profile.svg'
 
 const initialState = {
     firstName: '',
     lastName: '',
     dob: new Date(),
     gender: '',
-    bvn: '',
+    id_number: '',
     password: '',
     password2: '',
     sender_id: '',
     customer_id: '',
     id_number: '',
     id_url: '',
-    id_type: '',
     amount: '',
     pin: '',
     pin2: ''
@@ -25,7 +26,7 @@ const initialState = {
 
 const Profile = () => {
     let history = useHistory()
-    const { logedIn, giveAccess, game, isLoggedIn, token} = useGlobalContext();
+    const { logedIn, giveAccess, game, days, isLoggedIn, token} = useGlobalContext();
     const [user, setUser] = useState([])
     const [users, setUsers] = useState(initialState)
     const [getProfile, setGetProfile] = useState(true)
@@ -43,6 +44,8 @@ const Profile = () => {
     const [shown, setShown] = useState(false)
     const [shown1, setShown1] = useState(false)
     const [options, setOptions] = useState('')
+    const [idType, setIdType] = useState('')
+    const [name, setName] = useState('')
 
     const handleClick = (e) => {
         e.preventDefault()
@@ -176,10 +179,61 @@ const Profile = () => {
                         }
                     })
                 .catch(error => console.log('error', error));
+        } else if (name && users.id_number && idType) {
+            const data = new FormData()
+            data.append("file", idType)
+
+            var config = {
+                method: 'post',
+                url: 'http://localhost:5016/api/v2/auth/kyc-upgrade',
+                headers: {
+                    'signatures': 'lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=',
+                    'Authorization': `Bearer ${get}`,
+                    'Content-Type': 'application/json'
+                },
+                data: data
+            };
+
+            Axios(config)
+                .then(function (response) {
+                    if (response.data) {
+                        console.log('yeah')
+                        var myHeaders = new Headers();
+                        myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+                        myHeaders.append("Authorization", `Bearer ${get}`);
+                        myHeaders.append("Content-Type", "application/json");
+
+                        var raw = JSON.stringify({
+                            "id_type": `${name}`,
+                            "id_number": `${users.id_number}`,
+                        });
+
+                        var requestOptions = {
+                            method: 'POST',
+                            headers: myHeaders,
+                            body: raw,
+                            redirect: 'follow'
+                        };
+
+                        fetch('http://localhost:5016/api/v2/auth/kyc-upgrades', requestOptions)
+                            .then(response => response.json())
+                            .then(result => {
+                                if (result.success) {
+                                    const { message } = result.success;
+                                    setSuccess(message)
+                                }
+                            })
+                            .catch(error => console.log('error', error));
+                    }
+                })
+                .catch(function (error) {
+                    setSuccess('already uploaded files')
+                    return
+                });
         }
         else if (users.customer_id) {
             if (users.customer_id && users.sender_id && users.amount) {
-                if (users.amount > parseInt(user.withdrawable)) {
+                if (users.amount > parseInt(user.withdrawable) ) {
                     setSuccess('Cannot Send more than you have in your withdrawable account')
                     return
                 }else if (parseInt(users.amount) > 1) {
@@ -257,7 +311,7 @@ const Profile = () => {
 
                 var raw = JSON.stringify({
                     "pin": `${users.pin}`
-                });
+                })
 
                 var requestOptions = {
                     method: 'POST',
@@ -286,29 +340,25 @@ const Profile = () => {
         setOptions('')
     }
     
-    // useEffect(() => {
-    //     let interval = setInterval(() => {
-    //         var myHeaders = new Headers();
-    //         myHeaders.append("signatures", "3b55227b019105b2f8550792916ee41321b53fb2104fd0149e81c360811ef027");
-    //         myHeaders.append("Authorization", `Bearer ${get}`);
+    useEffect(() => {
+            var myHeaders = new Headers();
+            myHeaders.append("signatures", "3b55227b019105b2f8550792916ee41321b53fb2104fd0149e81c360811ef027");
+            myHeaders.append("Authorization", `Bearer ${get}`);
 
 
-    //         var requestOptions = {
-    //             method: 'GET',
-    //             headers: myHeaders,
-    //             redirect: 'follow'
-    //         };
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
 
-    //         fetch("http://localhost:5016/api/v2/auth/profile", requestOptions)
-    //             .then(response => response.json())
-    //             .then(result => {
-    //                 setUser(result.success.data)
-    //             })
-    //             .catch(error => console.log('error', error));
-    //     }, 2000)
-
-    //     return () => clearInterval(interval)
-    // })
+            fetch("http://localhost:5016/api/v2/auth/profile", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    setUser(result.success.data)
+                })
+                .catch(error => console.log('error', error));
+    }, [])
 
 
         useEffect(() => {
@@ -343,8 +393,6 @@ const Profile = () => {
         history.push('/games')
     }
 
-    console.log(user)
-
     return (
         <main>
             <Container fluid>
@@ -359,23 +407,29 @@ const Profile = () => {
                         </section>
                     </Col>
                         <Col lg={10}>
-                            <section>
+                            <section> 
                             <section className='header_section'>
                                 <div className='d-flex paragraph_header justify-content-between'>
-                                    <p className='profile_paragraph'>Wallet: {user.wallet}</p>
+                                    <p className='profile_paragraph'>Wallet: &#x20A6;{user.wallet}</p>
                                     <p className='profile_paragraph'>Mobile Number: {user.mobile}</p>
-                                    <p className='profile_paragraph'> Withdrawable Balance: {user.withdrawable}</p>
+                                    <p className='profile_paragraph'> Withdrawable Balance: &#x20A6;{user.withdrawable}</p>
                                     <p className='profile_paragraph'>ID: {user.customer_id}</p>
                                 </div>
                         </section>
                         
-                        <section className='d-none d-lg-flex pt-3 justify-content-between'>
-                            <div>
-                                <button className='profile_btn profile' name='profile' onClick={handleClick}>MY PROFILE</button>
-                            </div>
-                            <div>
-                               <button className='profile_btn kyc' name='kyc' onClick={handleClick}>KYC DOCUMENTATION</button>
-                            </div>
+                            <section className='d-none d-lg-flex pt-3 justify-content-between'>
+                                {
+                                    user.profile_status !== 1 &&
+                                    <div>
+                                       <button className='profile_btn profile' name='profile' onClick={handleClick}>MY PROFILE</button>
+                                    </div>
+                                }
+                                {
+                                    user.kyc_status !== 1 &&
+                                <div>
+                                    <button className='profile_btn kyc' name='kyc' onClick={handleClick}>KYC DOCUMENTATION</button>
+                                </div>
+                                }
                               <div>
                                <button className='profile_btn transfer' name='transfer' onClick={handleClick}>FUND TRANSFER</button>
                             </div>
@@ -397,11 +451,22 @@ const Profile = () => {
                                 menuAlign="right"
                                 title="Updates"
                                 id="dropdown-menu-align-right"
-                            >
-                                    <Dropdown.Item className='item' name='profile' onClick={handleClick}>MY PROFILE</Dropdown.Item>
-                                    <Dropdown.Divider />
-                                    <Dropdown.Item className='item' name='kyc' onClick={handleClick}>KYC DOCUMENTATION</Dropdown.Item>
-                                    <Dropdown.Divider />
+                                >
+                                    {
+                                        user.profile_status !== 1 &&
+                                        <div>
+                                        <Dropdown.Item className='item' name='profile' onClick={handleClick}>MY PROFILE</Dropdown.Item>
+                                        <Dropdown.Divider />
+                                        </div>
+                                    }
+                                    {
+                                        user.kyc_status !== 1 &&
+                                        <div>
+                                        <Dropdown.Item className='item' name='kyc' onClick={handleClick}>KYC DOCUMENTATION</Dropdown.Item>
+                                        <Dropdown.Divider />
+                                        </div>
+
+                                    }
                                     <Dropdown.Item className='item' name='transfer' onClick={handleClick}>FUND TRANSFER</Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item className='item' name='password' onClick={handleClick}>CHANGE PASSWORD</Dropdown.Item>
@@ -411,8 +476,108 @@ const Profile = () => {
                                 <Dropdown.Item className='item' name='bank' onClick={handleClick}>FUND ACCOUNT</Dropdown.Item>
                             </DropdownButton>
                         </section>
-                        <section className='d-flex justify-content-center mt-4'>
-                            {getProfile &&
+                            <section className='d-lg-flex justify-content-center mt-4'>
+                                <article>
+                                    {
+                                    (user.profile_status === 1 || user.kyc_status === 1) ?
+                                    <section className='mt-3 ml-5 d-lg-none'>
+                                        <p>Email: {user.email}</p>
+                                        <p className='mt-3'>First Name: {user.firstname}</p>
+                                        <p className='mt-3'>Last Name: {user.lastname}</p>
+                                        <p className='mt-3'>Date Of Birth: {user.dob}</p>
+                                        <p className='mt-3'>Mobile Number: {user.mobile}</p>
+                                        <p className='mt-3'>Balance In Account: &#x20A6;{user.balance}</p>
+                                    </section> :
+                                    <section className='ml-5 d-none'>
+                                       <img className='svg_imgs' src={profile} alt="svg image indicating profile status not updated" />
+                                    </section>        
+                                }
+                                </article>
+                                <Col className='d-none d-lg-flex' lg={6}>
+                                {
+                                    (user.profile_status === 1 || user.kyc_status === 1) ?
+                                    <section className='mt-3'>
+                                        <p>Email: {user.email}</p>
+                                        <p className='mt-3'>First Name: {user.firstname}</p>
+                                        <p className='mt-3'>Last Name: {user.lastname}</p>
+                                        <p className='mt-3'>Date Of Birth: {user.dob}</p>
+                                        <p className='mt-3'>Mobile Number: {user.mobile}</p>
+                                        <p className='mt-3'>Balance In Account: &#x20A6;{user.balance}</p>
+                                    </section> :
+                                    <section>
+                                       <img className='svg_imgs' src={profile} alt="svg image indicating profile status not updated" />
+                                    </section>        
+                                }
+                                </Col>
+                                <Col lg={6}>
+                                    <section>
+                                {
+                                bank && <FundWallet />
+                                }
+                                        {fundTransfer && 
+                               <article className='width'>
+                                <h5 className='ml-lg-3'>Fund Transfer</h5>
+                            <p className='header_class ml-lg-3'>Uploading your KYC documents is very essential so as to remove the <br />  limitations in withdrawing funds to your accounts.</p>
+                             <Form noValidate onSubmit={handleSubmit}>
+                        <Form.Group as={Col} md="8" controlId="validationCustom01">
+                            <Form.Label>Receiver ID</Form.Label>
+                            <Form.Control
+                                    required
+                                    value={users.customer_id}
+                                type="text"
+                                name="customer_id"
+                                onChange={handleRegisterChange}
+                                placeholder="Friend's ID"
+                                required
+                            />
+                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom02">
+                            <Form.Label>Amount</Form.Label>
+                            <Form.Control
+                                required
+                                value={users.amount}
+                                type="text"
+                                name="amount"
+                                onChange={handleRegisterChange}
+                                placeholder="1000000000"
+                                required
+                            />
+                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustomUsername">
+                                            <Form.Label>Pin</Form.Label>
+                            <div className="d-flex">
+                            <Form.Control
+                                type={showPassword}
+                                value={users.sender_id}
+                                placeholder="Pin"
+                                name="sender_id"
+                                onChange={handleRegisterChange}
+                                aria-describedby="inputGroupPrepend"
+                                required
+                            />
+                            {
+                            point2 &&
+                                <span onClick={handleSecShow} className='show_password'>
+                                    <p className='m-2'>{!shown ? 'Show' : 'Hide'}</p>
+                                </span>
+                              }
+                            </div>
+                            <Form.Control.Feedback type="invalid">
+                                Please choose a username.
+                            </Form.Control.Feedback>
+                                </Form.Group>
+                            <Button variant='success' className='m-3' type="submit">Submit</Button>
+                            {success && <section>
+                            {
+                            alert && <p>{success}</p>
+                            }
+                            </section>}
+                        </Form>
+                            </article>
+                            }
+                                        {getProfile &&
                               <article className='width'>
                                 <h5 className='ml-lg-3'>Update Profile</h5>
                             <p className='header_class ml-lg-3'>Please fill the form below to setup your profile information. <br />  Kindly note that your name must match your bank account name.</p>
@@ -476,17 +641,20 @@ const Profile = () => {
                         </Form>
                             </article>
                             }
-                            {kyc && 
+                                 </section>   
+                                <section>
+                                    {kyc && 
                                <article className='width'>
                                 <h5 className='ml-lg-3'>KYC Update</h5>
                             <p className='header_class ml-lg-3'>Uploading your KYC documents is very essential so as to remove the <br />  limitations in withdrawing funds to your accounts.</p>
                              <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom01">
-                            <Form.Label>BVN</Form.Label>
+                            <Form.Label>ID Number</Form.Label>
                             <Form.Control
                                 required
+                                value={users.id_number}
                                 type="text"
-                                name="bvn"
+                                name="id_number"
                                 onChange={handleRegisterChange}
                                 placeholder="1234xxxxxxxxxxxxx"
                                 required
@@ -495,86 +663,43 @@ const Profile = () => {
                         </Form.Group>
                         <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom02">
                             <Form.Label className='mr-3'>ID Type</Form.Label>
-                            <Form.Select className='select' aria-label="Default select example">
+                            <Form.Select className='select' aria-label="Defaselect example" onChange={(e) => {
+                              setName(e.target.value)        
+                            }}>
                               <option>Select Your Idebtity Type</option>
-                              <option value={users.id_type}>National ID (NIN)</option>
-                              <option value={users.id_type}>International Passport</option>
-                              <option value={users.id_type}>Driver's License</option>
-                              <option value={users.id_type}>Voter's Card</option>
+                              <option value='National ID (NIN)'>National ID (NIN)</option>
+                              <option value='International Passport'>International Passport</option>
+                              <option value="Driver's License">Driver's License</option>
+                              <option value="Voter's Card">Voter's Card</option>
                             </Form.Select>
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} md="8" controlId="formFile" className="mb-3 mt-3">
-                          <Form.Label>ID Document</Form.Label>
-                          <Form.Control required name='id_url' onChange={handleRegisterChange} type="file" size="sm"/>
-                        </Form.Group>
+                        <input
+                            accept='.jpg'
+                            type="file"
+                            name="id_url"
+                            id=""
+                            onChange={(e) => {
+                                const file = e.target.files[0]
+                                setIdType(file)
+                            }}
+                        />
+                          {/* <Form.Control required name='id_url' onChange={handleRegisterChange} type="file" size="sm"/> */}
+                          </Form.Group>
+                          <div>
+                            {
+                            success && <section>
+                                {alert && <p className='green'>{success}</p> }
+                            </section>
+                            }
                         <Button variant='success' className='mb-3 mt-3 ml-3' type="submit">Submit</Button>
+                          </div>
+
                         </Form>
                             </article>
-                            }
-                            {fundTransfer && 
-                               <article className='width'>
-                                <h5 className='ml-lg-3'>Fund Transfer</h5>
-                            <p className='header_class ml-lg-3'>Uploading your KYC documents is very essential so as to remove the <br />  limitations in withdrawing funds to your accounts.</p>
-                             <Form noValidate onSubmit={handleSubmit}>
-                        <Form.Group as={Col} md="8" controlId="validationCustom01">
-                            <Form.Label>Receiver ID</Form.Label>
-                            <Form.Control
-                                    required
-                                    value={users.customer_id}
-                                type="text"
-                                name="customer_id"
-                                onChange={handleRegisterChange}
-                                placeholder="Friend's ID"
-                                required
-                            />
-                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustom02">
-                            <Form.Label>Amount</Form.Label>
-                            <Form.Control
-                                required
-                                value={users.amount}
-                                type="text"
-                                name="amount"
-                                onChange={handleRegisterChange}
-                                placeholder="1000000000"
-                                required
-                            />
-                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group as={Col} md="8" className='mt-3' controlId="validationCustomUsername">
-                                            <Form.Label>Pin</Form.Label>
-                            <div className="d-flex">
-                            <Form.Control
-                                type={showPassword}
-                                value={users.sender_id}
-                                placeholder="Pin"
-                                name="sender_id"
-                                onChange={handleRegisterChange}
-                                aria-describedby="inputGroupPrepend"
-                                required
-                            />
-                            {
-                            point2 &&
-                                <span onClick={handleSecShow} className='show_password'>
-                                    <p className='m-2'>{!shown ? 'Show' : 'Hide'}</p>
-                                </span>
-                              }
-                            </div>
-                            <Form.Control.Feedback type="invalid">
-                                Please choose a username.
-                            </Form.Control.Feedback>
-                                </Form.Group>
-                            <Button variant='success' className='m-3' type="submit">Submit</Button>
-                            {success && <section>
-                            {
-                            alert && <p>{success}</p>
-                            }
-                            </section>}
-                        </Form>
-                            </article>
-                            }
+                            }   
+                                </section>     
                             {password &&  
                                <article className='width'>
                                     <h5 className='ml-lg-3'>Update Password</h5>
@@ -690,11 +815,9 @@ const Profile = () => {
                         </Form>
                             </article>
                             }
-                            {
-                                bank && <FundWallet />
-                            }
                             
-                        </section>
+                                </Col>
+                            </section>
                         </section>
                     </Col>
             </Row>

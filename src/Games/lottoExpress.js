@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container, Button, Form } from 'react-bootstrap'
 import { Link } from 'react-router-dom';
-import { useGlobalContext } from '../store/context';
 import Countdown from "react-countdown";
+import { useGlobalContext } from '../store/context';
+import { useHistory } from 'react-router';
 import { FaTimes } from 'react-icons/fa';
 import moment from 'moment'
+import GetWhatsapp from '../Fetch/GetWhatsapp'
+
+let date = new Date().getHours(0, 0, 0, 0);
 
 const LottoExpress = () => {
     const [activeNums, setActiveNums] = useState(false)
+    const history = useHistory()
     const { logedIn } = useGlobalContext();
     let [array, setArray] = useState([])
-    let [day, setDay] = useState(1633292094629)
+    let [day, setDay] = useState(date)
     const [numbers, setNumbers] = useState([])
     const [error, setError] = useState('')
     const [amount, setAmount] = useState('')
@@ -19,7 +24,9 @@ const LottoExpress = () => {
     const [arr, setArr] = useState([])
     const [showAlert, setShowAlert] = useState(false)
     const [success, setSuccess] = useState('')
+    const [geteNums, setGetNums] = useState(false)
     const [timer, setTimer] = useState(moment().format('LTS'))
+    const [showModal, setShowModal] = useState(false)
 
     let nums = []
 
@@ -137,24 +144,24 @@ const LottoExpress = () => {
         
     }
 
-    const handleClass = (i) => {
-        setActiveNums((state) => {
-            return {
-                ...state,
-                [i]: !state[i],
-            };
-        });
+    // const handleClass = (i) => {
+    //     setActiveNums((state) => {
+    //         return {
+    //             ...state,
+    //             [i]: !state[i],
+    //         };
+    //     });
 
-        if (array.includes(i)) {
-            const index = array.indexOf(i)
-            if (index > -1) {
-                array.splice(index, 1)
-            }
-        } else {
-            array.push(i)
-        }
+    //     if (array.includes(i)) {
+    //         const index = array.indexOf(i)
+    //         if (index > -1) {
+    //             array.splice(index, 1)
+    //         }
+    //     } else {
+    //         array.push(i)
+    //     }
         
-    }
+    // }
 
 
     useEffect(() => {
@@ -169,7 +176,7 @@ const LottoExpress = () => {
     }
 
     const Completionist = ({setDay}) => {
-        setDay(Date.now())
+        // setDay(Date.now())
         return <p>Games Drawn</p>
     }
 
@@ -195,6 +202,34 @@ const LottoExpress = () => {
         return () => clearInterval(timeInterval)
     })
 
+    const handleClass = (i) => {
+        setActiveNums((state) => {
+            return {
+                ...state,
+                [i]: !state[i],
+            };
+        });
+
+        if (array.includes(i)) {
+            const index = array.indexOf(i)
+            if (index > -1) {
+                array.splice(index, 1)
+            }
+        } else {
+            if (array.length < 10) {
+                array.push(i)
+            } else {
+                setGetNums((state) => {
+                    return {
+                        ...state,
+                        [i]: !state[i],
+                    };
+                });
+            }
+        }
+        
+    }
+
     return (
 
         <Container fluid>
@@ -217,19 +252,26 @@ const LottoExpress = () => {
                                     </section>}
                                 </div>
                             <p className='p_red ml-3 ml-lg-0'>Games will will be Drawn after every thirty (30) minutes Intervals</p>
-                                {/* <Countdown key={Date.now()} className='ml-2' date={day + 1800000}>
+                                {/* <Countdown key={day} className='ml-2' date={date + new Date().getHours(0,30,0)}>
                                   <Completionist setDay={setDay}/>
                                 </Countdown> */}
+                                <Countdown key={day} className='ml-2 mb-3' date={day + new Date().setHours(
+                                    0,0,0)}>
+                                  <Completionist setDay={setDay}/>
+                                </Countdown>
                             </div>
                             <div className='smalls'>
                                 {nums.map((i)=> {
-                                    return <button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) && 'lottoExpress' } lotto_btns`}>{i}</button>
+                                    return <button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) ? 'lottoExpress' : geteNums && 'grey' } lotto_btns`}>{i}</button>
                                 })}
                             </div>
                         </section>
                         
-                        
+                        <div>
                         <Button className='mt-2 ml-2 ml-lg-0' onClick={handlePlaceBets} variant="outline-secondary">Place Bet</Button>
+                        {success && <Button className='mb-1 btn_class' onClick={() => {history.push('/profile/betHistory')}} variant="outline-secondary">View Bets</Button>}
+                        </div>
+
                         <p className='p_red mt-2 ml-2 ml-lg-0'>{error && error}</p>
                     </main>
                 </Col>
@@ -248,7 +290,10 @@ const LottoExpress = () => {
                             <Button className='mr-1 mr-lg-0 'size='sm' value='400' size='sm' onClick={handleClick}>&#x20A6;400</Button>
                             <Button className='mr-1 mr-lg-0' size='sm' value='500' size='sm' onClick={handleClick}>&#x20A6;500</Button>
                         </div>
-                        <Button className={`mt-3 ${!getBet || !logedIn && 'disabled'} `} onClick={handleBetSubmit} variant="outline-success">{`${!logedIn ? 'Login to Place bet' : 'Submit'}`}</Button>
+                        {!logedIn && <Button size='sm' className={`mt-3 align-item-center mb-2 game`} variant='success' onClick={() => setShowModal(!showModal)}  variant="outline-success">Login To Place Bet</Button> }
+                        {logedIn &&
+                            <Button size='sm' className={`mt-3 align-item-center mb-2 game`} variant='success' onClick={handleBetSubmit} variant="outline-success">Place Bet</Button>
+                        }
                     </section>
 
                     {
@@ -283,6 +328,7 @@ const LottoExpress = () => {
                     
                 </Col>
             </Row>
+            {showModal && <GetWhatsapp />}
         </Container>
     )
 }

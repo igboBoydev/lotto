@@ -93,8 +93,7 @@ const FundWallet = () => {
     }, [success])
 
     return (
-        <section className='funds_section'>
-            <div className='form_section_div'>
+        <section className='width'>
                 <span className='span_stack'>Payment using paystack</span>
                <Form onSubmit={handleSubmit}>
                     <Form.Label htmlFor="inputPassword5">Amount:</Form.Label>
@@ -117,7 +116,6 @@ const FundWallet = () => {
                     </div>
                 </Form>
                  <PaystackButton className="paystack-button" {...componentProps} />
-          </div>
         </section>
     )
 }

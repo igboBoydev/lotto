@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Container, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router';
 
 const Reset = () => {
     const [user, setUser] = useState('')
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
+     let history = useHistory()
+    const [alert, setAlert] = useState(false)
     const handleSecondChange = (e) => {
         e.preventDefault()
         setUser(e.target.value)
@@ -37,6 +40,8 @@ const Reset = () => {
               if (result.success) {
                   const { message } = result.success;
                   setSuccess(message)
+                  setAlert(true)
+                  history.push('/profile/reset/password')
               } else if (result.error) {
                   const { message } = result.error;
                   setError(message)
@@ -81,7 +86,6 @@ const Reset = () => {
             Please enter the your valid Email address.
         </Form.Text>
             <Button className='mb-2 ' type='submit' variant="outline-success">Submit</Button>
-            {alert && <Link className='btns ml-3 reset_validate_btn' to='/profile/reset/validate'>Validate Token</Link>}
       </Form>
                        
                 </Col>

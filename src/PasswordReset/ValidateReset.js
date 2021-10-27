@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Container, Col } from 'react-bootstrap';
+import {useHistory} from 'react-router'
 
 const ValidateReset = () => {
     const [user, setUser] = useState('')
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
+    let history = useHistory()
 
 
     const handleSecondChange = (e) => {
@@ -21,7 +23,7 @@ const ValidateReset = () => {
         myHeaders.append("Content-Type", "application/json");
 
         var raw = JSON.stringify({
-            "token": `${user.token}`
+            "token": `${user}`
         });
 
         var requestOptions = {
@@ -37,6 +39,7 @@ const ValidateReset = () => {
                 if (result.success) {
                     const { message } = result.success;
                     setSuccess(message)
+                    history.push('/profile/reset/password')
                 } else if (result.error) {
                     const { message } = result.error;
                     setError(message)
@@ -70,7 +73,7 @@ const ValidateReset = () => {
              </section>
                         }
       <Form onSubmit={handleSecondSubmit}>
-          <Form.Label htmlFor="inputPassword5">Enter Email:</Form.Label>
+          <Form.Label htmlFor="inputPassword5">Enter Token Here:</Form.Label>
           <Form.Control
             type="text"
                 name='token'
@@ -80,7 +83,7 @@ const ValidateReset = () => {
             aria-describedby="passwordHelpBlock"
               />
           <Form.Text id="passwordHelpBlock" className='mb-3' muted>
-            Please enter the your valid Email address.
+            Please enter the token sent to the Email provided earlier.
         </Form.Text>
             <Button className='mb-2 ' type='submit' variant="outline-success">Submit</Button>
       </Form>
