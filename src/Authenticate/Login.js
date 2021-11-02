@@ -117,8 +117,7 @@ const Login = () => {
     <Formik
       validationSchema={schema}
         onSubmit={values => {
-            console.log(values)
-                    var myHeaders = new Headers();
+        var myHeaders = new Headers();
         myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
         myHeaders.append("timestamps", "1614848109");
         myHeaders.append("Content-Type", "application/json");

@@ -46,7 +46,7 @@ const LottoExpress = () => {
                 array.splice(index, 1)
             }
         } else {
-            if (array.length < 3) {
+            if (array.length < 3 && array.length < 4) {
                 array.push(i)
             } else {
                 setGetNums((state) => {
@@ -77,7 +77,6 @@ const LottoExpress = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log(arr)
         arr.filter((a) => {
         const { value, numbers, type } = a;
         var myHeaders = new Headers();
@@ -146,7 +145,7 @@ const LottoExpress = () => {
     const handleGameSubmit = (e) => {
         e.preventDefault()
         if(numbers.length < 3){
-            setError('Please Choose numbers to play')
+            setError('Please Choose three numbers to play')
             return;
         } else if (amount < 50) {
             setError('Please add an amount from 50 naira')
@@ -228,9 +227,6 @@ const LottoExpress = () => {
                             <div>
                                 <div className='d-flex'>
                                     <p className='express_p ml-3 ml-lg-0'>Please atleast Pick Five(3) numbers</p>
-                                    {success && <section className='small_message ml-3 mt-3'>
-                                        {showAlert && <span className='green'>{success}</span>}
-                                    </section>}
                                 </div>
                                 {gameType === 'Ordered' && <p className='green ml-3 ml-lg-0'>Extra Odds are added to your stake odds when you choose type as Ordered; if your picked numbers tallies exactly with the numbers drawn your odds would be higher</p>}
                                 {gameType === 'Regular' && <p className='green ml-3 ml-lg-0'>No extra odds</p>}
@@ -255,23 +251,24 @@ const LottoExpress = () => {
                 </Col>
                 <Col>
                     <section className='mt-3 submit_section'>
-                        <p>Numbers: <span className='green'>{numbers}</span></p>
-                        <p>Amount per Line: <span className='green'>&#x20A6;{amount}</span></p>
+                        <p className='pl-2 pl-lg-0'>Numbers: <span className='green'>{numbers}</span></p>
+                        <p className='pl-2 pl-lg-0'>Amount per Line: <span className='green'>&#x20A6;{amount}</span></p>
                         <Form>
                             <Form.Control size='sm' className='form_input' onChange={handleInputChange} type="text" placeholder={`${amount}`} />
                         </Form>
-                        <div className='mt-2 d-flex justify-content-lg-between'>
+                        <div className='mt-2 d-flex justify-content-between pl-2 pl-lg-0'>
                             <Button className='mr-1 mr-lg-0 games game' value='50' size='sm' onClick={handleClick}>&#x20A6;50</Button>
                             <Button className='mr-1 mr-lg-0 'size='sm' value='100' size='sm' onClick={handleClick}>&#x20A6;100</Button>
                             <Button className='mr-1 mr-lg-0 'size='sm' value='200' size='sm' onClick={handleClick}>&#x20A6;200</Button>
                             <Button className='mr-1 mr-lg-0 'size='sm' value='300' size='sm' onClick={handleClick}>&#x20A6;300</Button>
-                            <Button className='mr-1 mr-lg-0 'size='sm' value='400' size='sm' onClick={handleClick}>&#x20A6;400</Button>
-                            <Button className='mr-1 mr-lg-0' size='sm' value='500' size='sm' onClick={handleClick}>&#x20A6;500</Button>
                         </div>
-                        {!logedIn && <Button size='sm' className={`mt-3 align-item-center mb-2 game`} variant='success' onClick={() => setShowModal(!showModal)} variant="outline-success">Login To Place Bet</Button>}
+                        {!logedIn && <Button size='sm' className='mt-3 mb-2 game ml-2 ml-lg-0' variant='success' onClick={() => setShowModal(!showModal)} variant="outline-success">Login To Place Bet</Button>}
                         {logedIn &&
-                            <Button size='sm' className={`mt-3 align-item-center mb-2 game`} variant='success' onClick={handleGameSubmit} variant="outline-success">Place Bet</Button>
+                            <Button size='sm' className='mt-3 mb-2 game ml-2 ml-lg-0' variant='success' onClick={handleGameSubmit} variant="outline-success">Place Bet</Button>
                         }
+                        {success && <section className='small_message ml-3 mt-3'>
+                            {showAlert && <span className='green'>{success}</span>}
+                        </section>}
                     </section>
                     {
                         arr.length > 0 &&

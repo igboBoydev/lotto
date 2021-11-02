@@ -20,8 +20,8 @@ const Games = () => {
     let [gameType, setGameType] = useState('NAP 1')
     const [games, setGames] = useState('EMBASSY')
     const [totalStake, setTotalStake] = useState('')
-    const [subValue, setSubValue] = useState(null)
-    const [value, setValue] = useState(null)
+    const [subValue, setSubValue] = useState(0)
+    const [value, setValue] = useState(0)
     let [arr, setArr] = useState([])
     const [success, setSuccess] = useState('')
     let [betSlip, setBetSlip] = useState([])
@@ -38,10 +38,12 @@ const Games = () => {
     const [submited, setSubmited] = useState(false)
     const [nap1Max, setNap1Max] = useState(null)
     const [nap2Max, setNap2Max] = useState(null)
+    const [general, setGeneral] = useState(null)
     const [nap3Max, setNap3Max] = useState(null)
     const [nap4Max, setNap4Max] = useState(null)
     const [nap5Max, setNap5Max] = useState(null)
-
+    const [number, setNumber] = useState(0)
+    const [secArr, setSecArr] = useState([])
 
     const categories = [...new Set(game.map((item) => {
         return [item.name, item.startTime, item.endTime]
@@ -95,18 +97,21 @@ const Games = () => {
     const handleInputChange = (e, type) => {
         e.preventDefault()
         let value = e.target.value
-        // console.log(typeof value)
         if (type === 'NAP 1' && value > parseInt(nap1Max)) {
             setSuccess(`Cannot add amount more than #${nap1Max}`)
+            return;
         } else if (type === 'NAP 2' && value > parseInt(nap2Max)) {
             setSuccess(`Cannot add amount more than #${nap2Max}`)
+            return;
         } else if (type === 'NAP 3' && value > parseInt(nap3Max)) {
-            console.log(nap3Max)
             setSuccess(`Cannot add amount more than #${nap3Max}`)
+            return;
         } else if (type === 'NAP 4' && value > parseInt(nap4Max)) {
             setSuccess(`Cannot add amount more than #${nap4Max}`)
+            return;
         } else if (type === 'NAP 5' && value > parseInt(nap5Max)) {
             setSuccess(`Cannot add amount more than #${nap5Max}`)
+            return;
         } else {
             setValue(value)
         }
@@ -116,7 +121,10 @@ const Games = () => {
 
     const handleInputSubmit = (data) => {
         setSubValue(value)
-        data.amount = value
+        data.amount = value * data.lines;
+        data.amounts = parseInt(value)
+        setValue(0)
+        calculateTotalStake()
     }
 
 
@@ -144,213 +152,223 @@ const Games = () => {
           lines = 1
         }
 
-        let data = {
+        if (gameType === 'AGAINST') {
+            let data = {
                 id: new Date().getTime().toString(),
+                gameId: gameShow.id,
                 lines: lines,
                 type: gameType,
-                numbers: arr,
-                amount: 0 || subValue
+                stakeList: arr.slice(0, arr.indexOf(0)),
+                stakeList2:  arr.slice(arr.indexOf(0) + 1, arr[arr.length - 1]),
+                amount: 0 || subValue * lines,
+                amounts: subValue
             }
             betSlip.push(data)
             calculateTotalStake();
             setArr([]);
             setShowSlip(true);
+        } else {
+            let data = {
+                id: new Date().getTime().toString(),
+                gameId: gameShow.id,
+                lines: lines,
+                type: gameType,
+                stakeList: arr,
+                amount: 0 || subValue * lines,
+                amounts: subValue
+            }
+            betSlip.push(data)
+            calculateTotalStake();
+            setArr([]);
+            setShowSlip(true);
+        }
     }
 
-    const  calculateTotalStake = ()  => {
-      var total =0
-      for(var i =0; i< betSlip.length; i++){
-        total = total + betSlip[i].amount
-      }
-        setTotalStake(total)
+    const calculateTotalStake = () => {
+        setValue(0)
+        setSubValue(0)
+        const val = betSlip.reduce((total, money) => {
+            total += parseInt(money.amount)
+            return total;
+        }, 0);
+        setNumber(val)
+    }
+
+
+    // http://www.v2nmobile.com/api/httpsms.php?u=${email}&p=${pass}&m=${'abelkelly}&r=${09047597017}&s=${senderID}&t=1`
+
+    const calculateTotalStake1 = (newItem) => {
+        setValue(0)
+        setSubValue(0)
+        const val = newItem.reduce((total, money) => {
+            total += parseInt(money.amount)
+            return total;
+        }, 0);
+        setNumber(val)
     }
 
     const get = localStorage.getItem('token')
 
-    const handleGameBet = (lines, data, numbers) => {
-        let values = parseInt(data.amount)
-        if (values < 5) {
-            setSuccess(`Please Add an amount from #5 and above`)
+    const handleGameBet = (e) => {
+        e.preventDefault()
+
+        const val = betSlip.reduce((total, money) => {
+            total += parseInt(money.amount)
+            return total;
+        }, 0);
+
+        if (val > parseInt(general)) {
+            setSuccess(`Please kindly Note that you cannot place bet more than ${general} naira`)
             return;
-
         } else {
-
-        var myHeaders = new Headers();
-        myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
-        myHeaders.append("Authorization", `Bearer ${get}`);
+            var myHeaders = new Headers();
+            myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+            myHeaders.append("Authorization", `Bearer ${get}`);
             myHeaders.append("Content-Type", "application/json");
-            
-            let n;
-            
-            if (gameType === 'AGAINST') {
-                const first_against = numbers.slice(0, numbers.indexOf(0))
-                const second_against = numbers.slice(numbers.indexOf(0) + 1, numbers[numbers.length - 1])
-                if (!(first_against.length >= 2 && second_against.length >= 1) || !(first_against.length >= 1 || second_against.length >= 2)) {
-                    setSuccess('please select atleast 2 games for first choice and 1 game for second choice or vice-versa')
-                    return
-                } else if (first_against.includes(n) && second_against.includes(n)) {
-                    setSuccess('you cannot choose a number on both sides of the game')
-                    return;
-                } else {
-                    var raw = JSON.stringify({
-                        "type": `${gameType}`,
-                        "totalStake": `${numbers.length}`,
-                        "gameId": `${gameShow.id}`,
-                        "stakes": [
-                            {
-                                "amount": `${value}`,
-                                "type": `${gameType}`,
-                                "stakeList": `${first_against}`,
-                                "stakeList2": `${second_against}`,
-                            }
-                        ]
-                    });
-                }
-            } else {
+            myHeaders.append("Cookie", "connect.sid=s%3Ae0Zu5esOyG3kUqFKLpyqNN4lka0d4o3F.WngMLxSIx3GfvGfOlQDWPwr%2BeLG2ABZ6sABSEo4Hwkc");
+          
+            betSlip.filter((bet) => {
+                const { type, gameId, stakeList, stakeList2, amount, amounts } = bet;
+
                 var raw = JSON.stringify({
-                    "type": `${gameType}`,
-                    "totalStake": `${numbers.length}`,
-                    "gameId": `${gameShow.id}`,
+                    "totalStake": `${number}`,
                     "stakes": [
                         {
-                            "amount": `${value}`,
-                            "type": `${gameType}`,
-                            "stakeList": `${numbers}`,
-                        }
+                            "amount": `${amount}`,
+                            "amounts": `${amounts}`,
+                            "type": `${type}`,
+                            "stakeList": `${stakeList}`,
+                            "stakeList2": `${stakeList2}`,
+                            "gameId": `${gameId}`
+                        },
                     ]
                 });
-            }
 
-        var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-        };
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
 
-        fetch("http://localhost:5016/api/v1/placeStake", requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                if (result.result) {
-                    setSubmited(true)
-                    let show = result.result.map((res) => res)
-                    if (show[0].type === 'AGAINST') {
-                        const { type, amount, odd, staked, date, max_possibleWinning, min_possibleWinning, possibleWinning, stakes1, stakes2 } = show[0];
-                        let response1 = stakes1.toString()
-                        let response2 = stakes2.toString()
-                        var myHeaders = new Headers();
-                        myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
-                        myHeaders.append("Authorization", `Bearer ${get}`);
-                        myHeaders.append("Content-Type", "application/json");
+                fetch("http://localhost:5016/api/v1/placeStake", requestOptions)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.result) {
+                            
+                            setSubmited(true)
+                            let show = result.result.map((res) => res)
+                            if (show[0].type === 'AGAINST') {
+                                const { type, amount, odd, staked, date, possibleWinning, stakes1, stakes2 } = show[0];
+                                let response1 = stakes1.toString()
+                                let response2 = stakes2.toString()
+                                var myHeaders = new Headers();
+                                myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+                                myHeaders.append("Authorization", `Bearer ${get}`);
+                                myHeaders.append("Content-Type", "application/json");
 
-                        var raw = JSON.stringify({
-                            "amount": `${amount * stakes1.length * stakes2.length}`,
-                            "type": `${type}`,
-                            "odd": `${odd}`,
-                            "max_possibleWinning": `${max_possibleWinning}`,
-                            "min_possibleWinning": `${min_possibleWinning}`,
-                            "possibleWinning": `${possibleWinning}`,
-                            "staked": `${staked}`,
-                            "stakes1": `${response1}`,
-                            "stakes2": `${response2}`,
-                            "date": `${date}`
-                        });
+                                var raw = JSON.stringify({
+                                    "amount": `${amount}`,
+                                    "type": `${type}`,
+                                    "odd": `${odd}`,
+                                    "possibleWinning": `${possibleWinning}`,
+                                    "staked": `${amount}`,
+                                    "stakes1": `${response1}`,
+                                    "stakes2": `${response2}`,
+                                    "date": `${date}`
+                                });
 
-                        var requestOptions = {
-                            method: 'POST',
-                            headers: myHeaders,
-                            body: raw,
-                            redirect: 'follow'
-                        };
+                                var requestOptions = {
+                                    method: 'POST',
+                                    headers: myHeaders,
+                                    body: raw,
+                                    redirect: 'follow'
+                                };
 
-                        fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
-                            .then(response => response.json())
-                            .then(result => {
-                                const { message } = result.success;
-                                setSuccess(message)
-                            })
-                            .catch(error => console.log('error', error));
+                                fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
+                                    .then(response => response.json())
+                                    .then(result => {
+                                        const { message } = result.success;
+                                        setSuccess(message)
+                                    })
+                                    .catch(error => console.log('error', error));
 
                     
-                    } else if (show[0].type === '1 BANKER') {
-                        const { type, amount, odd, staked, date, max_possibleWinning, min_possibleWinning, possibleWinning, stakes } = show[0];
-                        let response = stakes.toString()
-                        var myHeaders = new Headers();
-                        myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
-                        myHeaders.append("Authorization", `Bearer ${get}`);
-                        myHeaders.append("Content-Type", "application/json");
+                            } else if (show[0].type === '1 BANKER') {
+                                const { type, amount, odd, staked, date, possibleWinning, stakes } = show[0];
+                                let response = stakes.toString()
+                                var myHeaders = new Headers();
+                                myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+                                myHeaders.append("Authorization", `Bearer ${get}`);
+                                myHeaders.append("Content-Type", "application/json");
 
-                        var raw = JSON.stringify({
-                            "amount": `${amount * 89}`,
-                            "type": `${type}`,
-                            "odd": `${odd}`,
-                            "max_possibleWinning": `${max_possibleWinning}`,
-                            "min_possibleWinning": `${min_possibleWinning}`,
-                            "possibleWinning": `${possibleWinning}`,
-                            "staked": `${staked}`,
-                            "stakes": `${response}`,
-                            "date": `${date}`
-                        });
+                                var raw = JSON.stringify({
+                                    "amount": `${amount}`,
+                                    "type": `${type}`,
+                                    "odd": `${odd}`,
+                                    "possibleWinning": `${possibleWinning}`,
+                                    "staked": `${staked}`,
+                                    "stakes": `${response}`,
+                                    "date": `${date}`
+                                });
 
-                        var requestOptions = {
-                            method: 'POST',
-                            headers: myHeaders,
-                            body: raw,
-                            redirect: 'follow'
-                        };
+                                var requestOptions = {
+                                    method: 'POST',
+                                    headers: myHeaders,
+                                    body: raw,
+                                    redirect: 'follow'
+                                };
 
-                        fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
-                            .then(response => response.json())
-                            .then(result => {
-                                const { message } = result.success;
-                                setSuccess(message)
-                            })
-                            .catch(error => console.log('error', error));
-                    } else {
-                        const { type, amount, odd, staked, date, max_possibleWinning, min_possibleWinning, possibleWinning, stakes } = show[0];
-                        let response = stakes.toString()
-                        var myHeaders = new Headers();
-                        myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
-                        myHeaders.append("Authorization", `Bearer ${get}`);
-                        myHeaders.append("Content-Type", "application/json");
+                                fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
+                                    .then(response => response.json())
+                                    .then(result => {
+                                        const { message } = result.success;
+                                        setSuccess(message)
+                                    })
+                                    .catch(error => console.log('error', error));
+                            } else {
+                                const { type, amount, odd, staked, date, possibleWinning, stakes } = show[0];
+                                let response = stakes.toString()
+                                var myHeaders = new Headers();
+                                myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+                                myHeaders.append("Authorization", `Bearer ${get}`);
+                                myHeaders.append("Content-Type", "application/json");
 
-                        var raw = JSON.stringify({
-                            "amount": `${amount * lines}`,
-                            "type": `${type}`,
-                            "odd": `${odd}`,
-                            "max_possibleWinning": `${max_possibleWinning}`,
-                            "min_possibleWinning": `${min_possibleWinning}`,
-                            "possibleWinning": `${possibleWinning}`,
-                            "staked": `${staked}`,
-                            "stakes": `${response}`,
-                            "date": `${date}`
-                        });
+                                var raw = JSON.stringify({
+                                    "amount": `${amount}`,
+                                    "type": `${type}`,
+                                    "odd": `${odd}`,
+                                    "possibleWinning": `${possibleWinning}`,
+                                    "staked": `${staked}`,
+                                    "stakes": `${response}`,
+                                    "date": `${date}`
+                                });
 
-                        var requestOptions = {
-                            method: 'POST',
-                            headers: myHeaders,
-                            body: raw,
-                            redirect: 'follow'
-                        };
+                                var requestOptions = {
+                                    method: 'POST',
+                                    headers: myHeaders,
+                                    body: raw,
+                                    redirect: 'follow'
+                                };
 
-                        fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
-                            .then(response => response.json())
-                            .then(result => {
-                                const { message } = result.success;
-                                setSuccess(message)
-                            })
-                            .catch(error => console.log('error', error));
-                    }
-                } else {
-                    return
-                }
+                                fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
+                                    .then(response => response.json())
+                                    .then(result => {
+                                        const { message } = result.success;
+                                        setSuccess(message)
+                                    })
+                                    .catch(error => console.log('error', error));
+                            }
+                        } else {
+                            return
+                        }
                 
-            },
-                (error) => {
-                    console.log(error)
-                }
-            )
-  
+                    },
+                        (error) => {
+                            console.log(error)
+                        }
+                    );
+            })
         }
     }
 
@@ -536,16 +554,25 @@ const Games = () => {
 
 
     useEffect(() => {
-        setTimeout(() => {
+        let time = setTimeout(() => {
             setShowAlert(!showAlert)
             setSuccess('')
         }, 3000)
+
+        return () => clearTimeout(time)
     }, [success]);
 
     const removeItem = (id) => {
         let newItem = betSlip.filter((item) => item.id !== id)
-        setBetSlip(newItem)
-        calculateTotalStake()
+        if (newItem.length < 1) {
+            setBetSlip([])
+             setNumber(0)
+        } else {
+            setBetSlip(newItem)
+            // console.log(betSlip)
+            calculateTotalStake1(newItem)
+        }
+        // setBetSlip(newItem)
     }
 
     useEffect(() => {
@@ -568,28 +595,12 @@ const Games = () => {
 
         if (show) {
             setDaysShow(e.target.textContent)
+            setSecArr([i])
         } else {
             setDaysShow('')
+            setSecArr([])
         }
     }
-
-    // const handleClass = (e, i) => {
-        // setActiveNums((state) => {
-        //     return {
-        //         ...state,
-        //         [i]: !state[i],
-        //     };
-        // });
-
-        // if (arr.includes(i)) {
-        //     const index = arr.indexOf(i)
-        //     if (index > -1) {
-        //         arr.splice(index, 1)
-        //     }
-        // } else {
-        //     arr.push(i)
-        // }
-    // }
 
     useEffect(() => {
         var myHeaders = new Headers();
@@ -615,6 +626,8 @@ const Games = () => {
                         setNap4Max(value.value)
                     } else if (value.type === 'NAP 5') {
                         setNap5Max(value.value)
+                    } else if (value.type === 'General') {
+                        setGeneral(value.value)
                     } else {
                         return;
                     }
@@ -666,7 +679,6 @@ const Games = () => {
                 } else {
                     if (arr.length < 2) {
                         arr.push(i)
-                        console.log(arr.length)
                     } else {
                         setGetNums((state) => {
                             return {
@@ -814,10 +826,72 @@ const Games = () => {
     }
 
     useEffect(() => {
+        
+        function GetDates(startDate, daysToAdd) {
+            var aryDates = [];
+
+            for (var i = 0; i <= daysToAdd; i++) {
+                var currentDate = new Date();
+                currentDate.setDate(startDate.getDate() + i);
+                aryDates.push(DayAsString(currentDate.getDay()) + ", " + currentDate.getDate() + " " + MonthAsString(currentDate.getMonth()));
+            }
+
+             return aryDates;
+        }
+
+        function MonthAsString(monthIndex) {
+            var month = [];
+            month[0] = "Jan";
+            month[1] = "Feb";
+            month[2] = "Mar";
+            month[3] = "Apr";
+            month[4] = "May";
+            month[5] = "Jun";
+            month[6] = "Jul";
+            month[7] = "Aug";
+            month[8] = "Sept";
+            month[9] = "Oct";
+            month[10] = "Nov";
+            month[11] = "Dec";
+
+            return month[monthIndex];
+        }
+
+        function DayAsString(dayIndex) {
+            var weekdays = new Array(7);
+            weekdays[0] = "Sunday";
+            weekdays[1] = "Monday";
+            weekdays[2] = "Tuesday";
+            weekdays[3] = "Wednesday";
+            weekdays[4] = "Thursday";
+            weekdays[5] = "Friday";
+            weekdays[6] = "Saturday";
+
+            return weekdays[dayIndex];
+        }
+
+
+        var startDate = new Date();
+        var aryDates = GetDates(startDate, 0);
+        setDaysShow(aryDates.toString())
+        setSecArr([0])
+        setShow(0)
+
+        game.map((gam) => {
+            if (daysShow.includes(gam.day.charAt(0).toUpperCase() + gam.day.slice(1))) {
+                setClicked(true)
+                setGameShow({ ...gameShow, name: gam.name, start: gam.startTime, end: gam.endTime, id: gam.uuid })
+            }
+        });
+    }, [])
+
+
+    useEffect(() => {
         if (gameShow.name) {
             setShowSvg(false)
         }
     }, [gameShow.name])
+
 
 
     return (
@@ -830,19 +904,20 @@ const Games = () => {
             <Col className='pl-4 days_column scrollbar d-none color d-lg-inline' lg={2}>
                 <h6 className='draw'>Daily Draws</h6>
                         <main className='days scrollContent'>
-                            {days.map((day, i) => {
+                        {days.map((day, i) => {  
                         return (
                             <section className='category'>
-                                <div className='game_flex' key={i}  onClick={(e) => handleCategory(e, i)}>
+                                <div className='game_flex' key={i} onClick={(e) => handleCategory(e, i)}>
                                    <span className='span1'>{day}</span>
-                                   {!show[i] && <span className='span'>+</span>}
-                                    {show[i] && <span className='span'>-</span>}
+                                   {!secArr.includes(i) ? <span className='span'>+</span> : <span className='span'>-</span>}
+                                    {/* {secArr.includes(i) && <span className='span'>-</span>} */}
+                                   {/* {!secArr[i] && show[i] ? <span className='span'>+</span> :  <span className='span'>-</span>} */}
                                 </div>
                                 {
-                                    show[i] &&
+                                    // show[i] &&
                                     <div className='game_types'>
                                         {game.map((gam) => {
-                                            if (daysShow.includes(gam.day.charAt(0).toUpperCase() + gam.day.slice(1))) {
+                                            if (secArr.includes(i) && daysShow.includes(gam.day.charAt(0).toUpperCase() + gam.day.slice(1))) {
                                                 return <p onClick={(e) => {
                                                     e.preventDefault()
                                                     setClicked(true)
@@ -856,8 +931,7 @@ const Games = () => {
                             </section>
                         )
 
-                    })}
-                        
+                        })}
                 </main>
             </Col>
                     <Col className='game_col' lg={7} >
@@ -973,8 +1047,6 @@ const Games = () => {
                                     {success && <section className='small_message'>
                                         {showAlert && <span className='error_message'>{success}</span>}
                                     </section>}
-                                    
-                                   
                                 </section>
                             </Col>
                         </Row>
@@ -1002,7 +1074,7 @@ const Games = () => {
                             </div>
                             <div>
                                 {betSlip.map((data) => {
-                                    let { id, lines, type, numbers, amount } = data;
+                                    const { type, lines, id, gameId, stakeList, stakeList2, amount } = data;
                                     return (
                                         <main key={id} className='get_line'>
                                             <div className='d-flex justify-content-end'>
@@ -1015,7 +1087,8 @@ const Games = () => {
                                             <div>
                                             <p className='p_type'>Lines: {lines}</p>
                                             <p className='p_type'>Type: {type}</p>
-                                                <p className='p_type'>Numbers: {numbers.toString()}</p>
+                                                {stakeList && stakeList2 && <p className='p_type'>Numbers: {`${stakeList.toString()} ${stakeList2.toString()}`}</p>}
+                                                {gameType !== 'AGAINST' && stakeList && <p className='p_type'>Numbers: {stakeList.toString()} </p>}
                                                 <p className='p_type'>Enter Stake Amount: {amount}</p>
                                                 <Form onSubmit={(e) => {
                                                     e.preventDefault();
@@ -1032,53 +1105,59 @@ const Games = () => {
                                                 {gameType !== 'NAP 1' && gameType !== 'NAP 2' && gameType !== 'NAP 3' && gameType !== 'NAP 4' && gameType !== 'NAP 5' &&
                                                 <div className='mt-2 d-flex justify-content-lg-between'>
                                                 <Button className='mr-2 mr-lg-0 games game' value='50' size='sm' onClick={() => {
-                                                        data.amount = 50;
+                                                        data.amount = 50 * lines;
+                                                        data.amounts = 50
                                                         calculateTotalStake()
                                                 }}>50</Button>
                                                 <Button className='mr-2 mr-lg-0 'size='sm' value='100' size='sm' onClick={() => {
-                                                        data.amount = 100;
+                                                        data.amount = 100 * lines;
+                                                        data.amounts = 100
                                                         calculateTotalStake()
                                                 }}>100</Button>
                                                 <Button className='mr-2 mr-lg-0 'size='sm' value='200' size='sm' onClick={() => {
-                                                        data.amount = 200;
+                                                        data.amount = 200 * lines;
+                                                        data.amounts = 200
                                                         calculateTotalStake()
                                                 }}>200</Button>
                                                 <Button className='mr-2 mr-lg-0 'size='sm' value='300' size='sm' onClick={() => {
-                                                        data.amount = 300;
+                                                        data.amount = 300 * lines;
+                                                        data.amounts = 300
                                                         calculateTotalStake()
                                                 }}>300</Button>
                                                 <Button className='mr-2 mr-lg-0 'size='sm' value='400' size='sm' onClick={() => {
-                                                        data.amount = 400;
+                                                        data.amount = 400 * lines;
+                                                        data.amounts = 400
                                                         calculateTotalStake()
                                                 }}>400</Button>
                                                 <Button className='mr-2 mr-lg-0' size='sm' value='500' size='sm' onClick={() => {
-                                                        data.amount = 500;
+                                                        data.amount = 500 * lines;
+                                                        data.amounts = 500
                                                         calculateTotalStake()
                                                 }}>500</Button>
                                             </div>
                                 }
                                              </div>
-                                            <section className='mt-2'>
+                                        </main>
+                                        
+                                    )
+                                })}
+                            </div>
+                                                                        <section className='mt-2'>
                                                 <div className='d-flex justify-content-between'>
                                                    <p className='p_type'>Number of Bets: </p>
                                                    <p className='p_type'>{betSlip.length}</p>
                                                 </div>
                                                 <div className='d-flex justify-content-between'>
                                                     <p className='p_type'>Total Stake: </p>
-                                                   <p className='p_type'>&#x20A6;{ lines * data.amount}</p>
+                                                   <p className='p_type'>&#x20A6;{number}</p>
                                                 </div>
                                                 </section>
                                         <div className='d-flex justify-content-center'>
                                                 {!logedIn && <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={() => setShowModal(!showModal)}>Login To Place Bet</Button> }
-                                            {logedIn && 
-                                         <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={() => handleGameBet(lines, data, numbers)}>Place Bet</Button>
-                                        }
+                                {logedIn &&
+                                    <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={handleGameBet}>Place Bet</Button>
+                                }
                                         </div>
-                                        </main>
-                                        
-                                    )
-                                })}
-                            </div>
                 </section>
             </Col>
                     }

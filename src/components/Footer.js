@@ -13,8 +13,6 @@ const Footer = () => {
         <footer className='footer pt-5 pb-2'>
             <section className='footer_section_md'>
                 <Container>
-                    <section>
-            </section>
                     <Row class=" d-flex justify-content-center set_footer_display">
                         <Col className='text-center'>
 
@@ -23,8 +21,7 @@ const Footer = () => {
                                     <Link to='https://www.applestore.com'>
                                         <FontAwesomeIcon className='color1' size-md='3x' icon={faApple} />
                                     </Link>  
-                                        <div class="pl-2">
-                                            <small>Download on the </small>
+                                        <div class="pl-2 pt-2">
                                             <h5 className='h5_small'>App Store</h5>
                                        </div>   
                             </div>
@@ -32,8 +29,7 @@ const Footer = () => {
                                     <Link to='https://www.googleplay.com'>
                                         <FontAwesomeIcon className='color2' size-md='3x' icon={faGooglePlay} />
                                     </Link>
-                                <div class="pl-2">
-                                    <small>Download on the </small>
+                                <div class="pl-2 pt-2">
                                     <h5 className='h5_small'>Google Store</h5>
                                 </div>     
                                 </div>

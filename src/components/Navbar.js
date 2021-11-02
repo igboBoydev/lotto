@@ -176,8 +176,8 @@ const Navigation = () => {
 
 
     return (
-        <main className='position' >
-        <Navbar bg="light" expand="lg" className='d-none d-lg-flex nav_height justify-content-between'>
+        <main >
+        <Navbar bg="light" expand="lg" className='d-none d-lg-flex justify-content-between'>
             <Navbar.Brand href="/">
                     <img src={GrandLotto} width='200px' alt="" className='nav_img' />
                     {
@@ -222,16 +222,16 @@ const Navigation = () => {
         </Navbar>
         
 
-        <Navbar bg="light" expand="lg" className='d-flex d-lg-none nav_height'>
+        <Navbar bg="light" expand="lg" className='d-flex d-lg-none'>
                 <Navbar.Brand href="/">
                     <img src={GrandLotto} width='150px' alt="" className='nav_img' />
                     
                 </Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Toggle aria-controls="basic-navbar-nav" className='nav_toggle' />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         {!logedIn &&
-                               <Form justify-content-center>
+                               <Form className='nav_form'>
                                    <Form.Control name='mobile'  className='me-4 "mr-2' onChange={handleLogin} type="text" placeholder="090xxxxx" aria-label="Mobile" value={userLogin.mobile} />
                                    <Form.Control name='password' className='mt-2 "mr-2' onChange={handleLogin} type="password" placeholder="Password" aria-label="Password" value={userLogin.password}  />
                             <Button size='sm' className='m-2' onClick={handleSubmit} variant="outline-success">Login</Button>
@@ -242,7 +242,7 @@ const Navigation = () => {
                         </Form>
                       }
                         {logedIn &&
-                            <section className='d-flex ml-4'>
+                            <section className='d-flex'>
                  
                                 <DropdownButton
                                 className='nav_dropdown'

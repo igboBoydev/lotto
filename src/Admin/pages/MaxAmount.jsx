@@ -3,7 +3,7 @@ import { Form, Button, Container } from 'react-bootstrap'
 
 const MaxAmount = () => {
     const [value, setValue] = useState(null)
-    const [type, setType] = useState('NAP 1')
+    const [type, setType] = useState('Lotto Express')
     let token = localStorage.getItem('adminToken')
     const [success, setSuccess] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
@@ -69,6 +69,9 @@ const MaxAmount = () => {
                           <Form.Group className='mt-2' controlId="exampleForm.SelectCustom">
                 <Form.Label>Game Type for Amount Update:</Form.Label>
                     <Form.Control as="select" required onChange={handleSelect} custom>
+                    <option name='NAP 1' value='NAP 1'>Lotto Express</option>
+                    <option name='NAP 1' value='NAP 1'>Soft Lotto</option>
+                    <option name='NAP 1' value='NAP 1'>General</option>
                     <option name='NAP 1' value='NAP 1'>NAP 1</option>
                     <option name='NAP 2' value='NAP 2'>NAP 2</option>
                     <option name='NAP 3' value='NAP 3'>NAP 3</option>
