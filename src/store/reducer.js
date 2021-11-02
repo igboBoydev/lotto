@@ -85,8 +85,6 @@ const reducer = (state, action) => {
                 whatsapp: whatsapp
             }
         case GET_DAYS_IN_WEEK:
-            // console.log('hello world')
-            // console.log(action.payload)
             const getDays = { ...state, day: action.payload };
             return {
                 ...state,

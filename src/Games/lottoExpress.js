@@ -27,12 +27,14 @@ const LottoExpress = () => {
     const [geteNums, setGetNums] = useState(false)
     const [timer, setTimer] = useState(moment().format('LTS'))
     const [showModal, setShowModal] = useState(false)
+    const [expressMax, setExpressMax] = useState(null)
 
     let nums = []
 
     for (let i = 1; i < 91; i++) {
         nums.push(i)
     }
+
     const get = localStorage.getItem('token')
 
     const handleSubmit = (e) => {
@@ -119,18 +121,28 @@ const LottoExpress = () => {
 
     }
 
-
     const handleClick = (e) => {
         e.preventDefault()
-        setAmount(e.target.value)
+        const value = e.target.value
+        if (value > expressMax) {
+            setSuccess(`Cannot place bet with more than ${expressMax} naira`)
+            return
+        } else {
+           setAmount(e.target.value)
+        }
     }
 
     const handleInputChange = (e) => {
         e.preventDefault()
-        setAmount(e.target.value)
+        const value = e.target.value
+        if (value > parseInt(expressMax)) {
+            setSuccess(`Cannot place bet with more than ${expressMax} naira`)
+            return
+        } else {
+            setAmount(e.target.value)
+        }
     }
     
-
     const handlePlaceBets = (e) => {
         e.preventDefault()
         if (array.length >= 5) {
@@ -143,26 +155,6 @@ const LottoExpress = () => {
         }
         
     }
-
-    // const handleClass = (i) => {
-    //     setActiveNums((state) => {
-    //         return {
-    //             ...state,
-    //             [i]: !state[i],
-    //         };
-    //     });
-
-    //     if (array.includes(i)) {
-    //         const index = array.indexOf(i)
-    //         if (index > -1) {
-    //             array.splice(index, 1)
-    //         }
-    //     } else {
-    //         array.push(i)
-    //     }
-        
-    // }
-
 
     useEffect(() => {
         setTimeout(() => {
@@ -230,6 +222,31 @@ const LottoExpress = () => {
         
     }
 
+        useEffect(() => {
+        var myHeaders = new Headers();
+        myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
+
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        fetch("http://localhost:5016/api/v1/gamemaxamount", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                result.showMax.map((value) => {
+                    if (value.type === 'Lotto Express') {
+                        setExpressMax(value.value)
+                    } else {
+                        return;
+                    }
+                })
+            })
+            .catch(error => console.log('error', error));
+        
+    }, [])
+
     return (
 
         <Container fluid>
@@ -247,9 +264,6 @@ const LottoExpress = () => {
                             <div>
                                 <div className='d-flex'>
                                     <p className='express_p'>Please Pick Five(5) numbers</p>
-                                    {success && <section className='small_message ml-3 mt-3'>
-                                        {showAlert && <span className='green'>{success}</span>}
-                                    </section>}
                                 </div>
                             <p className='p_red ml-3 ml-lg-0'>Games will will be Drawn after every thirty (30) minutes Intervals</p>
                                 {/* <Countdown key={day} className='ml-2' date={date + new Date().getHours(0,30,0)}>
@@ -277,23 +291,24 @@ const LottoExpress = () => {
                 </Col>
                 <Col>
                     <section className='mt-3 submit_section'>
-                        <p>Numbers: <span className='green'>{numbers}</span></p>
-                        <p>Amount per Line: <span className='green'>&#x20A6;{amount}</span></p>
+                        <p className='pl-2 pl-lg-0'>Numbers: <span className='green'>{numbers}</span></p>
+                        <p className='pl-2 pl-lg-0'>Amount per Line: <span className='green'>&#x20A6;{amount}</span></p>
                         <Form>
                             <Form.Control size='sm' value={amount} className='form_input' onChange={handleInputChange} type="text" placeholder="Amount" />
                         </Form>
-                        <div className='mt-2 d-flex justify-content-lg-between'>
+                        <div className='mt-2 d-flex justify-content-between pl-2 pl-lg-0'>
                             <Button className='mr-1 mr-lg-0 games game' value='50' size='sm' onClick={handleClick}>&#x20A6;50</Button>
                             <Button className='mr-1 mr-lg-0 'size='sm' value='100' size='sm' onClick={handleClick}>&#x20A6;100</Button>
                             <Button className='mr-1 mr-lg-0 'size='sm' value='200' size='sm' onClick={handleClick}>&#x20A6;200</Button>
                             <Button className='mr-1 mr-lg-0 'size='sm' value='300' size='sm' onClick={handleClick}>&#x20A6;300</Button>
-                            <Button className='mr-1 mr-lg-0 'size='sm' value='400' size='sm' onClick={handleClick}>&#x20A6;400</Button>
-                            <Button className='mr-1 mr-lg-0' size='sm' value='500' size='sm' onClick={handleClick}>&#x20A6;500</Button>
                         </div>
-                        {!logedIn && <Button size='sm' className={`mt-3 align-item-center mb-2 game`} variant='success' onClick={() => setShowModal(!showModal)}  variant="outline-success">Login To Place Bet</Button> }
+                        {!logedIn && <Button size='sm' className='mt-3 mb-2 game ml-2 ml-lg-0' variant='success' onClick={() => setShowModal(!showModal)}  variant="outline-success">Login To Place Bet</Button> }
                         {logedIn &&
-                            <Button size='sm' className={`mt-3 align-item-center mb-2 game`} variant='success' onClick={handleBetSubmit} variant="outline-success">Place Bet</Button>
+                            <Button size='sm' className='mt-3 mb-2 game ml-2 ml-lg-0' variant='success' onClick={handleBetSubmit} variant="outline-success">Place Bet</Button>
                         }
+                        {success && <section className='small_message ml-3 mt-3'>
+                            {showAlert && <span className='green'>{success}</span>}
+                        </section>}
                     </section>
 
                     {
