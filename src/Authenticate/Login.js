@@ -203,7 +203,7 @@ const Login = () => {
                     type="text"
                     name="mobile"
                     onChange={handleChange}
-                    placeholder="token"
+                    placeholder="0902xxxxxx"
                     isInvalid={!!errors.mobile}
                 />
               <Form.Control.Feedback type="invalid">

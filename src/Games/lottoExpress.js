@@ -6,7 +6,9 @@ import { useGlobalContext } from '../store/context';
 import { useHistory } from 'react-router';
 import { FaTimes } from 'react-icons/fa';
 import moment from 'moment'
+import axios from 'axios';
 import GetWhatsapp from '../Fetch/GetWhatsapp'
+import { RiBankLine, RiHome2Line, RiSdCardMiniLine, RiUserAddLine } from 'react-icons/ri';
 
 let date = new Date().getHours(0, 0, 0, 0);
 
@@ -28,6 +30,8 @@ const LottoExpress = () => {
     const [timer, setTimer] = useState(moment().format('LTS'))
     const [showModal, setShowModal] = useState(false)
     const [expressMax, setExpressMax] = useState(null)
+    const [showGameModal, setShowGameModal] = useState(false)
+    var [count, setCount] = useState(0)
 
     let nums = []
 
@@ -116,6 +120,7 @@ const LottoExpress = () => {
         } else {
             setShow(true)
             const newItem = { id: new Date().getTime().toString(), value: amount, numbers: numbers }
+            setCount(count += 1)
             setArr([...arr, newItem])
         }
 
@@ -165,6 +170,7 @@ const LottoExpress = () => {
     const removeItem = (id) => {
         let newItem = arr.filter((item) => item.id !== id)
         setArr(newItem)
+        setCount(count -= 1)
     }
 
     const Completionist = ({setDay}) => {
@@ -313,13 +319,13 @@ const LottoExpress = () => {
 
                     {
                         arr.length > 0 &&
-                        <section className={`${arr.length > 2 && 'sub_section'}`}>
+                        <section className={`${!showGameModal ? 'display' : 'c-sidebar --bet-slip is-open pt-5 background2'} ${arr.length > 2 && 'sub_section'}`}>
                             {
                                 arr.length >= 1 &&
                                 arr.map((a) => {
                                     const { id, value, numbers } = a;
                                     return (
-                                        <div key={id} className='sub_div'>
+                                        <div key={id} className={`${showGameModal ? 'sub_divs' : 'sub_div'}`}>
                                             <div className='d-flex justify-content-end'>
                                                 <FaTimes onClick={() => {
                                                     removeItem(id)
@@ -334,8 +340,9 @@ const LottoExpress = () => {
                                 })
                             }
 
-                            <Button onClick={handleSubmit} className='margin' variant='outline-success'>Place Bet</Button>
-                            {success && <section className='small_message ml-3 mt-3'>
+                            <Button onClick={handleSubmit} className='margin ml-2 mb-5' variant='outline-danger'>Place Bet</Button>
+                            <section className='mb-5'></section>
+                            {success && <section className='small_message ml-3 mt-3 mb-5'>
                                         {showAlert && <span className='green'>{success}</span>}
                                     </section>}
                                 </section>
@@ -344,6 +351,26 @@ const LottoExpress = () => {
                 </Col>
             </Row>
             {showModal && <GetWhatsapp />}
+                        <section className='bottom'>
+                <div className='game_item' onClick={() => { showGameModal && setShowGameModal(false); history.push('/') }}>
+                    <RiHome2Line className='select_icon' />
+                    <span className='select_item'>Home</span>
+                </div>
+                <div className='game_item' onClick={() => setShowGameModal(!showGameModal)}>
+                    <span className='bet_count'>{count}</span>
+                    <RiSdCardMiniLine className='select_icon' />
+                    <span className='select_item'>BetSlip</span>
+                </div>
+                <div className={`game_item ${!logedIn && 'disabled getLogged'}`} onClick={() => { showGameModal && setShowGameModal(false); history.push('/profile') }}>
+                    <RiBankLine className='select_icon' />
+                    <span className='select_item'>Deposit</span>
+                </div>
+                <div className='game_item' onClick={() => { showGameModal && setShowGameModal(false); history.push('/register') }}>
+                    <RiUserAddLine className='select_icon' />
+                    <span className='select_item'>Register</span>
+                </div>
+            
+        </section>
         </Container>
     )
 }

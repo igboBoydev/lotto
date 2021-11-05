@@ -9,6 +9,8 @@ import moment from 'moment'
 import { useHistory } from 'react-router';
 import GetWhatsapp from '../Fetch/GetWhatsapp'
 import GetVoice from '../Fetch/GetVoice'
+import { RiBankLine, RiHome2Line, RiSdCardMiniLine, RiUserAddLine } from 'react-icons/ri';
+import IntegrationNotistack from '../Fetch/IntegrationNotistack';
 
 const Games = () => {
     const { game, logedIn, days } = useGlobalContext();
@@ -44,6 +46,11 @@ const Games = () => {
     const [nap5Max, setNap5Max] = useState(null)
     const [number, setNumber] = useState(0)
     const [secArr, setSecArr] = useState([])
+    var [maxArr, setMaxArr] = useState([])
+    const [showAll, setShowAll] = useState([])
+    const [message, showMessage] = useState(false)
+    const [showGameModal, setShowGameModal] = useState(false)
+    var [count, setCount] = useState(0)
 
     const categories = [...new Set(game.map((item) => {
         return [item.name, item.startTime, item.endTime]
@@ -116,7 +123,6 @@ const Games = () => {
             setValue(value)
         }
     }
-
 
 
     const handleInputSubmit = (data) => {
@@ -192,9 +198,8 @@ const Games = () => {
             return total;
         }, 0);
         setNumber(val)
+        setCount(betSlip.length)
     }
-
-
     // http://www.v2nmobile.com/api/httpsms.php?u=${email}&p=${pass}&m=${'abelkelly}&r=${09047597017}&s=${senderID}&t=1`
 
     const calculateTotalStake1 = (newItem) => {
@@ -219,6 +224,9 @@ const Games = () => {
 
         if (val > parseInt(general)) {
             setSuccess(`Please kindly Note that you cannot place bet more than ${general} naira`)
+            return;
+        } else if (val < 1) {
+            setSuccess(`Kindly add an amount`)
             return;
         } else {
             var myHeaders = new Headers();
@@ -255,7 +263,6 @@ const Games = () => {
                     .then(response => response.json())
                     .then(result => {
                         if (result.result) {
-                            
                             setSubmited(true)
                             let show = result.result.map((res) => res)
                             if (show[0].type === 'AGAINST') {
@@ -288,8 +295,13 @@ const Games = () => {
                                 fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
                                     .then(response => response.json())
                                     .then(result => {
-                                        const { message } = result.success;
-                                        setSuccess(message)
+                                        console.log(result)
+                                        if (result.success) {
+                                            const { message } = result.success;
+                                            setSuccess(message)
+                                        } else {
+                                            console.log(result)
+                                        }
                                     })
                                     .catch(error => console.log('error', error));
 
@@ -322,8 +334,13 @@ const Games = () => {
                                 fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
                                     .then(response => response.json())
                                     .then(result => {
-                                        const { message } = result.success;
-                                        setSuccess(message)
+                                        console.log(result)
+                                        if (result.success) {
+                                            const { message } = result.success;
+                                            setSuccess(message)
+                                        } else {
+                                            console.log(result)
+                                        }
                                     })
                                     .catch(error => console.log('error', error));
                             } else {
@@ -354,8 +371,14 @@ const Games = () => {
                                 fetch("http://localhost:5016/api/v2/auth/betHistory", requestOptions)
                                     .then(response => response.json())
                                     .then(result => {
-                                        const { message } = result.success;
-                                        setSuccess(message)
+                                        if (result.success) {
+                                            const { message } = result.success;
+                                            setSuccess(message)
+                                        } else {
+                                            result.map((res) => {
+
+                                            })
+                                        }
                                     })
                                     .catch(error => console.log('error', error));
                             }
@@ -552,7 +575,6 @@ const Games = () => {
         }
     }
 
-
     useEffect(() => {
         let time = setTimeout(() => {
             setShowAlert(!showAlert)
@@ -566,9 +588,12 @@ const Games = () => {
         let newItem = betSlip.filter((item) => item.id !== id)
         if (newItem.length < 1) {
             setBetSlip([])
-             setNumber(0)
+            setCount(0)
+            setShowGameModal(false)
+            setNumber(0)
         } else {
             setBetSlip(newItem)
+            setCount(count -= 1)
             // console.log(betSlip)
             calculateTotalStake1(newItem)
         }
@@ -639,186 +664,193 @@ const Games = () => {
 
 
     const handleClass = (e, i) => {
+        // console.log(i)
+        // console.log(showAll)
         if (clicked) {
-            if (gameType === 'NAP 1' || gameType === '1 BANKER') {
-                setActiveNums((state) => {
-                    return {
-                        ...state,
-                        [i]: !state[i],
-                    };
-                });
-
-                if (arr.includes(i)) {
-                    const index = arr.indexOf(i)
-                    if (index > -1) {
-                        arr.splice(index, 1)
-                    }
-                } else {
-                    setArr([i])
-                    setGetNums((state) => {
+            if (showAll.includes(i)) {
+                showMessage(true)
+            }
+            else {
+                if (gameType === 'NAP 1' || gameType === '1 BANKER') {
+                    setActiveNums((state) => {
                         return {
                             ...state,
                             [i]: !state[i],
                         };
                     });
 
-                }
-            } else if (gameType === 'NAP 2') {
-                setActiveNums((state) => {
-                    return {
-                        ...state,
-                        [i]: !state[i],
-                    };
-                });
-
-                if (arr.includes(i)) {
-                    const index = arr.indexOf(i)
-                    if (index > -1) {
-                        arr.splice(index, 1)
-                    }
-                } else {
-                    if (arr.length < 2) {
-                        arr.push(i)
+                    if (arr.includes(i)) {
+                        const index = arr.indexOf(i)
+                        if (index > -1) {
+                            arr.splice(index, 1)
+                        }
                     } else {
+                        setArr([i])
                         setGetNums((state) => {
                             return {
                                 ...state,
                                 [i]: !state[i],
                             };
                         });
-                    }
-                }
-            } else if (gameType === 'NAP 3') {
-                setActiveNums((state) => {
-                    return {
-                        ...state,
-                        [i]: !state[i],
-                    };
-                });
 
-                if (arr.includes(i)) {
-                    const index = arr.indexOf(i)
-                    if (index > -1) {
-                        arr.splice(index, 1)
+                    }
+                } else if (gameType === 'NAP 2') {
+                    setActiveNums((state) => {
+                        return {
+                            ...state,
+                            [i]: !state[i],
+                        };
+                    });
+
+                    if (arr.includes(i)) {
+                        const index = arr.indexOf(i)
+                        if (index > -1) {
+                            arr.splice(index, 1)
+                        }
+                    } else {
+                        if (arr.length < 2) {
+                            arr.push(i)
+                        } else {
+                            setGetNums((state) => {
+                                return {
+                                    ...state,
+                                    [i]: !state[i],
+                                };
+                            });
+                        }
+                    }
+                } else if (gameType === 'NAP 3') {
+                    setActiveNums((state) => {
+                        return {
+                            ...state,
+                            [i]: !state[i],
+                        };
+                    });
+
+                    if (arr.includes(i)) {
+                        const index = arr.indexOf(i)
+                        if (index > -1) {
+                            arr.splice(index, 1)
+                        }
+                    } else {
+                        if (arr.length < 3) {
+                            arr.push(i)
+                        } else {
+                            setGetNums((state) => {
+                                return {
+                                    ...state,
+                                    [i]: !state[i],
+                                };
+                            });
+                        }
+                    }
+                } else if (gameType === 'NAP 4') {
+                    setActiveNums((state) => {
+                        return {
+                            ...state,
+                            [i]: !state[i],
+                        };
+                    });
+
+                    if (arr.includes(i)) {
+                        const index = arr.indexOf(i)
+                        if (index > -1) {
+                            arr.splice(index, 1)
+                        }
+                    } else {
+                        if (arr.length < 4) {
+                            arr.push(i)
+                        } else {
+                            setGetNums((state) => {
+                                return {
+                                    ...state,
+                                    [i]: !state[i],
+                                };
+                            });
+                        }
+                    }
+                } else if (gameType === 'NAP 5') {
+                    setActiveNums((state) => {
+                        return {
+                            ...state,
+                            [i]: !state[i],
+                        };
+                    });
+
+                    if (arr.includes(i)) {
+                        const index = arr.indexOf(i)
+                        if (index > -1) {
+                            arr.splice(index, 1)
+                        }
+                    } else {
+                        if (arr.length < 5) {
+                            arr.push(i)
+                        } else {
+                            setGetNums((state) => {
+                                return {
+                                    ...state,
+                                    [i]: !state[i],
+                                };
+                            });
+                        }
+                    }
+                } else if (gameType === 'PERM 2' || gameType === 'PERM 3' || gameType === 'PERM 4' || gameType === 'PERM 5') {
+                    setActiveNums((state) => {
+                        return {
+                            ...state,
+                            [i]: !state[i],
+                        };
+                    });
+
+                    if (arr.includes(i)) {
+                        const index = arr.indexOf(i)
+                        if (index > -1) {
+                            arr.splice(index, 1)
+                        }
+                    } else {
+                        if (arr.length < 15) {
+                            arr.push(i)
+                        } else {
+                            setGetNums((state) => {
+                                return {
+                                    ...state,
+                                    [i]: !state[i],
+                                };
+                            });
+                        }
+                    }
+                } else if (gameType === 'AGAINST') {
+                    setActiveNums((state) => {
+                        return {
+                            ...state,
+                            [i]: !state[i],
+                        };
+                    });
+
+                    if (arr.includes(i)) {
+                        const index = arr.indexOf(i)
+                        if (index > -1) {
+                            arr.splice(index, 1)
+                        }
+                    } else {
+                        const first_against = arr.slice(0, arr.indexOf(0))
+                        const second_against = arr.slice(arr.indexOf(0) + 1, arr[arr.length - 1])
+                        if ((second_against.length + first_against.length) < 20) {
+                            arr.push(i)
+                        } else {
+                            setGetNums((state) => {
+                                return {
+                                    ...state,
+                                    [i]: !state[i],
+                                };
+                            });
+                        }
                     }
                 } else {
-                    if (arr.length < 3) {
-                        arr.push(i)
-                    } else {
-                        setGetNums((state) => {
-                            return {
-                                ...state,
-                                [i]: !state[i],
-                            };
-                        });
-                    }
+                    setSuccess('Please Choose a valid game type')
+                    return;
                 }
-            } else if (gameType === 'NAP 4') {
-                setActiveNums((state) => {
-                    return {
-                        ...state,
-                        [i]: !state[i],
-                    };
-                });
-
-                if (arr.includes(i)) {
-                    const index = arr.indexOf(i)
-                    if (index > -1) {
-                        arr.splice(index, 1)
-                    }
-                } else {
-                    if (arr.length < 4) {
-                        arr.push(i)
-                    } else {
-                        setGetNums((state) => {
-                            return {
-                                ...state,
-                                [i]: !state[i],
-                            };
-                        });
-                    }
-                }
-            } else if (gameType === 'NAP 5') {
-                setActiveNums((state) => {
-                    return {
-                        ...state,
-                        [i]: !state[i],
-                    };
-                });
-
-                if (arr.includes(i)) {
-                    const index = arr.indexOf(i)
-                    if (index > -1) {
-                        arr.splice(index, 1)
-                    }
-                } else {
-                    if (arr.length < 5) {
-                        arr.push(i)
-                    } else {
-                        setGetNums((state) => {
-                            return {
-                                ...state,
-                                [i]: !state[i],
-                            };
-                        });
-                    }
-                }
-            } else if (gameType === 'PERM 2' || gameType === 'PERM 3' || gameType === 'PERM 4' || gameType === 'PERM 5') {
-                setActiveNums((state) => {
-                    return {
-                        ...state,
-                        [i]: !state[i],
-                    };
-                });
-
-                if (arr.includes(i)) {
-                    const index = arr.indexOf(i)
-                    if (index > -1) {
-                        arr.splice(index, 1)
-                    }
-                } else {
-                    if (arr.length < 15) {
-                        arr.push(i)
-                    } else {
-                        setGetNums((state) => {
-                            return {
-                                ...state,
-                                [i]: !state[i],
-                            };
-                        });
-                    }
-                }
-            } else if (gameType === 'AGAINST') {
-                setActiveNums((state) => {
-                    return {
-                        ...state,
-                        [i]: !state[i],
-                    };
-                });
-
-                if (arr.includes(i)) {
-                    const index = arr.indexOf(i)
-                    if (index > -1) {
-                        arr.splice(index, 1)
-                    }
-                } else {
-                    const first_against = arr.slice(0, arr.indexOf(0))
-                    const second_against = arr.slice(arr.indexOf(0) + 1, arr[arr.length - 1])
-                    if ((second_against.length + first_against.length) < 20) {
-                        arr.push(i)
-                    } else {
-                        setGetNums((state) => {
-                            return {
-                                ...state,
-                                [i]: !state[i],
-                            };
-                        });
-                    }
-                }
-            } else {
-                setSuccess('Please Choose a valid game type')
-                return;
-            }
+            } 
         } else {
           setShowSvg(true)
        }
@@ -893,9 +925,73 @@ const Games = () => {
     }, [gameShow.name])
 
 
+    useEffect(() => {
+        var myHeaders = new Headers();
+        myHeaders.append("signatures", "");
+        myHeaders.append("Authorization", `Bearer ${get}`);
+        myHeaders.append("Content-Type", "application/json");
+
+
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        fetch("http://localhost:5016/api/v2/auth/gettotal", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    let a = []
+                    let arr = result.success.total.bet_numbers
+                    a = Array.from(arr.split(','), Number)
+                    // setMaxArr([result.success.total.bet_numbers])
+                    setMaxArr(a)
+                }
+            })
+            .catch(error => console.log('error', error));
+        // let arr = maxArr.toString()
+        // console.log(arr.split(','))
+        // let findDuplicates = maxArr => maxArr.filter((item, index) => arr.indexOf(item) !== index)
+        // let duplicate = findDuplicates(maxArr)
+        // console.log(duplicate)
+    const countDuplicate = (a) => {
+        let count = {}
+        for (let i = 0; i < maxArr.length; i++){
+            if (count[maxArr[i]]) {
+                count[maxArr[i]] += 1;
+            } else {
+                count[maxArr[i]] = 1
+            }
+        }
+
+        let x = []
+
+        for (let prop in count) {
+            if (count[prop] >= 2) {
+                console.log(prop + " counted" + " " + count[prop] + " times")
+                x.push(parseInt(prop))
+            }
+        }
+
+        setShowAll(x)
+    }
+
+        countDuplicate(maxArr)
+        
+    }, [])
+
+    useEffect(() => {
+        let show = setTimeout(() => {
+            showMessage(false)
+        }, 7000)
+
+    }, [message])
+    
 
     return (
         <section>
+            {success && <IntegrationNotistack success={`${success}`} />}
             <div className='news pl-1 pl-lg-5 pb-2 pt-2 p_white'>
                 {timer}
              </div>
@@ -934,9 +1030,9 @@ const Games = () => {
                         })}
                 </main>
             </Col>
-                    <Col className='game_col' lg={7} >
+                    <Col className={`${showGameModal ? 'background disabled' : 'game_col'}`} lg={7} >
                         <Row>
-                            <Col>
+                            <Col className={`${showGameModal && 'display2'}`}>
                                 
                                 <section className='game_svg'>
                                     <div className='mt-2 choose_game'>
@@ -969,6 +1065,7 @@ const Games = () => {
                                     <Link className='game_links first' to='/lottoexpress'>Lotto Express</Link>
                                     <Link className='game_links ml-3' to='/softlotto'>Soft Lotto</Link>
                                     </div>
+                                    {message && <p className='white'>Please kindly note that you have exceeded the amount of picks for this number per day.</p> }
                                     <div className='d-flex flex-row justify-content-around'>
                                             <h4 className='game_header'>
                                                {gameShow.name}
@@ -1003,7 +1100,7 @@ const Games = () => {
                                     </div> */}
                                     <div className='small'>
                                          {nums.map((i)=> {
-                                        return <button key={i} name={!activeNums[i] && 'ready'} onClick={(e) => handleClass(e, i)} className={`${arr.includes(i) ? 'game_clicked' : geteNums && 'red'} game_btn `}>{i}</button>
+                                             return <button key={i} name={!activeNums[i] && 'ready'} onClick={(e) => handleClass(e, i)} className={`${arr.includes(i) ? 'game_clicked' : geteNums && 'red'} game_btn ${showAll.includes(i) && 'reds'}`}>{i}</button>
                                     })}
                                     </div>
                                    
@@ -1044,9 +1141,6 @@ const Games = () => {
                                          {submited && <Button className='mt-lg-5 btn_class' onClick={() => {history.push('/profile/betHistory')}} variant="outline-secondary">View Bets</Button>}
                                         </div>
                                     }
-                                    {success && <section className='small_message'>
-                                        {showAlert && <span className='error_message'>{success}</span>}
-                                    </section>}
                                 </section>
                             </Col>
                         </Row>
@@ -1064,13 +1158,13 @@ const Games = () => {
                     }
                 {showGames && 
                    
-                        <Col className={`${betSlip.length > 0 ? 'd_none scroll_game' : 'd'} `} lg={3}>
+                        <Col className={`${!showGameModal ? 'display' : 'c-sidebar --bet-slip is-open'} ${betSlip.length > 0 ? 'd_none scroll_game' : 'display'}`} lg={3}>
                 <section className='scroller bet_section mt-2'>
                     <div className='d-flex justify-content-between game_back'>
                         <h6 className='game_h6'>
                             {games.slice(0, 11)}
                         </h6>
-                            <button className="game_slip_btn" onClick={() => setBetSlip([])}>Clear Slip</button>
+                                <button className="game_slip_btn" onClick={() => { setBetSlip([]); setCount(0); setShowGameModal(false)}}>Clear Slip</button>
                             </div>
                             <div>
                                 {betSlip.map((data) => {
@@ -1153,11 +1247,12 @@ const Games = () => {
                                                 </div>
                                                 </section>
                                         <div className='d-flex justify-content-center'>
-                                                {!logedIn && <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={() => setShowModal(!showModal)}>Login To Place Bet</Button> }
+                                {!logedIn && <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={() => { setShowModal(!showModal); showGameModal && setShowGameModal(false)}}>Login To Place Bet</Button> }
                                 {logedIn &&
                                     <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={handleGameBet}>Place Bet</Button>
                                 }
-                                        </div>
+                            </div>
+                            
                 </section>
             </Col>
                     }
@@ -1169,6 +1264,26 @@ const Games = () => {
                 clicked={setClicked}
                 gameShow={gameShow}
             />}
+            <section className='bottom'>
+                <div className='game_item' onClick={() => { showGameModal && setShowGameModal(false); history.push('/') }}>
+                    <RiHome2Line className='select_icon' />
+                    <span className='select_item'>Home</span>
+                </div>
+                <div className='game_item' onClick={() => setShowGameModal(!showGameModal)}>
+                    <span className='bet_count'>{count}</span>
+                    <RiSdCardMiniLine className='select_icon' />
+                    <span className='select_item'>BetSlip</span>
+                </div>
+                <div className={`game_item ${!logedIn && 'disabled getLogged'}`} onClick={() => { showGameModal && setShowGameModal(false); history.push('/profile') }}>
+                    <RiBankLine className='select_icon' />
+                    <span className='select_item'>Deposit</span>
+                </div>
+                <div className='game_item' onClick={() => { showGameModal && setShowGameModal(false); history.push('/register') }}>
+                    <RiUserAddLine className='select_icon' />
+                    <span className='select_item'>Register</span>
+                </div>
+            
+        </section>
        </section>
     )
 }
