@@ -3,6 +3,7 @@ import { Form, Button, Row, Container, Col } from 'react-bootstrap';
 import { useGlobalContext } from '../store/context';
 import { Formik } from 'formik';
 import { useHistory } from 'react-router';
+import IntegrationNotistack from '../Fetch/IntegrationNotistack';
  import * as yup from 'yup';
 
 const schema = yup.object().shape({
@@ -14,106 +15,23 @@ const Login = () => {
     const { giveAccess, showBoard } = useGlobalContext();
     let history = useHistory()
     const [success, setSuccess] = useState(false)
-    const [error, setError] = useState(null)
     const [showAlert, setShowAlert] = useState(false)
-    const [password, setPassword] = useState('password')
-    const [color, setColor] = useState(false)
 
-    // const handleSubmit = (event) => {
-    //     event.preventDefault()
-
-    //     const form = event.currentTarget;
-    //     if (form.checkValidity() === false) {
-    //         event.preventDefault();
-    //         event.stopPropagation();
-    //     }
-
-        // var myHeaders = new Headers();
-        // myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
-        // myHeaders.append("timestamps", "1614848109");
-        // myHeaders.append("Content-Type", "application/json");
-
-        // var raw = JSON.stringify({
-        //     "mobile": `${users.mobile}`,
-        //     "password": `${users.password}`
-        // });
-
-        // var requestOptions = {
-        //     method: 'POST',
-        //     headers: myHeaders,
-        //     body: raw,
-        //     redirect: 'follow'
-        // };
-
-
-        // fetch("http://localhost:5016/api/v1/login", requestOptions)
-        //     .then(response => response.json())
-        //     .then(result => {
-        //         if (result.success) {
-        //             history.push('/games')
-        //             const { token } = result.success;
-        //             setShowAlert(true)
-        //             giveAccess(token)
-        //             var myHeaders = new Headers();
-        //             myHeaders.append("signatures", "5a1131f2eb747be50714281ec3e68b759476c6dc9e1faf5fc5d91c552cf8c230");
-        //             myHeaders.append("Authorization", `Bearer ${token}`);
-
-        //             var requestOptions = {
-        //                 method: 'GET',
-        //                 headers: myHeaders,
-        //                 redirect: 'follow'
-        //             };
-
-        //             fetch("http://localhost:5016/api/v2/auth/profile", requestOptions)
-        //                 .then(response => response.json())
-        //                 .then(result => {
-        //                     console.log(result)
-        //                     if (result.success) {
-        //                         const { data } = result.success;
-        //                         setSuccess(true)
-        //                         showBoard(data)
-        //                     } else {
-        //                         setSuccess('Please refresh and try again')
-        //                         return;
-        //                     }
-        //                 },
-        //                     (error) => {
-        //                         console.log(error)
-        //                     });
-        //         } else if (result.error) {
-        //             const { message } = result.error;
-        //             setError(message)
-        //         }else{
-        //             return;
-        //         }
-        //     },
-        //         (error) => {
-        //             console.log(error)
-        //         }
-        // );
-        
-    //     users.mobile = ''
-    //     users.password = ''
-    // };
-
-    
     useEffect(() => {
-        setTimeout(() => {
+        let time = setTimeout(() => {
             setShowAlert(!showAlert)
+            setSuccess('')
         }, 3000)
-    }, [success, error])
 
+        return () => clearTimeout(time)
+    }, [success]);
+    
     return (
          <section className='register_section d-flex justify-content-center'>
             <Container fluid='md'>
             <Row>
           <Col className='mt-5' md={{ span: 12, offset: 1 }}>
-                        {success ? <section>
-                            {showAlert && <span>{success}</span>}
-             </section> : <section>
-                            {showAlert && <span>{error}</span>}
-             </section>
-                        }
+        {success && <IntegrationNotistack success={`${success}`} />}
     <Formik
       validationSchema={schema}
         onSubmit={values => {
@@ -168,12 +86,10 @@ const Login = () => {
                                 (error) => {
                                     console.log(error)
                                 });
-                    } else if (result.error) {
-                        const { message } = result.error;
-                        setError(message)
-                    } else {
-                        return;
-                    }
+                  } else {
+                      setSuccess('Mobile number and password incorrect')
+                      return;
+                  }
                 },
                     (error) => {
                         console.log(error)

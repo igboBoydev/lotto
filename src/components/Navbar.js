@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGlobalContext } from '../store/context';
-import { Navbar, NavDropdown, Nav, Form, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { Navbar, NavDropdown, Nav, Form, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { useHistory } from 'react-router';
+import IntegrationNotistack from '../Fetch/IntegrationNotistack';
 import logo from '../static/assets/logo4.png'
 import GrandLotto from '../svg/GrandLotto.svg'
 
@@ -10,7 +11,7 @@ const Navigation = () => {
     let { giveAccess, giveAdminAccess, showBoard, logOut, logedIn, isLoggedIn } = useGlobalContext();
     const isMounted = useRef(true)
     let history = useHistory()
-    const [error, setError] = useState(false)
+    const [success, setSuccess] = useState(false)
     const [userLogin, setUserLogin] = useState({ mobile: '', password: '' });
     const [user, setUser] = useState(null)
      let get = localStorage.getItem('token')
@@ -22,32 +23,6 @@ const Navigation = () => {
         const value = e.target.value;
         setUserLogin({ ...userLogin, [name]: value })
     };
-
-    // useEffect(() => {
-    //     if (get) {
-    //         let inter = setInterval(() => {
-    //             var myHeaders = new Headers();
-    //             myHeaders.append("signatures", "lWMVR8oHqcoW4RFuV3GZAD6Wv1X7EQs8y8ntHBsgkug=");
-    //             myHeaders.append("timestamps", "1614848109");
-    //             myHeaders.append("Authorization", `Bearer ${get}`);
-
-    //             var requestOptions = {
-    //                 method: 'GET',
-    //                 headers: myHeaders,
-    //                 redirect: 'follow'
-    //             };
-
-    //             fetch("http://localhost:5016/api/v2/auth/games/results", requestOptions)
-    //                 .then(response => response.json())
-    //                 .then(result => console.log(result))
-    //                 .catch(error => console.log('error', error));
-            
-    //         }, 180000)
-            
-    //         return () => clearInterval(inter)
-    //     }
-    // })
-
 
       const handleSubmit = (e) => {
           e.preventDefault();
@@ -100,10 +75,8 @@ const Navigation = () => {
                               (error) => {
                                   console.log(error)
                               });
-                  } else if (result.error) {
-                      const { message } = result.error;
-                      setError(true)
                   } else {
+                      setSuccess('Mobile number and password incorrect')
                       return;
                   }
               },
@@ -176,73 +149,32 @@ const Navigation = () => {
 
 
     return (
-        <main >
-        <Navbar bg="light" expand="lg" className='d-none d-lg-flex justify-content-between'>
-            <Navbar.Brand href="/">
-                    <img src={GrandLotto} width='200px' alt="" className='nav_img' />
-                    {
-                        logedIn &&
-                        <Link className='links ml-2' to='/'>Home</Link>
-                }
-                </Navbar.Brand>
-                {!logedIn  &&
-                   <div className='d-flex'>
-                    <Form onSubmit={handleSubmit} inline justify-content-center className="d-flex form_btn">
-                        <Form.Control name="mobile" onChange={handleLogin} type="text" placeholder="090xxxxxxxx" className="mr-2" aria-label="Mobile" value={userLogin.mobile} />
-                        <Form.Control onChange={handleLogin} type="password" name="password" placeholder="Password" className="mr-2" aria-label="Password" value={userLogin.password} />
-                        <Button size='sm' type='submit' className='mr-3' variant="outline-success">Login</Button>
-                    </Form>
-                    <span className='mt-2'>
-                        <Link size='sm' className='register_btn' to='/register'>Register</Link>
-                    </span>
-                       
-                </div>
-                }
-                {
-                    logedIn &&
-                    <section className='d-flex mr-5'>
-                            <DropdownButton
-                            className='nav_dropdown'
-                            variant='secondary'
-                            size='sm'
-                                menuAlign="left"
-                                title="View Profile Here"
-                                id="dropdown-menu-align-right"
-                            >
-                                <Dropdown.Item href="/profile">View Profile</Dropdown.Item>
-                                <Dropdown.Item onClick={handleLogOut}>Log out</Dropdown.Item>
-                                <Dropdown.Item onClick={handleTransactionHistory}>Transaction History</Dropdown.Item>
-                                <Dropdown.Item onClick={handleBetHistory}>Bet History</Dropdown.Item>
-                                <Dropdown.Item onClick={() => {
-                                    history.push('/profile/results')
-                                }}>Draw Results</Dropdown.Item>
-                            </DropdownButton> 
-                    </section>
-                }
-        </Navbar>
+        <header>
+        {success && <IntegrationNotistack success={`${success}`} />}
+  <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark" style={{height: '74px'}}>
+    <div className="container-fluid ms-2">
+      <a className="navbar-brand" href="/">
+        <img src="assets/brand/GrandLotto.svg" alt="" width="200px" height="60px" className="d-inline-block align-text-top nav_img" />
+      </a>
+      <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span className="navbar-toggler-icon"></span>
+      </button>
+      
+      <div className="collapse navbar-collapse d-md-flex justify-content-end" id="navbarCollapse">
         
-
-        <Navbar bg="light" expand="lg" className='d-flex d-lg-none'>
-                <Navbar.Brand href="/">
-                    <img src={GrandLotto} width='150px' alt="" className='nav_img' />
-                    
-                </Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" className='nav_toggle' />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                        {!logedIn &&
-                               <Form className='nav_form'>
-                                   <Form.Control name='mobile'  className='me-4 "mr-2' onChange={handleLogin} type="text" placeholder="090xxxxx" aria-label="Mobile" value={userLogin.mobile} />
-                                   <Form.Control name='password' className='mt-2 "mr-2' onChange={handleLogin} type="password" placeholder="Password" aria-label="Password" value={userLogin.password}  />
-                            <Button size='sm' className='m-2' onClick={handleSubmit} variant="outline-success">Login</Button>
-                        <span className='mt-4'>
-                            <Link size='sm' id='btn' className='register_btn' to='/register'>Register</Link>
-                        </span>
-                                  
-                        </Form>
-                      }
-                        {logedIn &&
-                            <section className='d-flex'>
+                        {!logedIn && <section className='d-flex flex-column flex-md-row'>
+                            <form className="d-flex">
+                                <input className="form-control ml-2 mr-2" type="text" id="phone" name='mobile' onChange={handleLogin} value={userLogin.mobile} placeholder="Phone" />
+                                <input className="form-control ml-2 mr-2" type="password" id="password" onChange={handleLogin} name='password' placeholder="Password" value={userLogin.password} />
+                                <button className="btn btn-success ml-2 mr-2" type="submit" onClick={handleSubmit}>Login</button>
+          
+                            </form>
+                            <a href="/register"><button className="btn btn-outline-primary fredbut me-2 mt-2 mt-md-0">Sign Up</button></a>
+                        </section>
+                        }
+                        {
+                            logedIn &&
+                            <section className='d-flex flex-end'>
                  
                                 <DropdownButton
                                 className='nav_dropdown'
@@ -262,12 +194,12 @@ const Navigation = () => {
                             </DropdownButton>
                    
                             </section>
+                        
                         }
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-            
-        </main>
+      </div>
+    </div>
+  </nav>
+</header>
     )
 }
 

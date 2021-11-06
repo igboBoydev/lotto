@@ -10,7 +10,10 @@ import { useHistory } from 'react-router';
 import GetWhatsapp from '../Fetch/GetWhatsapp'
 import GetVoice from '../Fetch/GetVoice'
 import { RiBankLine, RiHome2Line, RiSdCardMiniLine, RiUserAddLine } from 'react-icons/ri';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faApple, faGooglePlay, faFacebook, faYoutube, faTwitter, faInstagram } from '@fortawesome/free-brands-svg-icons'
 import IntegrationNotistack from '../Fetch/IntegrationNotistack';
+import { array } from 'yup';
 
 const Games = () => {
     const { game, logedIn, days } = useGlobalContext();
@@ -21,9 +24,8 @@ const Games = () => {
     const [geteNums, setGetNums] = useState(false)
     let [gameType, setGameType] = useState('NAP 1')
     const [games, setGames] = useState('EMBASSY')
-    const [totalStake, setTotalStake] = useState('')
     const [subValue, setSubValue] = useState(0)
-    const [value, setValue] = useState(0)
+    const [value, setValue] = useState(0);
     let [arr, setArr] = useState([])
     const [success, setSuccess] = useState('')
     let [betSlip, setBetSlip] = useState([])
@@ -51,6 +53,8 @@ const Games = () => {
     const [message, showMessage] = useState(false)
     const [showGameModal, setShowGameModal] = useState(false)
     var [count, setCount] = useState(0)
+    const [how, setHow] = useState(true)
+    const [slip, setSlip] = useState(false)
 
     const categories = [...new Set(game.map((item) => {
         return [item.name, item.startTime, item.endTime]
@@ -407,7 +411,11 @@ const Games = () => {
         e.preventDefault()
         setActiveNums(false)
         setGetNums(false)
-        if (gameType === 'NAP 1') {
+        if (array.length < 1) {
+            setSuccess('Please Select numbers to play')
+            return;
+        }else{
+            if (gameType === 'NAP 1') {
             if (arr.length < 1) {
                 return;
             } else if (arr.length > 1 && arr.length < 3) {
@@ -434,42 +442,42 @@ const Games = () => {
             if (arr.length < 2) {
                 setSuccess('Please select atleast 2 numbers')
                 return;
-            }else if (arr.length > 2) {
+            } else if (arr.length > 2) {
                 gameType = 'PERM 2'
                 setGameType(gameType)
                 setSuccess('Your game type has been automatically changed to PERM 2 because the numbers picked are greater than 2; kindly choose 2 numbers only for NAP 2 and proceed or continue with the PERM 2 game type')
                 createSlip()
-                 setShowGames(true)
+                setShowGames(true)
             } else if (arr.length > 15) {
                 setSuccess('Please Select atmost 15 numbers')
                 return;
             } else {
                 createSlip()
-                 setShowGames(true)
+                setShowGames(true)
             }
         } else if (gameType === 'NAP 3') {
-            if(arr.length < 3){
+            if (arr.length < 3) {
                 setSuccess('Please select atleast 3 numbers')
                 return;
-            }else if (arr.length > 3) {
-                 gameType = 'PERM 2'
+            } else if (arr.length > 3) {
+                gameType = 'PERM 2'
                 setGameType(gameType)
                 setSuccess('Your game type has been automatically changed to PERM 2 because the numbers picked are greater than 3; kindly choose 3 numbers only for NAP 2 and proceed or continue with the PERM 2 game type')
                 createSlip()
-                 setShowGames(true)
+                setShowGames(true)
             } else if (arr.length > 15) {
                 setSuccess('Please Select atmost 15 numbers')
                 return;
             } else {
                 createSlip()
-                 setShowGames(true)
+                setShowGames(true)
             }
         } else if (gameType === 'NAP 4') {
             if (arr.length < 4) {
                 setSuccess('Please select atleast 4 numbers')
                 return;
-            }else if (arr.length > 4) {
-                 gameType = 'PERM 2'
+            } else if (arr.length > 4) {
+                gameType = 'PERM 2'
                 setGameType(gameType)
                 setSuccess('Your game type has been automatically changed to PERM 2 because the numbers picked are greater than 4; kindly choose 4 numbers only for NAP 2 and proceed or continue with the PERM 2 game type')
                 createSlip()
@@ -479,18 +487,18 @@ const Games = () => {
                 return;
             } else {
                 createSlip()
-                 setShowGames(true)
+                setShowGames(true)
             }
         } else if (gameType === 'NAP 5') {
             if (arr.length < 5) {
-                 setSuccess('Please select atleast 5 numbers')
+                setSuccess('Please select atleast 5 numbers')
                 return;
-            }else if (arr.length > 5) {
+            } else if (arr.length > 5) {
                 gameType = 'PERM 2'
                 setGameType(gameType)
                 setSuccess('Your game type has been automatically changed to PERM 2 because the numbers picked are greater than 5; kindly choose 5 numbers only for NAP 2 and proceed or continue with the PERM 2 game type')
                 createSlip()
-                 setShowGames(true)
+                setShowGames(true)
             } else if (arr.length > 15) {
                 setSuccess('Please Select atmost 15 numbers')
                 return;
@@ -498,7 +506,7 @@ const Games = () => {
                 createSlip()
                 setShowGames(true)
             }
-        }else if(gameType === 'PERM 2'){
+        } else if (gameType === 'PERM 2') {
             if (arr.length < 3) {
                 setSuccess('Please Select atleast 3 numbers')
                 return
@@ -508,7 +516,7 @@ const Games = () => {
             } else {
                 createSlip()
                 setShowGames(true)
-             }
+            }
         } else if (gameType === 'PERM 3') {
             if (arr.length < 4) {
                 setSuccess('Please Select atleast 4 numbers')
@@ -542,13 +550,13 @@ const Games = () => {
                 createSlip()
                 setShowGames(true)
             }
-        }else if (gameType === '1 BANKER') {
+        } else if (gameType === '1 BANKER') {
             if (!arr.length) {
                 setSuccess('Please Select a single number')
                 return
             }
-             let y = arr[arr.length - 1]
-             arr = y
+            let y = arr[arr.length - 1]
+            arr = y
             setShowGames(true)
             createSlip()
         } else if (gameType === 'AGAINST') {
@@ -565,13 +573,14 @@ const Games = () => {
             } else if (first_against.length > max || second_against.length > max) {
                 setSuccess('please choose atmost 10 numbers for either of the against games')
                 return;
-            }else {
+            } else {
                 createSlip()
                 setShowGames(true)
             }
         } else {
             createSlip()
             setShowGames(true)
+        }
         }
     }
 
@@ -588,6 +597,8 @@ const Games = () => {
         let newItem = betSlip.filter((item) => item.id !== id)
         if (newItem.length < 1) {
             setBetSlip([])
+            setHow(true)
+            setSlip(false)
             setCount(0)
             setShowGameModal(false)
             setNumber(0)
@@ -662,13 +673,67 @@ const Games = () => {
         
     }, [])
 
+    const handleRandom = e => {
+        setGameType('PERM 2')
+        e.preventDefault()
+        let ar = []
+        if (showAll.length > 0) {
+            let num = generateRandom(90, showAll);
+            let num1 = generateRandom(90, showAll);
+            let num2 = generateRandom(90, showAll);
+            let num3 = generateRandom(90, showAll);
+            let num4 = generateRandom(90, showAll);
+            let num5 = generateRandom(90, showAll);
+
+            function generateRandom(max, except) {
+                const exceptSet = new Set(except);
+                let result;
+
+                do {
+                    result = Math.floor(Math.random() * max) + 1;
+                } while (exceptSet.has(result));
+
+                return result;
+            }
+            ar = [num, num1, num2, num3, num4]
+            let numberSet = new Set(ar)
+            let a = [...numberSet]
+            if (a.length !== 5) {
+                a.push(num5)
+                let x = new Set(a)
+                let b = [...x]
+                setArr(b)
+            } else {
+                setArr(a)
+            }
+        } else {
+            const number = Math.floor(Math.random() * 90) + 1
+            const number1 = Math.floor(Math.random() * 90) + 1
+            const number2 = Math.floor(Math.random() * 90) + 1
+            const number3 = Math.floor(Math.random() * 90) + 1
+            const number4 = Math.floor(Math.random() * 90) + 1
+            const num5 = Math.floor(Math.random() * 90) + 1
+            ar = [number, number1, number2, number3, number4]
+            let numberSet = new Set(ar)
+            let a = [...numberSet]
+            if (a.length !== 5) {
+                a.push(num5)
+                let x = new Set(a)
+                let b = [...x]
+                setArr(b)
+            } else {
+                setArr(a)
+            }
+        }
+
+    }
+
 
     const handleClass = (e, i) => {
-        // console.log(i)
-        // console.log(showAll)
         if (clicked) {
             if (showAll.includes(i)) {
-                showMessage(true)
+                setSuccess('You cannot pick this number as you have exceeded the amount of picks for this number per day')
+                return;
             }
             else {
                 if (gameType === 'NAP 1' || gameType === '1 BANKER') {
@@ -981,36 +1046,47 @@ const Games = () => {
         
     }, [])
 
-    useEffect(() => {
-        let show = setTimeout(() => {
-            showMessage(false)
-        }, 7000)
-
-    }, [message])
-    
-
     return (
-        <section>
+        <section className='black_bg'>
             {success && <IntegrationNotistack success={`${success}`} />}
-            <div className='news pl-1 pl-lg-5 pb-2 pt-2 p_white'>
+            <div className='news pl-1 pl-lg-5 pb-2 pt-2 p_white d-flex justify-content-between'>
                 {timer}
+                <Link className='game_links first pt-1' to='/lottoexpress'>Lotto Express</Link>
+                <Link className='game_links ml-3 pt-1' to='/softlotto'>Soft Lotto</Link>
+                                                        <Link to='#'>
+                                          <p className='game_links first'>How to Play</p>
+                                        </Link>
+                                        <Link to='#'>
+                                           <p className='game_links first'>Deposit Fund</p>
+                                        </Link>
+                                        <Link to='#'>
+                                           <p className='game_links first'>First Bet</p>
+                                        </Link>
+                                                                    <div class="d-flex flex-right mr-2">
+                                        <Link to='https://www.facebook.com'>
+                                           <FontAwesomeIcon className=' backg color3' size-mode='1x' icon={faFacebook} />
+                                        </Link>
+                                        <Link to='https://www.twitter.com'>
+                                           <FontAwesomeIcon className='ml-1 mr-1 backg color4' size-md='1x' icon={faTwitter} />
+                                        </Link>
+                                        <Link to='https://www.instagram.com'>
+                                           <FontAwesomeIcon className='mr-1 backg color5' size-md='1x' icon={faInstagram} />
+                                        </Link>
+                                        <Link to='https://www.youtube.com'>
+                                           <FontAwesomeIcon className=' backg color6'  size-md='1x' icon={faYoutube} />
+                                        </Link>       
+                </div>
              </div>
             <Container fluid>
                  <Row>
-            <Col className='pl-4 days_column scrollbar d-none color d-lg-inline' lg={2}>
-                <h6 className='draw'>Daily Draws</h6>
-                        <main className='days scrollContent'>
+            <Col className='' md={3}>
                         {days.map((day, i) => {  
                         return (
-                            <section className='category'>
-                                <div className='game_flex' key={i} onClick={(e) => handleCategory(e, i)}>
-                                   <span className='span1'>{day}</span>
-                                   {!secArr.includes(i) ? <span className='span'>+</span> : <span className='span'>-</span>}
-                                    {/* {secArr.includes(i) && <span className='span'>-</span>} */}
-                                   {/* {!secArr[i] && show[i] ? <span className='span'>+</span> :  <span className='span'>-</span>} */}
+                            <section className=''>
+                                <div className='htext' key={i} onClick={(e) => handleCategory(e, i)}>
+                                   <span className=''>{day}</span>
                                 </div>
                                 {
-                                    // show[i] &&
                                     <div className='game_types'>
                                         {game.map((gam) => {
                                             if (secArr.includes(i) && daysShow.includes(gam.day.charAt(0).toUpperCase() + gam.day.slice(1))) {
@@ -1028,55 +1104,22 @@ const Games = () => {
                         )
 
                         })}
-                </main>
-            </Col>
-                    <Col className={`${showGameModal ? 'background disabled' : 'game_col'}`} lg={7} >
+                    </Col>
+                    <Col md={5} className='boxplay'>
                         <Row>
                             <Col className={`${showGameModal && 'display2'}`}>
-                                
-                                <section className='game_svg'>
-                                    <div className='mt-2 choose_game'>
-                                        <img onClick={() => setShowVoice(!showVoice)} className='game_hamburger' src={hamburger} alt="" />
-                                    </div>
-                                {
-                                    showSvg &&
-
-                                        <div id="arrowAnim">
-  <div className="arrowSliding">
-    <div className="arrow"></div>
-  </div>
-  <div className="arrowSliding delay1">
-    <div className="arrow"></div>
-  </div>
-  <div className="arrowSliding delay2">
-    <div className="arrow"></div>
-  </div>
-  <div className="arrowSliding delay3">
-    <div className="arrow"></div>
-  </div>
-</div>
-                                
-                            }
-
-                            </section>
-
-                                <section className='game_section'>
-                                    <div className='d-md-flex mb-4 ml-2 ml-lg-0'>
-                                    <Link className='game_links first' to='/lottoexpress'>Lotto Express</Link>
-                                    <Link className='game_links ml-3' to='/softlotto'>Soft Lotto</Link>
-                                    </div>
-                                    {message && <p className='white'>Please kindly note that you have exceeded the amount of picks for this number per day.</p> }
-                                    <div className='d-flex flex-row justify-content-around'>
-                                            <h4 className='game_header'>
+                                    <div className='d-flex justify-between pt-3'>
+                                            <h4 className='h4_font'>
                                                {gameShow.name}
                                             </h4>
-                                            {gameShow.start && <p className='color_white pt-2'>Start Time: {gameShow.start}</p>}
-                                           {gameShow.end &&  <p className='color_white pt-2'>End Time: {gameShow.end}</p>}
+                                            {gameShow.start && <p className='col-md-4 text-center'> <span className='span_h4'>Draw:</span> <span className='span_h4'>{gameShow.start} <small>UTC</small></span></p>}
+                                           {gameShow.end &&  <p className='col-md-4 text-end'> <span className='span_h4'>Closes:</span> <span className='span_h4'>{gameShow.end} <small>UTC</small> </span></p>}
                                     </div>
-
-                                    {gameType === 'AGAINST' && <Button variant='danger' onClick={handleAgainst} className={`small_class ml-2 ml-lg-0 ${arr.length > 0 ? '' : 'disabled' }`}>Against</Button>}
+                            </Col>
+                            </Row>
+                                    {gameType === 'AGAINST' && <Button variant='danger' onClick={handleAgainst} className={`small_class ml-2 mb-2 ml-lg-0 ${arr.length > 0 ? '' : 'disabled' }`}>Against</Button>}
                                     
-                                    <Form className='mb-3 mt-2 form_width' onChange={handleChange}>
+                                    <Form className='form-select form-select-sm align-center' onChange={handleChange}>
                                         <Form.Group controlId="exampleForm.SelectCustom">
                                             <Form.Control as="select" custom>
                                             <option value='NAP 1'>NAP 1</option>
@@ -1093,72 +1136,134 @@ const Games = () => {
                                         </Form.Control>
                                         </Form.Group>
                                     </Form>
-                                    {/* <div className='small'>
-                                         {nums.map((i)=> {
-                                        return <button key={i} name={!activeNums[i] && 'ready'} onClick={(e) => handleClass(e, i)} className={`${arr.includes(i) && 'game_clicked' } game_btn `}>{i}</button>
-                                    })}
-                                    </div> */}
-                                    <div className='small'>
-                                         {nums.map((i)=> {
-                                             return <button key={i} name={!activeNums[i] && 'ready'} onClick={(e) => handleClass(e, i)} className={`${arr.includes(i) ? 'game_clicked' : geteNums && 'red'} game_btn ${showAll.includes(i) && 'reds'}`}>{i}</button>
-                                    })}
-                                    </div>
-                                   
-                                </section>
+                        <div className='mt-2 text-center'>
+                            {nums.map((i) => {
+                                return <Button key={i} name={!activeNums[i] && 'ready'} onClick={(e) => handleClass(e, i)} className={`${arr.includes(i) ? 'game_clicked' : geteNums && 'red'} balx ${showAll.includes(i) && 'reds'}`} variant='outline-primary'>{i}</Button>
+                            })}
+                        </div>
+                        <Row className="clearfix mt-2">
+                            <Col md={4}>
+                                <Button variant='outline-primary' className='thew' onClick={handleRandom}>Quick Pick</Button>
                             </Col>
-                            <Col>
-                                <section>
-                                    <h6 className='game_type_desc'>
-                                        {
-                                            gameType === 'NAP 1' ? <span>Pick 1 Numbers And If They Are Drawn You Win 40 multiplied by Your Ticket Cost. <br /> <strong className="str_red">Note: You cannot play more than &#x20A6;{nap1Max} on NAP 1 games</strong> </span> :
-                                                gameType === 'NAP 2' ? <span>Pick 2 Numbers And If They Are Drawn You Win 240 multiplied by Your Ticket Cost. <br />
-                                                    <strong className='str_red'>Note: You cannot play more than &#x20A6;{nap2Max} on NAP 2 games</strong>
-                                                </span> :
-                                            gameType === 'PERM 2' ||
-                                            gameType === 'PERM 3' ||
-                                            gameType === 'PERM 4' ||
-                                            gameType === 'PERM 5' ? 'Perm Games Are Exciting But More Complex So Please Read Our Guide On This.' :
-                                                        gameType === 'NAP 3' ? <span>Pick 3 Numbers And If They Are Drawn You Win 2,100 multiplied by Your Ticket Cost. <br />
-                                                         <strong className='str_red'>Note: You cannot play more than &#x20A6;{nap3Max} on NAP 3 games</strong>
-                                                        </span> :
-                                                            gameType === 'NAP 4' ? <span>Pick 4 Numbers And If They Are Drawn You Win 6,000 multiplied by Your Ticket Cost. <br />
-                                                            <strong className='str_red'>Note: You cannot play more than &#x20A6;{nap4Max} on NAP 4 games</strong>
-                                                            </span> :
-                                                                gameType === 'NAP 5' ? <span>Pick 5 Numbers And If They Are Drawn You Win 44,000 multiplied by Your Ticket Cost. <br />
-                                                                <strong className='str_red'>Note: You cannot play more than &#x20A6;{nap5Max} on NAP 5 games</strong>
-                                                                </span> :
-                                            gameType === '1 BANKER' ? 'Pick A Number And If Its Drawn You Win 960 multiplied by Your Single Stake Amount, If you choose more than one number only the last number would be played' : 
-                                            gameType === 'AGAINST' ? 'Permutations Of Numbers Against Each Other.(Num Winnings Lines) multiplied by (Stake Amount Per Line) multiplied by 240 = Winnings': null
-                                        }
-                                    </h6>
-                                    {
-                                        hideButton && gameType === "AGAINST" &&
-                                              <Button className='mt-5 ml-2 ml-lg-0 mb-2' onClick={handleBets} variant="outline-secondary">Place Bet</Button>
-                                        }
-                                    {gameType !== 'AGAINST' &&
-                                        <div>
-                                        <Button className='mt-lg-5 btn_class' onClick={handleBets} variant="outline-secondary">Place Bet</Button>
-                                         {submited && <Button className='mt-lg-5 btn_class' onClick={() => {history.push('/profile/betHistory')}} variant="outline-secondary">View Bets</Button>}
-                                        </div>
-                                    }
-                                </section>
+                            {
+                                hideButton && gameType === "AGAINST" &&
+                                <Col md={5}>
+                                    <Button variant='outline-success' className='thew mt-2 mb-2 mt-lg-0 mb-lg-0' onClick={handleBets}>Add To BetSlip</Button>
+                                </Col>
+                            }
+                            {
+                                gameType !== "AGAINST" &&
+                                <Col md={5}>
+                                    <Button variant='outline-success' className='thew  mt-2 mb-2 mt-lg-0 mb-lg-0' onClick={handleBets}>Add To BetSlip</Button>
+                                </Col>
+                            }
+                            <Col md={3}>
+                                <Button variant='outline-danger' className='thew' onClick={() => { setBetSlip([]); setHow(true); setSlip(false); setCount(0); setShowGameModal(false)}}>Clear</Button>
                             </Col>
+                      </Row>
+                    </Col>
+                    <Col md={3} className='show1'>
+                        <Row className='mt-2'>
+                            <div className={`col-md-6 col-sm-6 mbox1 text-center ${betSlip.length < 1 && 'disabled'}`} onClick={() => { setSlip(true); setHow(false); }}>BetSlip <span class="badge bg-secondary">{count}</span></div>
+                            <div className="col-md-6 col-sm-6 text-center mgames1" onClick={() => { setSlip(false); setHow(true); }}>How To</div>
+                        </Row>
+                        <Row>
+                        {
+                            how ?
+                            <div className="mybo col-sm-12" id="howto">
+                            <ul>
+                                <li>Choose a draw to play in (all the draw are at the same format, just a different times)</li>
+                                <li>Set how much to play for your ticket (Min &#x20A6;5 and Max &#x20A6;{general})</li>
+                                <li> NAP 1 Pick 1 Numbers And If They Are Drawn You Win 40 multiplied by Your Ticket Cost.
+                                <br />
+                                <strong className="str_red">Note: You cannot play more than &#x20A6;{nap1Max} on NAP 1 games</strong>
+                                </li>
+                                <li> NAP 2 Pick 2 Numbers And If They Are Drawn You Win 240 multiplied by Your Ticket Cost.
+                                <br />
+                                <strong className="str_red">Note: You cannot play more than &#x20A6;{nap2Max} on NAP 2 games</strong>
+                                </li>
+                                <li> NAP 3 Pick 3 Numbers And If They Are Drawn You Win 2100 multiplied by Your Ticket Cost.
+                                <br />
+                                <strong className="str_red">Note: You cannot play more than &#x20A6;{nap3Max} on NAP 3 games</strong>
+                                </li>
+                                <li> NAP 4 Pick 4 Numbers And If They Are Drawn You Win 6000 multiplied by Your Ticket Cost.
+                                <br />
+                                <strong className="str_red">Note: You cannot play more than &#x20A6;{nap4Max} on NAP 4 games</strong>
+                                </li>
+                                <li> NAP 5 Pick 5 Numbers And If They Are Drawn You Win 44,000 multiplied by Your Ticket Cost.
+                                <br />
+                                <strong className="str_red">Note: You cannot play more than &#x20A6;{nap5Max} on NAP 5 games</strong>
+                                </li>
+                                <li> PERM 2 Pick atleast 3 Numbers And If They Are Drawn You Win 240 multiplied by Your Ticket Cost.</li>
+                                <li> PERM 3 Pick 1 Numbers And If They Are Drawn You Win 2100 multiplied by Your Ticket Cost.</li>
+                                <li> PERM 4 Pick 1 Numbers And If They Are Drawn You Win 6000 multiplied by Your Ticket Cost.</li>
+                                <li> PERM 5 Pick 1 Numbers And If They Are Drawn You Win 44,000 multiplied by Your Ticket Cost.</li>
+                                <li>1 BANKER Pick 1 Numbers And If They Are Drawn You Win 4 multiplied by Your Ticket Cost.</li>
+                                <li>AGAINST Pick atleast 2 Numbers click the AGAINST button and pick atleast two numbers to pllay and If They Are Drawn You Win 240 multiplied by numbers won and your Ticket Cost.</li>
+                            </ul>
+                                    </div> :
+                                <section className='scroller bet_section mt-2'>
+                    <div className='d-flex justify-content-between game_back'>
+                            </div>
+                            <div>
+                                {betSlip.map((data) => {
+                                    const { type, lines, id, gameId, stakeList, stakeList2, amount } = data;
+                                    return (
+                                        <main key={id} className='get_line'>
+                                            <div className='d-flex justify-content-end'>
+                                                <FaTimes onClick={() => {
+                                                   removeItem(id)
+                                                }}
+                                                    className='cancel_game'
+                                                />
+                                            </div>
+                                            <div>
+                                            <p className='p_type'>Lines: {lines}</p>
+                                            <p className='p_type'>Type: {type}</p>
+                                                {stakeList && stakeList2 && <p className='p_type'>Numbers: {`${stakeList.toString()} ${stakeList2.toString()}`}</p>}
+                                                {gameType !== 'AGAINST' && stakeList && <p className='p_type'>Numbers: {stakeList.toString()} </p>}
+                                                <p className='p_type'>Enter Stake Amount: {amount}</p>
+                                                <Form key={id} onSubmit={(e) => {
+                                                    e.preventDefault();
+                                                    handleInputSubmit(data)
+                                                }
+                                                }>
+                                                      <InputGroup size='sm' className="mb-3">
+                                                        <Form.Control className='form_input' onChange={(e) => handleInputChange(e, type)} value={value} size='sm' placeholder='Amount' />
+                                                          <Button className='btn_secondary' type='submit' size='sm' variant='outline-secondary'>Submit</Button>
+  </InputGroup>
+
+                                                </Form>
+                                             </div>
+                                        </main>
+                                        
+                                    )
+                                })}
+                            </div>
+                                                                        <section className='mt-2'>
+                                                <div className='d-flex justify-content-between'>
+                                                   <p className='p_type'>Number of Bets: </p>
+                                                   <p className='p_type'>{betSlip.length}</p>
+                                                </div>
+                                                <div className='d-flex justify-content-between'>
+                                                    <p className='p_type'>Total Stake: </p>
+                                                   <p className='p_type'>&#x20A6;{number}</p>
+                                                </div>
+                                                </section>
+                                        <div className='d-flex justify-content-center'>
+                                {!logedIn && <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={() => { setShowModal(!showModal); showGameModal && setShowGameModal(false)}}>Login To Place Bet</Button> }
+                                {logedIn &&
+                                    <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={handleGameBet}>Place Bet</Button>
+                                }
+                            </div>
+                            
+                </section>    
+                            }
                         </Row>
                     </Col>
-                    {!showGames && 
-                        <Col lg={3}>
-                        <section className='mt-2 ml-2 ml-lg-0 mb-2 mb-lg-0 pt-5 register_game_section'>
-                            <h6>Not part of the family yet ? Register and join the feeling of being a part of GrandLOtto</h6>
-                            <Button className='ml-2 mb-2' variant='success'>{!logedIn ? 'Register' : 'Play Now'}</Button>
-                        </section>
-                        <section className='mt-2 ml-2 ml-lg-0 mb-2 mb-lg-0 pt-5 d-none d-lg-inline'>
-                            <img src={play} alt="" className='game_section_svg' />
-                        </section>
-                        </Col>
-                    }
                 {showGames && 
                    
-                        <Col className={`${!showGameModal ? 'display' : 'c-sidebar --bet-slip is-open'} ${betSlip.length > 0 ? 'd_none scroll_game' : 'display'}`} lg={3}>
+                        <Col className={`${!showGameModal ? 'display' : 'c-sidebar --bet-slip is-open'} ${betSlip.length > 0 ? 'd_none scroll_game' : 'display'}`} md={3}>
                 <section className='scroller bet_section mt-2'>
                     <div className='d-flex justify-content-between game_back'>
                         <h6 className='game_h6'>
@@ -1193,43 +1298,8 @@ const Games = () => {
                                                         <Form.Control className='form_input' onChange={(e) => handleInputChange(e, type)} value={value} size='sm' placeholder='Amount' />
                                                           <Button className='btn_secondary' type='submit' size='sm' variant='outline-secondary'>Submit</Button>
   </InputGroup>
-                                                {/* <Form.Control size='sm' className='form_input' value={value} onChange={(e) => handleInputChange(e, type)} type="text" placeholder={`${data.amount || value || 'Amount'}`} />
-                                                </Form> */}
+
                                                 </Form>
-                                                {gameType !== 'NAP 1' && gameType !== 'NAP 2' && gameType !== 'NAP 3' && gameType !== 'NAP 4' && gameType !== 'NAP 5' &&
-                                                <div className='mt-2 d-flex justify-content-lg-between'>
-                                                <Button className='mr-2 mr-lg-0 games game' value='50' size='sm' onClick={() => {
-                                                        data.amount = 50 * lines;
-                                                        data.amounts = 50
-                                                        calculateTotalStake()
-                                                }}>50</Button>
-                                                <Button className='mr-2 mr-lg-0 'size='sm' value='100' size='sm' onClick={() => {
-                                                        data.amount = 100 * lines;
-                                                        data.amounts = 100
-                                                        calculateTotalStake()
-                                                }}>100</Button>
-                                                <Button className='mr-2 mr-lg-0 'size='sm' value='200' size='sm' onClick={() => {
-                                                        data.amount = 200 * lines;
-                                                        data.amounts = 200
-                                                        calculateTotalStake()
-                                                }}>200</Button>
-                                                <Button className='mr-2 mr-lg-0 'size='sm' value='300' size='sm' onClick={() => {
-                                                        data.amount = 300 * lines;
-                                                        data.amounts = 300
-                                                        calculateTotalStake()
-                                                }}>300</Button>
-                                                <Button className='mr-2 mr-lg-0 'size='sm' value='400' size='sm' onClick={() => {
-                                                        data.amount = 400 * lines;
-                                                        data.amounts = 400
-                                                        calculateTotalStake()
-                                                }}>400</Button>
-                                                <Button className='mr-2 mr-lg-0' size='sm' value='500' size='sm' onClick={() => {
-                                                        data.amount = 500 * lines;
-                                                        data.amounts = 500
-                                                        calculateTotalStake()
-                                                }}>500</Button>
-                                            </div>
-                                }
                                              </div>
                                         </main>
                                         
@@ -1256,6 +1326,14 @@ const Games = () => {
                 </section>
             </Col>
                     }
+                    <div class="row win">
+                        <Col>
+                           WIN 30 MILLION
+                        </Col>
+                  {/* <div class="col-md-12 col-sm-12 col-xs-12">
+                      
+                  </div> */}
+              </div>
         </Row>
             </Container>
             {showModal && <GetWhatsapp />}

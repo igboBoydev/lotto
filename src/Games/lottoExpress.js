@@ -1,37 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Container, Button, Form } from 'react-bootstrap'
+import { Row, Col, Container, Button, Form, InputGroup } from 'react-bootstrap'
 import { Link } from 'react-router-dom';
 import Countdown from "react-countdown";
 import { useGlobalContext } from '../store/context';
 import { useHistory } from 'react-router';
 import { FaTimes } from 'react-icons/fa';
 import moment from 'moment'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faApple, faGooglePlay, faFacebook, faYoutube, faTwitter, faInstagram } from '@fortawesome/free-brands-svg-icons'
 import axios from 'axios';
 import GetWhatsapp from '../Fetch/GetWhatsapp'
+import play from '../svg/play.svg'
 import { RiBankLine, RiHome2Line, RiSdCardMiniLine, RiUserAddLine } from 'react-icons/ri';
+import IntegrationNotistack from '../Fetch/IntegrationNotistack';
 
 let date = new Date().getHours(0, 0, 0, 0);
 
 const LottoExpress = () => {
     const [activeNums, setActiveNums] = useState(false)
+    const [value, setValue] = useState(0);
+    const [showAlert, setShowAlert] = useState(false)
+    const [number, setNumber] = useState(0)
     const history = useHistory()
     const { logedIn } = useGlobalContext();
     let [array, setArray] = useState([])
     let [day, setDay] = useState(date)
-    const [numbers, setNumbers] = useState([])
-    const [error, setError] = useState('')
-    const [amount, setAmount] = useState('')
-    const [show, setShow] = useState(false)
+    const [betSlip, setBetSlip] = useState([])
+    let [arr, setArr] = useState([])
     const [getBet, setGetBet] = useState(false)
-    const [arr, setArr] = useState([])
-    const [showAlert, setShowAlert] = useState(false)
     const [success, setSuccess] = useState('')
     const [geteNums, setGetNums] = useState(false)
     const [timer, setTimer] = useState(moment().format('LTS'))
     const [showModal, setShowModal] = useState(false)
     const [expressMax, setExpressMax] = useState(null)
+    const [subValue, setSubValue] = useState(0)
     const [showGameModal, setShowGameModal] = useState(false)
     var [count, setCount] = useState(0)
+    const [how, setHow] = useState(true)
+    const [slip, setSlip] = useState(false)
 
     let nums = []
 
@@ -48,14 +54,29 @@ const LottoExpress = () => {
         myHeaders.append("Authorization", `Bearer ${get}`);
         myHeaders.append("Content-Type", "application/json");
 
-        arr.filter((a) => {
-            const { value, numbers } = a;
+        const val = betSlip.reduce((total, money) => {
+            total += parseInt(money.amount)
+            return total;
+        }, 0);
 
-            var raw = JSON.stringify({
+        if (val > 100000) {
+            setSuccess(`Please kindly Note that you cannot place bet more than 10000 naira`)
+            return;
+        }else if (val < 1) {
+            setSuccess(`Kindly add an amount`)
+            return;
+        } else {
+            betSlip.filter((a, i) => {
+            const { amount, amounts, stakeList } = a;
+                if (amount < 1) {
+                    setSuccess(`cannot place bet for ticket number ${i} please add an amount`)
+                    return;
+                } else {
+                    var raw = JSON.stringify({
                 "stakes": [
                     {
-                        "value": `${value}`,
-                        "numbers": `${numbers}`
+                        "value": `${amount}`,
+                        "numbers": `${stakeList}`
                     }
                 ]
             });
@@ -104,85 +125,110 @@ const LottoExpress = () => {
                         .catch(error => console.log('error', error));
                 })
                 .catch(error => console.log('error', error));
+            }
         });
+        }
+
+        
         setActiveNums(false)
     }
 
-    
-    const handleBetSubmit = (e) => {
-        e.preventDefault()
-        if (array.length < 5) {
-            setError('Please Choose numbers to play')
-            return;
-        } else if (amount < 50) {
-            setError('Please add an amount from 50 naira')
-            return;
-        } else {
-            setShow(true)
-            const newItem = { id: new Date().getTime().toString(), value: amount, numbers: numbers }
-            setCount(count += 1)
-            setArr([...arr, newItem])
-        }
+        useEffect(() => {
+        let time = setTimeout(() => {
+            setShowAlert(!showAlert)
+            setSuccess('')
+        }, 3000)
 
+        return () => clearTimeout(time)
+    }, [success]);
+
+    const createSlip = () => {
+        let data = {
+            id: new Date().getTime().toString(),
+            stakeList: array,
+            amount: 0 || subValue * arr.length,
+            amounts: subValue
+        }
+        betSlip.push(data)
+        calculateTotalStake();
+        setArr([]);
     }
 
-    const handleClick = (e) => {
-        e.preventDefault()
-        const value = e.target.value
-        if (value > expressMax) {
-            setSuccess(`Cannot place bet with more than ${expressMax} naira`)
-            return
-        } else {
-           setAmount(e.target.value)
-        }
+    const calculateTotalStake = () => {
+        setValue(0)
+        const val = betSlip.reduce((total, money) => {
+            total += parseInt(money.amount)
+            return total;
+        }, 0);
+        setNumber(val)
+        setCount(betSlip.length)
+    }
+    // http://www.v2nmobile.com/api/httpsms.php?u=${email}&p=${pass}&m=${'abelkelly}&r=${09047597017}&s=${senderID}&t=1`
+
+    const calculateTotalStake1 = (newItem) => {
+        setValue(0)
+        const val = newItem.reduce((total, money) => {
+            total += parseInt(money.amount)
+            return total;
+        }, 0);
+        setNumber(val)
     }
 
-    const handleInputChange = (e) => {
-        e.preventDefault()
-        const value = e.target.value
-        if (value > parseInt(expressMax)) {
-            setSuccess(`Cannot place bet with more than ${expressMax} naira`)
-            return
-        } else {
-            setAmount(e.target.value)
-        }
-    }
-    
-    const handlePlaceBets = (e) => {
+    const handleBet = (e) => {
         e.preventDefault()
         if (array.length >= 5) {
-            setNumbers(array.toString())
             setActiveNums(false)
             setGetBet(true)
+            createSlip()
+            setArray([])
         } else {
-            setError('Please Select up to five Numbers')
+            setSuccess('Please Select up to five Numbers')
             return;
         }
         
     }
 
-    useEffect(() => {
-        setTimeout(() => {
-        setError('')
-    }, 3000)
-    }, [error])
+    
+    // const handleBetSubmit = (e) => {
+    //     e.preventDefault()
+    //     if (array.length < 5) {
+    //         setError('Please Choose numbers to play')
+    //         return;
+    //     } else if (amount < 50) {
+    //         setError('Please add an amount from 50 naira')
+    //         return;
+    //     } else {
+    //         setShow(true)
+    //         const newItem = { id: new Date().getTime().toString(), value: amount, numbers: numbers }
+    //         setCount(count += 1)
+    //         setArr([...arr, newItem])
+    //     }
+
+    // }
+
 
     const removeItem = (id) => {
-        let newItem = arr.filter((item) => item.id !== id)
-        setArr(newItem)
-        setCount(count -= 1)
+        let newItem = betSlip.filter((item) => item.id !== id)
+        if (newItem.length < 1) {
+            setBetSlip([])
+            setHow(true)
+            setSlip(false)
+            setCount(0)
+            setShowGameModal(false)
+            setNumber(0)
+        } else {
+            setBetSlip(newItem)
+            setCount(count -= 1)
+            // console.log(betSlip)
+            calculateTotalStake1(newItem)
+        }
+        // setBetSlip(newItem)
     }
 
     const Completionist = ({setDay}) => {
         // setDay(Date.now())
         return <p>Games Drawn</p>
     }
-
-    useEffect(() => {
-        setTimeout(() => {
-            setShowAlert(!showAlert)
-        }, 3000)
-    }, [success]);
 
     useEffect(() => {
         const loggedInUser = localStorage.getItem('time')
@@ -251,104 +297,248 @@ const LottoExpress = () => {
             })
             .catch(error => console.log('error', error));
         
+        }, [])
+    
+    const handleInputChange = (e) => {
+        e.preventDefault()
+        let value = e.target.value
+        if (value > parseInt(expressMax)) {
+            setSuccess(`Cannot place bet with more than ${expressMax} naira`)
+            return
+        } else {
+            setValue(value)
+        }
+    }
+
+    useEffect(() => {
+        if (window.innerWidth > 770) {
+            setShowGameModal(false)
+        }
     }, [])
+
+    const handleInputSubmit = (data) => {
+        data.amount = parseInt(value) * data.stakeList.length;
+        data.amounts = parseInt(value)
+        calculateTotalStake()
+    }
+    
+    
+    const handleRandom = e => {
+        e.preventDefault()
+        let ar = []
+        const number = Math.floor(Math.random() * 90) + 1
+        const number1 = Math.floor(Math.random() * 90) + 1
+        const number2 = Math.floor(Math.random() * 90) + 1
+        const number3 = Math.floor(Math.random() * 90) + 1
+        const number4 = Math.floor(Math.random() * 90) + 1
+        const num5 = Math.floor(Math.random() * 90) + 1
+        ar = [number, number1, number2, number3, number4]
+        let numberSet = new Set(ar)
+        let a = [...numberSet]
+        if (a.length !== 5) {
+            a.push(num5)
+            let x = new Set(a)
+            let b = [...x]
+            setArray(b)
+        } else {
+            setArray(a)
+        }
+    }
 
     return (
 
-        <Container fluid>
-            <div className='news pl-1 pl-lg-5 pb-2 pt-2 p_white'>
+        <Container fluid className='black_bg'>
+            {success && <IntegrationNotistack success={`${success}`} />}
+            <div className='news pl-1 pl-lg-5 pb-2 pt-2 p_white d-flex justify-content-between'>
                 {timer}
-            </div>
+                <Link className='game_links first' to='/games'>Regular Lotto</Link>
+                <Link className='game_links ml-3' to='/softlotto'>Soft Lotto</Link>
+                                                        <Link to='#'>
+                                          <p className='game_links first'>How to Play</p>
+                                        </Link>
+                                        <Link to='#'>
+                                           <p className='game_links first'>Deposit Fund</p>
+                                        </Link>
+                                        <Link to='#'>
+                                           <p className='game_links first'>First Bet</p>
+                                        </Link>
+                                                                    <div class="d-flex flex-right mr-2">
+                                        <Link to='https://www.facebook.com'>
+                                           <FontAwesomeIcon className=' backg color3' size-mode='1x' icon={faFacebook} />
+                                        </Link>
+                                        <Link to='https://www.twitter.com'>
+                                           <FontAwesomeIcon className='ml-1 mr-1 backg color4' size-md='1x' icon={faTwitter} />
+                                        </Link>
+                                        <Link to='https://www.instagram.com'>
+                                           <FontAwesomeIcon className='mr-1 backg color5' size-md='1x' icon={faInstagram} />
+                                        </Link>
+                                        <Link to='https://www.youtube.com'>
+                                           <FontAwesomeIcon className=' backg color6'  size-md='1x' icon={faYoutube} />
+                                        </Link>       
+                </div>
+                </div>
             <Row>
-                <Col className='express_border'>
-                    <main className='express_section'>
-                        <section>
-                        <div className='d-md-flex mb-4 p-2 p-lg-0'>
-                            <Link className='game_links first' to='/games'>Regular Lotto</Link>
-                            <Link className='game_links ml-3' to='/softlotto'>Soft Lotto</Link>
-                        </div>
-                            <div>
-                                <div className='d-flex'>
-                                    <p className='express_p'>Please Pick Five(5) numbers</p>
-                                </div>
-                            <p className='p_red ml-3 ml-lg-0'>Games will will be Drawn after every thirty (30) minutes Intervals</p>
-                                {/* <Countdown key={day} className='ml-2' date={date + new Date().getHours(0,30,0)}>
-                                  <Completionist setDay={setDay}/>
-                                </Countdown> */}
-                                <Countdown key={day} className='ml-2 mb-3' date={day + new Date().setHours(
-                                    0,0,0)}>
-                                  <Completionist setDay={setDay}/>
-                                </Countdown>
-                            </div>
-                            <div className='smalls'>
-                                {nums.map((i)=> {
-                                    return <button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) ? 'lottoExpress' : geteNums && 'grey' } lotto_btns`}>{i}</button>
-                                })}
-                            </div>
-                        </section>
-                        
-                        <div>
-                        <Button className='mt-2 ml-2 ml-lg-0' onClick={handlePlaceBets} variant="outline-secondary">Place Bet</Button>
-                        {success && <Button className='mb-1 btn_class' onClick={() => {history.push('/profile/betHistory')}} variant="outline-secondary">View Bets</Button>}
-                        </div>
-
-                        <p className='p_red mt-2 ml-2 ml-lg-0'>{error && error}</p>
-                    </main>
-                </Col>
-                <Col>
-                    <section className='mt-3 submit_section'>
-                        <p className='pl-2 pl-lg-0'>Numbers: <span className='green'>{numbers}</span></p>
-                        <p className='pl-2 pl-lg-0'>Amount per Line: <span className='green'>&#x20A6;{amount}</span></p>
-                        <Form>
-                            <Form.Control size='sm' value={amount} className='form_input' onChange={handleInputChange} type="text" placeholder="Amount" />
-                        </Form>
-                        <div className='mt-2 d-flex justify-content-between pl-2 pl-lg-0'>
-                            <Button className='mr-1 mr-lg-0 games game' value='50' size='sm' onClick={handleClick}>&#x20A6;50</Button>
-                            <Button className='mr-1 mr-lg-0 'size='sm' value='100' size='sm' onClick={handleClick}>&#x20A6;100</Button>
-                            <Button className='mr-1 mr-lg-0 'size='sm' value='200' size='sm' onClick={handleClick}>&#x20A6;200</Button>
-                            <Button className='mr-1 mr-lg-0 'size='sm' value='300' size='sm' onClick={handleClick}>&#x20A6;300</Button>
-                        </div>
-                        {!logedIn && <Button size='sm' className='mt-3 mb-2 game ml-2 ml-lg-0' variant='success' onClick={() => setShowModal(!showModal)}  variant="outline-success">Login To Place Bet</Button> }
-                        {logedIn &&
-                            <Button size='sm' className='mt-3 mb-2 game ml-2 ml-lg-0' variant='success' onClick={handleBetSubmit} variant="outline-success">Place Bet</Button>
-                        }
-                        {success && <section className='small_message ml-3 mt-3'>
-                            {showAlert && <span className='green'>{success}</span>}
-                        </section>}
+                <Col className='d-none d-lg-inline' lg={3}>
+                    <section className='mt-2 ml-2 ml-lg-0 mb-2 mb-lg-0 pt-5'>
+                        <img src={play} alt="" className='game_section_svg' />
                     </section>
-
-                    {
-                        arr.length > 0 &&
-                        <section className={`${!showGameModal ? 'display' : 'c-sidebar --bet-slip is-open pt-5 background2'} ${arr.length > 2 && 'sub_section'}`}>
-                            {
-                                arr.length >= 1 &&
-                                arr.map((a) => {
-                                    const { id, value, numbers } = a;
+                    
+                </Col>
+                <Col lg={5} className={`${showGameModal && 'display2'} boxplay`}>
+                        <div className='mt-2 text-center'>
+                            {nums.map((i) => {
+                                return <Button key={i} name={!activeNums[i] && 'ready'} onClick={() => handleClass(i)} className={`${array.includes(i) ? 'game_clicked' : geteNums && 'red'} balx`} variant='outline-primary'>{i}</Button>
+                            })}
+                        </div>
+                        <Row className="clearfix mt-2">
+                            <Col md={4}>
+                                <Button variant='outline-primary' className='thew' onClick={handleRandom}>Quick Pick</Button>
+                            </Col>
+                                <Col md={5}>
+                                    <Button variant='outline-success' className='thew mt-2 mb-2 mt-lg-0 mb-lg-0' onClick={handleBet}>Add To BetSlip</Button>
+                                </Col>
+                            <Col md={3}>
+                                <Button variant='outline-danger' className='thew' onClick={() => { setBetSlip([]); setHow(true); setSlip(false); setCount(0); setShowGameModal(false)}}>Clear</Button>
+                            </Col>
+                      </Row>
+                </Col>
+                <Col lg={3} className='show1'>
+                        <Row className='mt-2'>
+                            <div className={`col-md-6 col-sm-6 mbox1 text-center ${betSlip.length < 1 && 'disabled'}`} onClick={() => { setSlip(true); setHow(false); }}>BetSlip <span class="badge bg-secondary">{count}</span></div>
+                            <div className="col-md-6 col-sm-6 text-center mgames1" onClick={() => { setSlip(false); setHow(true); }}>How To</div>
+                        </Row>
+                        <Row>
+                        {
+                            how ?
+                            <div className="mybo col-sm-12" id="howto">
+                            <ul>
+                                <li>Choose a draw to play in (all the draw are at the same format, just a different times)</li>
+                            </ul>
+                                    </div> :
+                                <section className='scroller bet_section mt-2'>
+                    <div className='d-flex justify-content-between game_back'>
+                            </div>
+                            <div>
+                                {betSlip.map((data) => {
+                                    const { type, lines, id, gameId, stakeList, stakeList2, amount } = data;
                                     return (
-                                        <div key={id} className={`${showGameModal ? 'sub_divs' : 'sub_div'}`}>
+                                        <main key={id} className='get_line'>
                                             <div className='d-flex justify-content-end'>
                                                 <FaTimes onClick={() => {
-                                                    removeItem(id)
+                                                   removeItem(id)
                                                 }}
                                                     className='cancel_game'
                                                 />
                                             </div>
-                                             <p>Numbers: <span className='p_red'>{numbers}</span></p>
-                                             <p>Stake Amount: <span className='p_red'>&#x20A6;{parseInt(value) * array.length}</span></p>
-                                        </div>
-                                    )
-                                })
-                            }
+                                            <div>
+                                                <p className='p_type'>Numbers: {stakeList.toString()} </p>
+                                                <p className='p_type'>Enter Stake Amount: {amount}</p>
+                                                {
+                                                    id &&                                                 <Form key={id} onSubmit={(e) => {
+                                                    e.preventDefault();
+                                                    handleInputSubmit(data)
+                                                }
+                                                }>
+                                                    <InputGroup size='sm' className="mb-3">
+                                                        <Form.Control className='form_input' onChange={handleInputChange} value={value} size='sm' placeholder='Amount' />
+                                                        <Button className='btn_secondary' type='submit' size='sm' variant='outline-secondary'>Submit</Button>
+                                                    </InputGroup>
 
-                            <Button onClick={handleSubmit} className='margin ml-2 mb-5' variant='outline-danger'>Place Bet</Button>
-                            <section className='mb-5'></section>
-                            {success && <section className='small_message ml-3 mt-3 mb-5'>
-                                        {showAlert && <span className='green'>{success}</span>}
-                                    </section>}
-                                </section>
-                             }
-                    
-                </Col>
+                                                </Form>
+                                             }
+                                             </div>
+                                        </main>
+                                        
+                                    )
+                                })}
+                            </div>
+                                                                        <section className='mt-2'>
+                                                <div className='d-flex justify-content-between'>
+                                                   <p className='p_type'>Number of Bets: </p>
+                                                   <p className='p_type'>{betSlip.length}</p>
+                                                </div>
+                                                <div className='d-flex justify-content-between'>
+                                                    <p className='p_type'>Total Stake: </p>
+                                                   <p className='p_type'>&#x20A6;{number}</p>
+                                                </div>
+                                                </section>
+                                        <div className='d-flex justify-content-center'>
+                                {!logedIn && <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={() => { setShowModal(!showModal); showGameModal && setShowGameModal(false)}}>Login To Place Bet</Button> }
+                                {logedIn &&
+                                    <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={handleSubmit}>Place Bet</Button>
+                                }
+                            </div>
+                            
+                </section>    
+                            }
+                        </Row>
+                    </Col>
+                   
+                        <Col className={`${!showGameModal ? 'display' : 'c-sidebar --bet-slip is-open'} ${betSlip.length > 0 ? 'd_none scroll_game' : 'display'}`} md={3}>
+                <section className='scroller bet_section mt-2'>
+                    <div className='d-flex justify-content-between game_back'>
+                                <button className="game_slip_btn" onClick={() => { setBetSlip([]); setCount(0); setShowGameModal(false)}}>Clear Slip</button>
+                            </div>
+                            <div>
+                                {betSlip.map((data) => {
+                                    const { id, stakeList, amount } = data;
+                                    return (
+                                        <main key={id} className='get_line'>
+                                            <div className='d-flex justify-content-end'>
+                                                <FaTimes onClick={() => {
+                                                   removeItem(id)
+                                                }}
+                                                    className='cancel_game'
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className='p_type'>Numbers: {stakeList.toString()} </p>
+                                                <p className='p_type'>Enter Stake Amount: {amount}</p>
+                                                <Form onSubmit={(e) => {
+                                                    e.preventDefault();
+                                                    handleInputSubmit(data)
+                                                }
+                                                }>
+                                                      <InputGroup size='sm' className="mb-3">
+                                                        <Form.Control className='form_input' onChange={handleInputChange} value={value} size='sm' placeholder='Amount' />
+                                                          <Button className='btn_secondary' type='submit' size='sm' variant='outline-secondary'>Submit</Button>
+  </InputGroup>
+
+                                                </Form>
+                                             </div>
+                                        </main>
+                                        
+                                    )
+                                })}
+                            </div>
+                                                                        <section className='mt-2'>
+                                                <div className='d-flex justify-content-between'>
+                                                   <p className='p_type'>Number of Bets: </p>
+                                                   <p className='p_type'>{betSlip.length}</p>
+                                                </div>
+                                                <div className='d-flex justify-content-between'>
+                                                    <p className='p_type'>Total Stake: </p>
+                                                   <p className='p_type'>&#x20A6;{number}</p>
+                                                </div>
+                                                </section>
+                                        <div className='d-flex justify-content-center'>
+                                {!logedIn && <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={() => { setShowModal(!showModal); showGameModal && setShowGameModal(false)}}>Login To Place Bet</Button> }
+                                {logedIn &&
+                                    <Button size='sm' className={`align-item-center mb-2 game`} variant='success' onClick={handleSubmit}>Place Bet</Button>
+                                }
+                            </div>
+                            
+                </section>
+            </Col>
+                
+                    <div class="row win">
+                        <Col>
+                           WIN 30 MILLION
+                        </Col>
+                  {/* <div class="col-md-12 col-sm-12 col-xs-12">
+                      
+                  </div> */}
+              </div>
             </Row>
             {showModal && <GetWhatsapp />}
                         <section className='bottom'>

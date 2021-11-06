@@ -394,7 +394,7 @@ const Profile = () => {
     }
 
     return (
-        <main>
+        <main className='margins'>
             <Container fluid>
                 <Row>
                     <Col className='pl-4 days_column scrollbar d-none color d-lg-inline' md={2}>
